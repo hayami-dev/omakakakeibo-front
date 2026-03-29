@@ -4,6 +4,12 @@ import { CATEGORIES } from "../categories";
 export default function InputForm({ onSend }) {
   const [inputValue, setInputValue] = useState(""); // 入力中の文字列
   const [selectCategory, setSelectCategory] = useState("");
+
+  const [selectDate, setSelectDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  console.log(selectDate);
+
   const handleLocalSend = () => {
     const amount = Number(inputValue); // 数値に加工
 
