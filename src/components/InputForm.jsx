@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { CATEGORIES } from "../categories";
 import { getFormattedDate } from "../DateUtils";
+import { NavLink, useOutletContext, useNavigate } from "react-router";
 
-export default function InputForm({ onSend }) {
+export default function InputForm() {
+  const { onSend } = useOutletContext();
+  const navigate = useNavigate();
+
   // 今日の日付を取得
   const today = getFormattedDate();
 
@@ -10,6 +14,10 @@ export default function InputForm({ onSend }) {
   const [inputDate, setInputDate] = useState(today); // 日付のValue
   const limitDate = getFormattedDate(0, -6, 1); // 今日から６か月間
   const [selectCategory, setSelectCategory] = useState(""); // タグ選択のValue
+
+  const handleClose = () => {
+    navigate("/");
+  };
 
   const handleLocalSend = () => {
     const amount = Number(inputValue); // 数値に加工
@@ -31,10 +39,11 @@ export default function InputForm({ onSend }) {
     setInputValue(""); //入力欄を空にする
     setSelectCategory("");
     setInputDate(today);
+    handleClose();
   };
 
   return (
-    <>
+    <section>
       <input
         type="number"
         value={inputValue}
@@ -68,6 +77,7 @@ export default function InputForm({ onSend }) {
         ))}
       </div>
       <button onClick={handleLocalSend}>送信</button>
-    </>
+      <button onClick={handleClose}>✖ とじる</button>
+    </section>
   );
 }
