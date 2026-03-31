@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { CATEGORIES } from "../categories";
+import { getFormattedDate } from "../DateUtils";
 
 export default function InputForm({ onSend }) {
-  const [inputValue, setInputValue] = useState(""); // 入力中の文字列
-  const [selectCategory, setSelectCategory] = useState("");
+  // 今日の日付を取得
+  const today = getFormattedDate();
+
+  const [inputValue, setInputValue] = useState(""); // 金額のValue
+  const [inputDate, setInputDate] = useState(today); // 日付のValue
+  const limitDate = getFormattedDate(0, -6, 1); // 今日から６か月間
+  const [selectCategory, setSelectCategory] = useState(""); // タグ選択のValue
+
   const handleLocalSend = () => {
     const amount = Number(inputValue); // 数値に加工
 
@@ -19,10 +26,11 @@ export default function InputForm({ onSend }) {
     }
 
     // Javaだと total = total + Integer.parseInt(inputValue);
-    onSend(amount, selectCategory); // 入力値を結果にセット
+    onSend(amount, selectCategory, inputDate); // 入力値を結果にセット
 
     setInputValue(""); //入力欄を空にする
     setSelectCategory("");
+    setInputDate(today);
   };
 
   return (
@@ -37,6 +45,14 @@ export default function InputForm({ onSend }) {
           ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
         }
         // 一部の半角文字を入力できないようにする
+      />
+      <input
+        type="date"
+        value={inputDate}
+        placeholder="おかねをつかった年月日"
+        min={limitDate}
+        max={today}
+        onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
         {CATEGORIES.map((cat) => (
