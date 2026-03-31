@@ -1,6 +1,6 @@
 import "./App.css";
-import Home from "./components/Home";
-import InputForm from "./components/InputForm";
+import Home from "./pages/Home";
+import InputForm from "./pages/InputForm";
 import { Route, Routes } from "react-router";
 
 function App() {

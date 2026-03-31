@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Summary from "./Summary";
-import HistoryList from "./HistoryList";
-import CategorySummary from "./CategorySummary";
+import Summary from "../components/Summary";
+import HistoryList from "../components/HistoryList";
+import CategorySummary from "../components/CategorySummary";
 import { NavLink, Outlet } from "react-router";
 
 export default function Home() {
