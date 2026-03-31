@@ -7,6 +7,9 @@ export default function HistoryList({ history, onRemove }) {
       <ul>
         {history.map((item, index) => (
           <li key={index}>
+            <time dateTime={item.date}>
+              {item.date.toString().replaceAll("-", "/")}
+            </time>
             【{item.category}】{item.amount.toLocaleString("ja-JP")}円
             <AiFillCloseCircle onClick={() => onRemove(index)} />
           </li>

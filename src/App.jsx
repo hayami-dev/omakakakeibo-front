@@ -34,11 +34,11 @@ function App() {
         {/* 入力 */}
         <section>
           <InputForm
-            onSend={(amount, selectedCat) => {
+            onSend={(amount, selectedCat, inputDate) => {
               setResult(result + amount);
               setHistory([
                 ...history,
-                { amount: amount, category: selectedCat },
+                { amount: amount, category: selectedCat, date: inputDate },
               ]);
             }}
           />
