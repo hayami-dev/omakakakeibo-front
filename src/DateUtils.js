@@ -1,3 +1,5 @@
+// yyyy-MM-dd
+// InputFormでの入力に使用
 export const getFormattedDate = (
   yearOffset = 0,
   monthOffset = 0,
@@ -18,4 +20,26 @@ export const getFormattedDate = (
   })
     .format(date)
     .replaceAll("/", "-");
+};
+// yyyy-MM
+// 月毎のSummaryに使用
+export const getYearMonth = (yearOffset = 0, monthOffset = 0) => {
+  const fullDate = getFormattedDate(yearOffset, monthOffset, 1);
+  return fullDate.substring(0, 7);
+};
+
+// yyyyに加工
+export function extractYear(yearMonthStr) {
+  if(!yearMonthStr){
+    return "";
+  }
+  return parseInt(yearMonthStr.substring(0,4));
+};
+
+// MMに加工
+export function extractMonth(yearMonthStr) {
+  if(!yearMonthStr){
+    return "";
+  }
+  return parseInt(yearMonthStr.substring(5,7));
 };
