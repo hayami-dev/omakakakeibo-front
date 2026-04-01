@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Summary from "./Summary";
-import HistoryList from "./HistoryList";
-import CategorySummary from "./CategorySummary";
+import Summary from "../components/Summary";
+import HistoryList from "../components/HistoryList";
+import CategorySummary from "../components/CategorySummary";
+import MonthSummary from "../components/MonthSummary";
 import { NavLink, Outlet } from "react-router";
 
 export default function Home() {
@@ -33,6 +34,7 @@ export default function Home() {
       <section>
         <HistoryList history={history} onRemove={removeHistory} />
         <CategorySummary history={history} />
+        <MonthSummary history={history} />
       </section>
       <Outlet
         context={{
