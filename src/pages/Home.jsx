@@ -29,6 +29,7 @@ export default function Home() {
     0,
   );
 
+  // 👇現時点でバグあり
   const removeHistory = (targetIndex) => {
     // indexがtargetIndexじゃないものだけ残す(配列を直で消せない)
     const newHistory = history.filter((_, index) => index !== targetIndex);
