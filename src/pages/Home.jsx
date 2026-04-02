@@ -4,11 +4,32 @@ import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
 import MonthSummary from "../components/MonthSummary";
 import { NavLink, Outlet } from "react-router";
+import { getYearMonth } from "../dateUtils";
+import { getDummyData, getDummySummary } from "../dummyData";
+import SelectMonth from "../components/SelectMonth";
 
 export default function Home() {
-  const [result, setResult] = useState(0);
-  const [history, setHistory] = useState([]);
+  const [result, setResult] = useState(getDummySummary());
+  const [history, setHistory] = useState(getDummyData);
+  // 選択中の月
+  const [selectMonth, setSelectMonth] = useState(getYearMonth());
 
+  const changeDisplayMonth = (yearMonth) => {
+    setSelectMonth(yearMonth);
+  };
+
+  // historyを月毎にフィルターにかける
+  const filteredHistory = selectMonth
+    ? history.filter((item) => item.date.startsWith(selectMonth))
+    : history; // 何も選ばれてなければ今月
+
+  // フィルタリングした内容の合計値を出す
+  const filteredTotal = filteredHistory.reduce(
+    (acc, cur) => acc + cur.amount,
+    0,
+  );
+
+  // 👇現時点でバグあり
   const removeHistory = (targetIndex) => {
     // indexがtargetIndexじゃないものだけ残す(配列を直で消せない)
     const newHistory = history.filter((_, index) => index !== targetIndex);
@@ -26,15 +47,16 @@ export default function Home() {
       <h1>おおまか家計簿</h1>
       <nav>
         <NavLink to="/input">📝 入力</NavLink>
+        <SelectMonth changeDisplayMonth={changeDisplayMonth}></SelectMonth>
       </nav>
       {/* 結果表示 */}
       <section>
-        <Summary total={result} />
+        <Summary total={filteredTotal} />
       </section>
       <section>
-        <HistoryList history={history} onRemove={removeHistory} />
-        <CategorySummary history={history} />
-        <MonthSummary history={history} />
+        <p>フィルター後</p>
+        <HistoryList history={filteredHistory} onRemove={removeHistory} />
+        <CategorySummary history={filteredHistory} />
       </section>
       <Outlet
         context={{
