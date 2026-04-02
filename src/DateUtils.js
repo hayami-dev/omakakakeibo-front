@@ -30,16 +30,16 @@ export const getYearMonth = (yearOffset = 0, monthOffset = 0) => {
 
 // yyyyに加工
 export function extractYear(yearMonthStr) {
-  if(!yearMonthStr){
+  if (!yearMonthStr) {
     return "";
   }
-  return parseInt(yearMonthStr.substring(0,4));
-};
+  return parseInt(yearMonthStr.substring(0, 4));
+}
 
 // MMに加工
 export function extractMonth(yearMonthStr) {
-  if(!yearMonthStr){
+  if (!yearMonthStr) {
     return "";
   }
-  return parseInt(yearMonthStr.substring(5,7));
-};
+  return parseInt(yearMonthStr.substring(5, 7));
+}

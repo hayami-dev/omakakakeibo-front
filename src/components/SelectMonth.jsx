@@ -1,4 +1,4 @@
-import { extractMonth, getYearMonth } from "../DateUtils";
+import { extractMonth, getYearMonth } from "../dateUtils";
 
 export default function SelectMonth({ changeDisplayMonth }) {
   // 今月から6か月前までを取得

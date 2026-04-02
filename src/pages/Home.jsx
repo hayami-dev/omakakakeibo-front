@@ -4,7 +4,7 @@ import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
 import MonthSummary from "../components/MonthSummary";
 import { NavLink, Outlet } from "react-router";
-import { getYearMonth, extractYear } from "../DateUtils";
+import { getYearMonth } from "../dateUtils";
 import { getDummyData, getDummySummary } from "../dummyData";
 import SelectMonth from "../components/SelectMonth";
 

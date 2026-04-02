@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { CATEGORIES } from "../categories";
-import { getFormattedDate } from "../DateUtils";
+import { getFormattedDate } from "../dateUtils";
 import { NavLink, useOutletContext, useNavigate } from "react-router";
 
 export default function InputForm() {
   const { onSend } = useOutletContext();
   const navigate = useNavigate();
 
-  // 今日の日付を取得
-  const today = getFormattedDate();
+  const today = getFormattedDate(); // 今日の日付を取得
 
   const [inputValue, setInputValue] = useState(""); // 金額のValue
   const [inputDate, setInputDate] = useState(today); // 日付のValue
-  const limitDate = getFormattedDate(0, -6, 1); // 今日から６か月間
+  const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
   const [selectCategory, setSelectCategory] = useState(""); // タグ選択のValue
 
   const handleClose = () => {
