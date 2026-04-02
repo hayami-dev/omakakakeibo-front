@@ -1,15 +1,15 @@
 import { useState } from "react";
+import { NavLink, Outlet, useNavigate } from "react-router";
+import { getYearMonth } from "../dateUtils";
+import { getDummyData, getDummySummary } from "../dummyData";
 import Summary from "../components/Summary";
 import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
-import MonthSummary from "../components/MonthSummary";
-import { NavLink, Outlet } from "react-router";
-import { getYearMonth } from "../dateUtils";
-import { getDummyData, getDummySummary } from "../dummyData";
 import SelectMonth from "../components/SelectMonth";
+import MonthSummary from "../components/MonthSummary";
 
 export default function Home() {
-  const [result, setResult] = useState(getDummySummary());
+  const [summary, setSummary] = useState(getDummySummary());
   const [history, setHistory] = useState(getDummyData);
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
@@ -29,17 +29,12 @@ export default function Home() {
     0,
   );
 
-  // 👇現時点でバグあり
-  const removeHistory = (targetIndex) => {
-    // indexがtargetIndexじゃないものだけ残す(配列を直で消せない)
-    const newHistory = history.filter((_, index) => index !== targetIndex);
-
-    // 新しい配列をセッターをつかって上書き
-    setHistory(newHistory);
-
-    // 合計金額(result)も減らす
-    const deletedItem = history[targetIndex];
-    setResult(result - deletedItem.amount);
+  const navigate = useNavigate();
+  const onEdit = (targetHistoryIndex) => {
+    const targetHistoryItem = filteredHistory[targetHistoryIndex];
+    navigate("/input", {
+      state: { item: targetHistoryItem },
+    });
   };
 
   return (
@@ -55,17 +50,44 @@ export default function Home() {
       </section>
       <section>
         <p>フィルター後</p>
-        <HistoryList history={filteredHistory} onRemove={removeHistory} />
+        <HistoryList history={filteredHistory} onEdit={onEdit} />
         <CategorySummary history={filteredHistory} />
       </section>
       <Outlet
         context={{
-          onSend: (amount, selectCat, inputDate) => {
-            setResult(result + amount);
+          onSend: (amount, category, inputDate) => {
+            setSummary(summary + amount);
             setHistory([
               ...history,
-              { amount: amount, category: selectCat, date: inputDate },
+              {
+                id: crypto.randomUUID(),
+                amount: amount,
+                category: category,
+                date: inputDate,
+              },
             ]);
+          },
+          onUpdate: (editItemId, amount, selectCategory, inputDate) => {
+            const newHistory = [...history];
+            setHistory(newHistory);
+            const targetHistoryIndex = newHistory.findIndex(
+              (item) => item.id === editItemId,
+            );
+
+            if (targetHistoryIndex !== -1) {
+              newHistory[targetHistoryIndex] = {
+                id: editItemId,
+                amount,
+                category: selectCategory,
+                date: inputDate,
+              };
+            }
+            setHistory(newHistory);
+            const newTotal = newHistory.reduce(
+              (acc, cur) => acc + cur.amount,
+              0,
+            );
+            setSummary(newTotal);
           },
         }}
       />
