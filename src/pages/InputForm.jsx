@@ -20,6 +20,8 @@ export default function InputForm() {
 
   const { onSend } = useOutletContext();
   const { onUpdate } = useOutletContext();
+  const { onRemove } = useOutletContext();
+
   const navigate = useNavigate();
 
   // 入力を登録
@@ -50,18 +52,13 @@ export default function InputForm() {
     handleClose();
   };
 
-  // 👇現時点でバグあり
-  // const removeHistory = (targetIndex) => {
-  //   // indexがtargetIndexじゃないものだけ残す(配列を直で消せない)
-  //   const newHistory = history.filter((_, index) => index !== targetIndex);
-
-  //   // 新しい配列をセッターをつかって上書き
-  //   setHistory(newHistory);
-
-  //   // 合計金額(summary)も減らす
-  //   const deletedItem = history[targetIndex];
-  //   setSummary(summary - deletedItem.amount);
-  // };
+  const handleRemove = () => {
+    if (!window.confirm("削除しますか？")) {
+      return;
+    }
+    onRemove(editItem.id);
+    navigate("/");
+  };
 
   // ダイアログを閉じる
   const handleClose = () => {
@@ -104,6 +101,7 @@ export default function InputForm() {
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
+      <button onClick={handleRemove}> 削除</button>
     </section>
   );
 }

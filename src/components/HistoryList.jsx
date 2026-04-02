@@ -1,4 +1,3 @@
-import { AiFillCloseCircle } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
 
 export default function HistoryList({ history, onEdit }) {
@@ -12,7 +11,6 @@ export default function HistoryList({ history, onEdit }) {
               {item.date.toString().replaceAll("-", "/")}
             </time>
             【{item.category}】{item.amount.toLocaleString("ja-JP")}円
-            {/* <AiFillCloseCircle onClick={() => onRemove(index)} /> */}
             <AiFillEdit onClick={() => onEdit(index)} />
           </li>
         ))}

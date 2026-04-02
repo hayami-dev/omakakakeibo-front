@@ -53,6 +53,7 @@ export default function Home() {
         <HistoryList history={filteredHistory} onEdit={onEdit} />
         <CategorySummary history={filteredHistory} />
       </section>
+      {/* InputFormのコンテキスト */}
       <Outlet
         context={{
           onSend: (amount, category, inputDate) => {
@@ -88,6 +89,14 @@ export default function Home() {
               0,
             );
             setSummary(newTotal);
+          },
+          onRemove: (editItemId) => {
+            const newHistory = history.filter((item) => item.id !== editItemId);
+            setHistory(newHistory);
+            const deletedItem = history.find((item) => item.id === editItemId);
+            if (deletedItem) {
+              setSummary(summary - deletedItem.amount);
+            }
           },
         }}
       />
