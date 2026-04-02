@@ -1,23 +1,30 @@
 import { useState } from "react";
 import { CATEGORIES } from "../categories";
 import { getFormattedDate } from "../dateUtils";
-import { NavLink, useOutletContext, useNavigate } from "react-router";
+import { useOutletContext, useNavigate, useLocation } from "react-router";
 
 export default function InputForm() {
-  const { onSend } = useOutletContext();
-  const navigate = useNavigate();
+  // Homeからデータを受け取る
+  const location = useLocation();
+  const editItem = location.state?.item;
 
   const today = getFormattedDate(); // 今日の日付を取得
 
-  const [inputValue, setInputValue] = useState(""); // 金額のValue
-  const [inputDate, setInputDate] = useState(today); // 日付のValue
+  const [inputValue, setInputValue] = useState(editItem ? editItem.amount : ""); // 金額のValue
+  const [inputDate, setInputDate] = useState(editItem ? editItem.date : today); // 日付のValue
+  const [selectCategory, setSelectCategory] = useState(
+    editItem ? editItem.category : "",
+  ); // タグ選択のValue
+
   const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
-  const [selectCategory, setSelectCategory] = useState(""); // タグ選択のValue
 
-  const handleClose = () => {
-    navigate("/");
-  };
+  const { onSend } = useOutletContext();
+  const { onUpdate } = useOutletContext();
+  const { onRemove } = useOutletContext();
 
+  const navigate = useNavigate();
+
+  // 入力を登録
   const handleLocalSend = () => {
     const amount = Number(inputValue); // 数値に加工
 
@@ -32,13 +39,30 @@ export default function InputForm() {
       return;
     }
 
-    // Javaだと total = total + Integer.parseInt(inputValue);
-    onSend(amount, selectCategory, inputDate); // 入力値を結果にセット
+    if (editItem) {
+      onUpdate(editItem.id, amount, selectCategory, inputDate);
+    } else {
+      // Javaだと total = total + Integer.parseInt(inputValue);
+      onSend(amount, selectCategory, inputDate); // 入力値を結果にセット
+    }
 
     setInputValue(""); //入力欄を空にする
     setSelectCategory("");
     setInputDate(today);
     handleClose();
+  };
+
+  const handleRemove = () => {
+    if (!window.confirm("削除しますか？")) {
+      return;
+    }
+    onRemove(editItem.id);
+    navigate("/");
+  };
+
+  // ダイアログを閉じる
+  const handleClose = () => {
+    navigate("/");
   };
 
   return (
@@ -77,6 +101,7 @@ export default function InputForm() {
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
+      <button onClick={handleRemove}> 削除</button>
     </section>
   );
 }
