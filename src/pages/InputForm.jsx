@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { CATEGORIES } from "../categories";
+import { getCategories } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
 
 export default function InputForm() {
+  // カテゴリ名の取得
+  const categories = getCategories();
+
   // Homeからデータを受け取る
   const location = useLocation();
   const editItem = location.state?.item;
@@ -87,15 +90,15 @@ export default function InputForm() {
         onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectCategory(cat)}
+            key={cat.id}
+            onClick={() => setSelectCategory(cat.name)}
             style={{
-              backgroundColor: selectCategory === cat ? "yellow" : "white",
+              backgroundColor: selectCategory === cat.name ? "yellow" : "white",
             }}
           >
-            {cat}
+            {cat.name}
           </button>
         ))}
       </div>

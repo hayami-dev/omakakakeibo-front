@@ -1,37 +1,43 @@
 // カテゴリーの編集画面
+import { useState } from "react";
+import { getCategories, saveCategories } from "../../service/categoryService";
+
 export default function Categories() {
-  // 処理
+  const [categories, setCategories] = useState(() => {
+    return getCategories();
+  });
+
+  const handleInputChange = (id, newName) => {
+    const updated = categories.map((cat) =>
+      cat.id === id ? { ...cat, name: newName } : cat,
+    );
+    setCategories(updated); // リアルタイムで更新
+  };
+
+  const onSend = () => {
+    saveCategories(categories);
+    console.log("更新が完了しました");
+    return;
+  };
+
   return (
     <>
       <h1>カテゴリーの変更</h1>
       <p>６個のカテゴリー分けができます。</p>
       <section className="category-input-area">
-        <div>
-          <label htmlFor="category1">カテゴリー１</label>
-          <input type="text" id="category1" />
-        </div>
-        <div>
-          <label htmlFor="category2">カテゴリー２</label>
-          <input type="text" id="category2" />
-        </div>
-        <div>
-          <label htmlFor="category3">カテゴリー３</label>
-          <input type="text" id="category3" />
-        </div>
-        <div>
-          <label htmlFor="category4">カテゴリー４</label>
-          <input type="text" id="category4" />
-        </div>
-        <div>
-          <label htmlFor="category5">カテゴリー５</label>
-          <input type="text" id="category5" />
-        </div>
-        <div>
-          <label htmlFor="category6">カテゴリー６</label>
-          <input type="text" id="category6" />
-        </div>
+        {categories.map((cat, index) => (
+          <div key={cat.id}>
+            <label htmlFor={"category-${index}"}>カテゴリー{index + 1}</label>
+            <input
+              type="text"
+              id={"category-${index}"}
+              value={cat.name}
+              onChange={(e) => handleInputChange(cat.id, e.target.value)}
+            />
+          </div>
+        ))}
       </section>
-      <button>変更</button>
+      <button onClick={onSend}>変更</button>
     </>
   );
 }
