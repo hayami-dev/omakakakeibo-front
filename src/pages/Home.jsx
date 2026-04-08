@@ -1,16 +1,24 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { getYearMonth } from "../dateUtils";
-import { getDummyData, getDummySummary } from "../dummyData";
+import { getDummyData } from "../dummyData";
 import Summary from "../components/Summary";
 import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
 import SelectMonth from "../components/SelectMonth";
 import MonthSummary from "../components/MonthSummary";
+import { createHistoryItem, saveHistory } from "../service/historyService";
 
 export default function Home() {
-  const [summary, setSummary] = useState(getDummySummary());
-  const [history, setHistory] = useState(getDummyData);
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem("myHistory");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.length > 0) return parsed;
+    }
+    return getDummyData;
+  });
+
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
 
@@ -40,6 +48,12 @@ export default function Home() {
     }
   };
 
+  // 💡 共通の更新・保存処理
+  const updateAndSaveHistory = (newHistory) => {
+    setHistory(newHistory);
+    saveHistory(newHistory); // 確定した最新の配列をそのまま渡す
+  };
+
   return (
     <main>
       <h1>おおまか家計簿</h1>
@@ -59,44 +73,24 @@ export default function Home() {
       {/* InputFormのコンテキスト */}
       <Outlet
         context={{
+          // 新しく金額データを登録
           onSend: (amount, categoryId, inputDate) => {
-            const newHistory = [
-              ...history,
-              {
-                id: crypto.randomUUID(),
-                amount: amount,
-                category: categoryId,
-                date: inputDate,
-              },
-            ];
-            setSummary(summary + amount);
-            setHistory(newHistory);
+            const newItem = createHistoryItem(amount, categoryId, inputDate);
+            updateAndSaveHistory([...history, newItem]);
           },
+          // 金額データの変更
           onUpdate: (editItemId, amount, categoryId, inputDate) => {
             const newHistory = history.map((item) =>
               item.id === editItemId
-                ? {
-                    id: editItemId,
-                    amount,
-                    category: categoryId,
-                    date: inputDate,
-                  }
+                ? createHistoryItem(amount, categoryId, inputDate, editItemId)
                 : item,
             );
-            setHistory(newHistory);
-            const newTotal = newHistory.reduce(
-              (acc, cur) => acc + cur.amount,
-              0,
-            );
-            setSummary(newTotal);
+            updateAndSaveHistory(newHistory);
           },
           onRemove: (editItemId) => {
-            const newHistory = history.filter((item) => item.id !== editItemId);
-            setHistory(newHistory);
-            const deletedItem = history.find((item) => item.id === editItemId);
-            if (deletedItem) {
-              setSummary(summary - deletedItem.amount);
-            }
+            updateAndSaveHistory(
+              history.filter((item) => item.id !== editItemId),
+            );
           },
         }}
       />
