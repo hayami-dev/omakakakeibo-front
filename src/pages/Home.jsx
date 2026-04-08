@@ -30,11 +30,14 @@ export default function Home() {
   );
 
   const navigate = useNavigate();
-  const onEdit = (targetHistoryIndex) => {
-    const targetHistoryItem = filteredHistory[targetHistoryIndex];
-    navigate("/input", {
-      state: { item: targetHistoryItem },
-    });
+  const onEdit = (targetId) => {
+    const targetHistoryItem = history.find((item) => item.id === targetId);
+
+    if (targetHistoryItem) {
+      navigate("/input", {
+        state: { item: targetHistoryItem },
+      });
+    }
   };
 
   return (
@@ -56,33 +59,30 @@ export default function Home() {
       {/* InputFormのコンテキスト */}
       <Outlet
         context={{
-          onSend: (amount, category, inputDate) => {
-            setSummary(summary + amount);
-            setHistory([
+          onSend: (amount, categoryId, inputDate) => {
+            const newHistory = [
               ...history,
               {
                 id: crypto.randomUUID(),
                 amount: amount,
-                category: category,
+                category: categoryId,
                 date: inputDate,
               },
-            ]);
-          },
-          onUpdate: (editItemId, amount, selectCategory, inputDate) => {
-            const newHistory = [...history];
+            ];
+            setSummary(summary + amount);
             setHistory(newHistory);
-            const targetHistoryIndex = newHistory.findIndex(
-              (item) => item.id === editItemId,
+          },
+          onUpdate: (editItemId, amount, categoryId, inputDate) => {
+            const newHistory = history.map((item) =>
+              item.id === editItemId
+                ? {
+                    id: editItemId,
+                    amount,
+                    category: categoryId,
+                    date: inputDate,
+                  }
+                : item,
             );
-
-            if (targetHistoryIndex !== -1) {
-              newHistory[targetHistoryIndex] = {
-                id: editItemId,
-                amount,
-                category: selectCategory,
-                date: inputDate,
-              };
-            }
             setHistory(newHistory);
             const newTotal = newHistory.reduce(
               (acc, cur) => acc + cur.amount,

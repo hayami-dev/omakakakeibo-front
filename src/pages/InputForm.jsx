@@ -93,9 +93,9 @@ export default function InputForm() {
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setSelectCategory(cat.name)}
+            onClick={() => setSelectCategory(cat.id)}
             style={{
-              backgroundColor: selectCategory === cat.name ? "yellow" : "white",
+              backgroundColor: selectCategory === cat.id ? "yellow" : "white",
             }}
           >
             {cat.name}

@@ -15,8 +15,36 @@ export default function Categories() {
   };
 
   const onSend = () => {
-    saveCategories(categories);
-    console.log("更新が完了しました");
+    const currentCategories = getCategories();
+    const nextCategories = [];
+    const oldCategories = categories.filter((cat) => cat.id.includes("_old"));
+
+    // 現在の入力欄をチェック
+    categories
+      .filter((cat) => !cat.id.includes("_old"))
+      .forEach((cat) => {
+        const original = currentCategories.find((old) => old.id === cat.id);
+
+        // 入力に変更があったら元の値をoldへ入れる
+        if (original && original.name !== "" && cat.name !== original.name) {
+          nextCategories.push({
+            ...original,
+            id: `${original.id}_old_${Date.now()}`,
+            isActive: false,
+          });
+
+          // 新しいデータを現在のIDで保存する
+          nextCategories.push({ ...cat, isActive: true });
+        } else {
+          // 名前が変わっていない場合
+          nextCategories.push({ ...cat, isActive: cat.name !== "" });
+        }
+      });
+
+    const finalData = [...nextCategories, ...oldCategories];
+    saveCategories(finalData);
+    setCategories(finalData);
+    window.alert("更新が完了しました");
     return;
   };
 
@@ -27,10 +55,10 @@ export default function Categories() {
       <section className="category-input-area">
         {categories.map((cat, index) => (
           <div key={cat.id}>
-            <label htmlFor={"category-${index}"}>カテゴリー{index + 1}</label>
+            <label htmlFor={`category-${index}`}>カテゴリー{index + 1}</label>
             <input
               type="text"
-              id={"category-${index}"}
+              id={`category-${index}`}
               value={cat.name}
               onChange={(e) => handleInputChange(cat.id, e.target.value)}
             />
