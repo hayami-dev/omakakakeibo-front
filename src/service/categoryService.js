@@ -11,6 +11,16 @@ export const INITIAL_CATEGORIES = [
 // LocalStorageの名前
 const STORAGE_KEY = "myCategories";
 
+// 色のマスター定義
+const COLOR_MAP = [
+  { label: "グリーン", code: "#2ecc71" },
+  { label: "ピンク", code: "#e91e63" },
+  { label: "ブルー", code: "#3498db" },
+  { label: "イエロー", code: "#f1c40f" },
+  { label: "パープル", code: "#9b59b6" },
+  { label: "オレンジ", code: "#e67e22" },
+];
+
 /**
  * カテゴリ一覧を取得する
  * @returns {Array} カテゴリオブジェクトの配列 (LocalStorageが空なら初期値)
@@ -37,7 +47,21 @@ export const saveCategories = (categories) => {
 export const getCategoryNameById = (id) => {
   const categories = getCategories();
   // LocalStrageから持って来たidと、引数で一致するものを探す
-  const category = categories.find((c) => c.id === id);
-  // あれば.nameを返す
+  let category = categories.find((c) => c.id === id);
+
+  // 無かったら前方一致を探す
+  if (!category) {
+    category = categories.find((c) => c.id.startsWith(`${id}_old`));
+  }
+
+  // nameを返す
   return category ? category.name : `不明なID(${id})`;
+};
+
+/**
+ * colorIndexに対応する色設定（ラベルとコード）を返す
+ */
+export const getCategoryStyle = (colorIndex) => {
+  // 範囲外アクセス対策でデフォルトを返す
+  return COLOR_MAP[colorIndex] || { label: "未設定", code: "#95a5a6" };
 };

@@ -6,6 +6,9 @@ import { useOutletContext, useNavigate, useLocation } from "react-router";
 export default function InputForm() {
   // カテゴリ名の取得
   const categories = getCategories();
+  const displayCategories = categories.filter(
+    (cat) => !cat.id.includes("_old") && cat.isActive && cat.name !== "",
+  );
 
   // Homeからデータを受け取る
   const location = useLocation();
@@ -90,7 +93,7 @@ export default function InputForm() {
         onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
-        {categories.map((cat) => (
+        {displayCategories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => setSelectCategory(cat.id)}

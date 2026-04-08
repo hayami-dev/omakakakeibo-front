@@ -1,11 +1,19 @@
 // カテゴリーの編集画面
 import { useState } from "react";
-import { getCategories, saveCategories } from "../../service/categoryService";
+import {
+  getCategories,
+  saveCategories,
+  getCategoryStyle,
+} from "../../service/categoryService";
 
 export default function Categories() {
   const [categories, setCategories] = useState(() => {
     return getCategories();
   });
+
+  const displayCategories = categories.filter(
+    (cat) => !cat.id.includes("_old"),
+  );
 
   const handleInputChange = (id, newName) => {
     const updated = categories.map((cat) =>
@@ -33,8 +41,12 @@ export default function Categories() {
             isActive: false,
           });
 
-          // 新しいデータを現在のIDで保存する
-          nextCategories.push({ ...cat, isActive: true });
+          // 新しいデータを新しいidをつけて保存する
+          nextCategories.push({
+            ...cat,
+            id: crypto.randomUUID(),
+            isActive: true,
+          });
         } else {
           // 名前が変わっていない場合
           nextCategories.push({ ...cat, isActive: cat.name !== "" });
@@ -45,6 +57,7 @@ export default function Categories() {
     saveCategories(finalData);
     setCategories(finalData);
     window.alert("更新が完了しました");
+    console.log(finalData);
     return;
   };
 
@@ -53,17 +66,26 @@ export default function Categories() {
       <h1>カテゴリーの変更</h1>
       <p>６個のカテゴリー分けができます。</p>
       <section className="category-input-area">
-        {categories.map((cat, index) => (
-          <div key={cat.id}>
-            <label htmlFor={`category-${index}`}>カテゴリー{index + 1}</label>
-            <input
-              type="text"
-              id={`category-${index}`}
-              value={cat.name}
-              onChange={(e) => handleInputChange(cat.id, e.target.value)}
-            />
-          </div>
-        ))}
+        {displayCategories.map((cat, index) => {
+          // 色のスタイルを呼び出し
+          const style = getCategoryStyle(cat.colorIndex);
+          return (
+            <div key={cat.id}>
+              <label
+                htmlFor={`category-${index}`}
+                style={{ color: style.code }}
+              >
+                {style.label}
+              </label>
+              <input
+                type="text"
+                id={`category-${index}`}
+                value={cat.name}
+                onChange={(e) => handleInputChange(cat.id, e.target.value)}
+              />
+            </div>
+          );
+        })}
       </section>
       <button onClick={onSend}>変更</button>
     </>
