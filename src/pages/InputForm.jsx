@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { getCategories } from "../service/categoryService";
+import { categoriesAtom, getCategoryStyle } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
+import { useAtom } from "jotai";
 
 export default function InputForm() {
-  // カテゴリ名の取得
-  const categories = getCategories();
-  const displayCategories = categories.filter(
-    (cat) => !cat.id.includes("_old") && cat.isActive && cat.name !== "",
-  );
+  // カテゴリ名をatomで取得
+  const [categories] = useAtom(categoriesAtom);
 
   // Homeからデータを受け取る
   const location = useLocation();
@@ -21,6 +19,25 @@ export default function InputForm() {
   const [selectCategory, setSelectCategory] = useState(
     editItem ? editItem.category : "",
   ); // タグ選択のValue
+
+  const displayCategories = categories.filter((cat) => {
+    // 空欄を除外
+    if (!cat.name || cat.name.trim() === "") return false;
+
+    // editかつ前方一致した古いカテゴリを呼び出す
+    if (editItem && cat.id.startsWith(editItem.category)) {
+      return true;
+    }
+
+    // 他oldを除外
+    if (cat.id.includes("_old")) return false;
+
+    // アクティブを返す
+    if (cat.isActive) return true;
+
+    // それ以外は出さない
+    return false;
+  });
 
   const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
 
@@ -98,7 +115,14 @@ export default function InputForm() {
             key={cat.id}
             onClick={() => setSelectCategory(cat.id)}
             style={{
-              backgroundColor: selectCategory === cat.id ? "yellow" : "white",
+              backgroundColor:
+                selectCategory === cat.id
+                  ? "black"
+                  : getCategoryStyle(cat.colorIndex).code,
+              color:
+                selectCategory === cat.id
+                  ? getCategoryStyle(cat.colorIndex).code
+                  : "white",
             }}
           >
             {cat.name}
@@ -107,7 +131,7 @@ export default function InputForm() {
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
-      <button onClick={handleRemove}> 削除</button>
+      {editItem && <button onClick={handleRemove}> 削除</button>}
     </section>
   );
 }

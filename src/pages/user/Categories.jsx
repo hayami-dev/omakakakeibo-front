@@ -1,15 +1,14 @@
 // カテゴリーの編集画面
-import { useState } from "react";
 import {
   getCategories,
   saveCategories,
   getCategoryStyle,
+  categoriesAtom,
 } from "../../service/categoryService";
+import { useAtom } from "jotai";
 
 export default function Categories() {
-  const [categories, setCategories] = useState(() => {
-    return getCategories();
-  });
+  const [categories, setCategories] = useAtom(categoriesAtom);
 
   const displayCategories = categories.filter(
     (cat) => !cat.id.includes("_old"),

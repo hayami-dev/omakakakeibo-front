@@ -1,3 +1,5 @@
+import { atom } from "jotai";
+
 // 初期値
 export const INITIAL_CATEGORIES = [
   { id: "c1", name: "必要経費", isActive: true, colorIndex: 0 },
@@ -22,6 +24,13 @@ const COLOR_MAP = [
 ];
 
 /**
+ * colorIndex順に並び替え
+ **/
+const sortCategories = (list) => {
+  return [...list].sort((a, b) => a.colorIndex - b.colorIndex);
+};
+
+/**
  * カテゴリ一覧を取得する
  * @returns {Array} カテゴリオブジェクトの配列 (LocalStorageが空なら初期値)
  */
@@ -30,32 +39,17 @@ export const getCategories = () => {
   return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
 };
 
+// Atomの定義
+export const categoriesAtom = atom(sortCategories(getCategories()));
+
 /**
  * カテゴリ一覧をLocalStorageに保存する
  * @param {Array} categories - 保存したいカテゴリの配列
  */
 export const saveCategories = (categories) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(categories));
-};
-
-/**
- * カテゴリIDからカテゴリ名を取得する共通関数
- * @param {string} id - カテゴリID ("c1" など)
- * @returns {string} - カテゴリ名 ("必要経費" など)
- */
-
-export const getCategoryNameById = (id) => {
-  const categories = getCategories();
-  // LocalStrageから持って来たidと、引数で一致するものを探す
-  let category = categories.find((c) => c.id === id);
-
-  // 無かったら前方一致を探す
-  if (!category) {
-    category = categories.find((c) => c.id.startsWith(`${id}_old`));
-  }
-
-  // nameを返す
-  return category ? category.name : `不明なID(${id})`;
+  const sorted = sortCategories(categories);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
+  return sorted;
 };
 
 /**
@@ -64,4 +58,30 @@ export const getCategoryNameById = (id) => {
 export const getCategoryStyle = (colorIndex) => {
   // 範囲外アクセス対策でデフォルトを返す
   return COLOR_MAP[colorIndex] || { label: "未設定", code: "#95a5a6" };
+};
+
+/**
+ * カテゴリIDからカテゴリ名を取得する共通関数
+ * @param {Array} categories - Jotaiから取得した最新名簿
+ * @param {string} id - カテゴリID
+ * @returns {Object} - { name: "名前", color: "#色" }
+ */
+export const getCategoryDisplayInfo = (categories, id) => {
+  // LocalStrageから持って来たidと、引数で一致するものを探す
+  let cat = categories.find((c) => c.id === id);
+
+  // 無かったら前方一致を探す
+  if (!cat) {
+    cat = categories.find((c) => c.id.startsWith(`${id}_old`));
+  }
+
+  if (cat) {
+    return {
+      name: cat.name,
+      color: getCategoryStyle(cat.colorIndex).code,
+    };
+  }
+
+  // nameを返す
+  return { name: `不明なID(${id})`, color: "#ccc" };
 };
