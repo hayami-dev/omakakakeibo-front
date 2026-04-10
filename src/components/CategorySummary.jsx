@@ -3,11 +3,14 @@ import {
   categoriesAtom,
   getCategoryDisplayInfo,
 } from "../service/categoryService";
+// import { historyAtom } from "../service/historyService";
 
 export default function CategorySummary({ history }) {
   // 最新マスタを参照
   const [categories] = useAtom(categoriesAtom);
+  // const [history] = useAtom(historyAtom);
 
+  // カテゴリ毎の集計
   const categoryTotals = history.reduce(
     (acc, cur) => {
       const id = cur.category || "unknown";
@@ -18,6 +21,8 @@ export default function CategorySummary({ history }) {
     },
     {}, // 👈初期値
   );
+
+  // categoryTotalsをcolorIndex順に並び替える
 
   return (
     <>

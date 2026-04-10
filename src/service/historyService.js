@@ -1,3 +1,5 @@
+import { atom } from "jotai";
+
 /**
  * 履歴オブジェクトを生成する (スキーマの一元管理)
  */
@@ -20,6 +22,8 @@ export const getHistory = () => {
   const saved = localStorage.getItem(STORAGE_KEY);
   return saved ? JSON.parse(saved) : [];
 };
+
+export const historyAtom = atom(getHistory());
 
 /**
  * 履歴一覧を保存する
