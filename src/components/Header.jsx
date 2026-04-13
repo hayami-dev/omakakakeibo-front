@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <header>
       <NavLink to="/">ホーム</NavLink>
-      {/* <NavLink to="/user">マイページ</NavLink> */}
+      <NavLink to="/user">マイページ</NavLink>
     </header>
   );
 }
