@@ -1,7 +1,7 @@
 import { activeCategoriesAtom } from "../../service/categoryService";
 import { useAtom } from "jotai";
 
-export default function Categories() {
+export default function CategoryEdit() {
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
 
   // リアルタイムで変更を監視

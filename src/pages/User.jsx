@@ -5,7 +5,7 @@ export default function User() {
   // 処理
   return (
     <>
-      <NavLink to="/user/categories">📝 カテゴリー</NavLink>
+      <NavLink to="/user/categoryEdit">📝 カテゴリー</NavLink>
     </>
   );
 }

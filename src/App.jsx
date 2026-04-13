@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router";
 import Home from "./pages/Home";
 import InputForm from "./pages/InputForm";
 import User from "./pages/User";
-import Categories from "./pages/user/Categories";
+import CategoryEdit from "./pages/user/CategoryEdit";
 import Header from "./components/Header";
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
         </Route>
         {/* ユーザーページ */}
         <Route path="user" element={<User />} />
-        <Route path="user/categories" element={<Categories />} />
+        <Route path="user/categoryEdit" element={<CategoryEdit />} />
       </Routes>
     </>
   );
