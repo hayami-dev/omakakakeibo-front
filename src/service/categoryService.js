@@ -81,6 +81,19 @@ export const getArchivedCategories = () => {
   return saved ? JSON.parse(saved) : {};
 };
 
+/**
+ * LocalStorageに保存時、styleを外す
+ * @param {*} list
+ * @returns styleを外した後のカテゴリ情報
+ */
+const toPureMap = (list) => {
+  return list.reduce((acc, cat) => {
+    const { style: _style, ...pureCat } = cat;
+    acc[cat.id] = pureCat;
+    return acc;
+  }, {});
+};
+
 /* Atomの定義 */
 // 大元のAtom id,name,colorIndexのみ
 const activeBaseAtom = atom(getActiveCategories());
@@ -111,22 +124,33 @@ export const activeCategoriesAtom = atom(
         ? newValue(get(activeCategoriesAtom))
         : newValue;
     // newValue(配列)を保存用Mapへ変換する
-    const nextMap = nextValue.reduce((acc, cat) => {
-      //styleプロパティを外す
-      const { style, ...rest } = cat;
-      acc[cat.id] = rest;
-      return acc;
-    }, {});
+    const nextMap = toPureMap(nextValue);
     set(activeBaseAtom, nextMap);
   },
 );
-export const ArchivedCategoriesAtom = atom(getArchivedCategories());
+export const archivedCategoriesAtom = atom(getArchivedCategories());
 
 /**
  * カテゴリ一覧をLocalStorageに保存する
- * @param {Array} categories - 保存したいカテゴリの配列
+ * @param {Array} activeCat - 画面用のActive配列
+ * @param {Object} archivedCat - ArchivedのMap
  */
-export const saveCategories = (categories) => {
-  localStorage.setItem(STORAGE_KEY_ACTIVE, JSON.stringify(categories));
-  return categories;
+export const saveAllCategories = (activeCat, archivedCat) => {
+  const activeMap = toPureMap(activeCat);
+
+  // archiveするものは空欄を除去
+  const archiveArray = Object.values(archivedCat).filter((cat) => {
+    const isNotBlank = !cat.id.includes("_blank");
+    const isNotEmptyName = cat.name.trim() !== "";
+    return isNotBlank && isNotEmptyName;
+  });
+  const archivedMap = toPureMap(archiveArray);
+
+  localStorage.setItem(STORAGE_KEY_ACTIVE, JSON.stringify(activeMap));
+  localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
+
+  console.log("activeMap:");
+  console.table(activeMap);
+  console.log("archivedMap:");
+  console.table(archivedMap);
 };
