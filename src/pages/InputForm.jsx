@@ -1,12 +1,52 @@
-import { useState } from "react";
-import { CATEGORIES } from "../categories";
+import { useMemo, useState } from "react";
+import { useAtom } from "jotai";
+// import { CATEGORIES } from "../categories";
+import {
+  COLOR_MAP,
+  activeCategoriesAtom,
+  archivedCategoriesAtom,
+} from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
 
 export default function InputForm() {
+  // カテゴリを取得
+  const [activeCategories] = useAtom(activeCategoriesAtom);
+  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+
   // Homeからデータを受け取る
   const location = useLocation();
   const editItem = location.state?.item;
+
+  const displayCategories = useMemo(() => {
+    let list = [...activeCategories];
+
+    if (editItem?.categoryId) {
+      const isActive = activeCategories.some(
+        (cat) => cat.id === editItem.categoryId,
+      );
+
+      if (!isActive) {
+        const archivedKeys = Object.keys(archivedCategories);
+        const matchKey = archivedKeys.find((key) =>
+          key.startsWith(editItem.categoryId + "_"),
+        );
+        if (matchKey) {
+          const archivedTarget = archivedCategories[matchKey];
+          list.push({
+            ...archivedTarget,
+            style: COLOR_MAP[archivedTarget.colorIndex] || {
+              label: "アーカイブ",
+              code: "gray",
+            },
+          });
+        }
+      }
+    }
+    return list
+      .filter((cat) => cat.name && cat.name.trim() !== "")
+      .sort((a, b) => a.colorIndex - b.colorIndex);
+  }, [activeCategories, archivedCategories, editItem]);
 
   const today = getFormattedDate(); // 今日の日付を取得
 
@@ -87,21 +127,22 @@ export default function InputForm() {
         onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
-        {CATEGORIES.map((cat) => (
+        {displayCategories.map((cat) => (
           <button
-            key={cat}
+            key={cat.id}
             onClick={() => setSelectCategory(cat)}
             style={{
-              backgroundColor: selectCategory === cat ? "yellow" : "white",
+              backgroundColor:
+                selectCategory?.id === cat.id ? "yellow" : "white",
             }}
           >
-            {cat}
+            {cat.name}
           </button>
         ))}
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
-      <button onClick={handleRemove}> 削除</button>
+      {editItem && <button onClick={handleRemove}> 削除</button>}
     </section>
   );
 }

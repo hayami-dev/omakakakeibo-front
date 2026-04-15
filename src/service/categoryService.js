@@ -11,7 +11,7 @@ export const INITIAL_CATEGORIES = [
 ];
 
 // 色のマスター定義
-const COLOR_MAP = [
+export const COLOR_MAP = [
   {
     label: "グリーン",
     code: "#44AF69",
