@@ -154,3 +154,32 @@ export const saveAllCategories = (activeCat, archivedCat) => {
   console.log("archivedMap:");
   console.table(archivedMap);
 };
+
+/**
+ * 渡されたidをもとにカテゴリリストから実体を取り出す
+ * @param {string} id
+ * @param {Array} activeList
+ * @param {Object} archiveList
+ * @returns
+ */
+export const resolveCategoryById = (id, activeList, archiveList) => {
+  // activeから探す
+  let target = activeList.find((c) => c.id === id);
+
+  //無ければarchiveから探す
+  if (!target) {
+    console.log("id", id);
+    const archiveArray = Object.values(archiveList);
+    target = archiveArray.find((c) => {
+      console.log("c.id", c);
+      return c.id && c.id.startsWith(id);
+    });
+  }
+  if (target) {
+    return {
+      ...target,
+      style: COLOR_MAP[target.colorIndex] || { label: "不明", code: "gray" },
+    };
+  }
+  return null;
+};

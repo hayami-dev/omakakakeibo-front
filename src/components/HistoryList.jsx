@@ -19,7 +19,8 @@ export default function HistoryList({ history, onEdit }) {
               <time dateTime={item.date}>
                 {item.date.toString().replaceAll("-", "/")}
               </time>
-              【{item.category}】{item.amount.toLocaleString("ja-JP")}円
+              【{item.category?.name || item.category}】
+              {item.amount.toLocaleString("ja-JP")}円
               <AiFillEdit onClick={() => onEdit(index)} />
             </li>
           );

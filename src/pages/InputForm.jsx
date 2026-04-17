@@ -5,6 +5,7 @@ import {
   COLOR_MAP,
   activeCategoriesAtom,
   archivedCategoriesAtom,
+  resolveCategoryById,
 } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
@@ -14,32 +15,35 @@ export default function InputForm() {
   const [activeCategories] = useAtom(activeCategoriesAtom);
   const [archivedCategories] = useAtom(archivedCategoriesAtom);
 
+  // 日付関係の取得
+  const today = getFormattedDate(); // 今日の日付を取得
+  const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
+
   // Homeからデータを受け取る
   const location = useLocation();
   const editItem = location.state?.item;
 
+  // 入力値の取得
+  const [inputValue, setInputValue] = useState(editItem ? editItem.amount : ""); // 金額のValue
+  const [inputDate, setInputDate] = useState(editItem ? editItem.date : today); // 日付のValue
+
+  // 表示するカテゴリ一覧をidをもとに作成
   const displayCategories = useMemo(() => {
     let list = [...activeCategories];
 
-    if (editItem?.categoryId) {
+    if (editItem?.category) {
       const isActive = activeCategories.some(
-        (cat) => cat.id === editItem.categoryId,
+        (cat) => cat.id === editItem.category,
       );
 
       if (!isActive) {
-        const archivedKeys = Object.keys(archivedCategories);
-        const matchKey = archivedKeys.find((key) =>
-          key.startsWith(editItem.categoryId + "_"),
+        const archivedTarget = resolveCategoryById(
+          editItem.category,
+          activeCategories,
+          archivedCategories,
         );
-        if (matchKey) {
-          const archivedTarget = archivedCategories[matchKey];
-          list.push({
-            ...archivedTarget,
-            style: COLOR_MAP[archivedTarget.colorIndex] || {
-              label: "アーカイブ",
-              code: "gray",
-            },
-          });
+        if (archivedTarget) {
+          list.push(archivedTarget);
         }
       }
     }
@@ -48,15 +52,12 @@ export default function InputForm() {
       .sort((a, b) => a.colorIndex - b.colorIndex);
   }, [activeCategories, archivedCategories, editItem]);
 
-  const today = getFormattedDate(); // 今日の日付を取得
-
-  const [inputValue, setInputValue] = useState(editItem ? editItem.amount : ""); // 金額のValue
-  const [inputDate, setInputDate] = useState(editItem ? editItem.date : today); // 日付のValue
-  const [selectCategory, setSelectCategory] = useState(
-    editItem ? editItem.category : "",
-  ); // タグ選択のValue
-
-  const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
+  // 選択中のカテゴリの初期値を取得
+  const [selectCategory, setSelectCategory] = useState(() => {
+    if (editItem?.category) {
+      return displayCategories.find((c) => c.id === editItem.category) || "";
+    }
+  });
 
   const { onSend } = useOutletContext();
   const { onUpdate } = useOutletContext();
@@ -127,18 +128,23 @@ export default function InputForm() {
         onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
-        {displayCategories.map((cat) => (
-          <button
-            key={cat.id}
-            onClick={() => setSelectCategory(cat)}
-            style={{
-              backgroundColor:
-                selectCategory?.id === cat.id ? "yellow" : "white",
-            }}
-          >
-            {cat.name}
-          </button>
-        ))}
+        {displayCategories.map((cat) => {
+          // console.log("displayCategories cat", cat);
+          // console.log("displayCategories cat", cat.id);
+          // console.log("displayCategories cat", selectCategory.id);
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setSelectCategory(cat)}
+              style={{
+                backgroundColor:
+                  selectCategory?.id === cat.id ? "yellow" : "white",
+              }}
+            >
+              {cat.name}
+            </button>
+          );
+        })}
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
