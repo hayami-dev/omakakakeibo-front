@@ -30,6 +30,7 @@ export default function CategoryEdit() {
     activeCategories.forEach((cat) => {
       // 変更前のカテゴリからidが一致するものを取得
       const original = currentCategories[cat.id];
+      const originalKey = cat.id;
 
       // 名前が空欄かつ、idが一致しない場合
       if (cat.name.trim() === "") {
@@ -37,9 +38,9 @@ export default function CategoryEdit() {
           // すでにblankを持っている(空欄で登録済み)はそのまま返す
           nextActive.push({ ...cat });
         } else {
-          const oldId = `${cat.id}_old_${Date.now()}`;
-          nextArchived[oldId] = { ...cat, id: oldId };
-
+          // 変更前の値をarchiveへ入れる
+          nextArchived[originalKey] = { ...original, id: originalKey };
+          // 変更後はactiveへ入れる
           nextActive.push({
             id: `${cat.id}_blank_${Date.now()}`,
             name: "",
@@ -47,11 +48,9 @@ export default function CategoryEdit() {
           });
         }
       }
-      // 名前が変更された場合
+      // 名前が変更された場合（originalと名前が一致するかどうか）
       else if (original && cat.name !== original.name) {
-        // originalと名前が一致するかどうか
-        const oldId = `${cat.id}_old_${Date.now()}`;
-        nextArchived[oldId] = { ...original, id: oldId };
+        nextArchived[originalKey] = { ...original, id: originalKey };
 
         nextActive.push({
           id: crypto.randomUUID(),
