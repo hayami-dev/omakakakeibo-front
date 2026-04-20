@@ -10,11 +10,16 @@ export default function HistoryList({ history, onEdit }) {
   // activeとarchiveのカテゴリを取得
   const [activeCategories] = useAtom(activeCategoriesAtom);
   const [archivedCategories] = useAtom(archivedCategoriesAtom);
+
+  // 日付を昇順にソート
+  const dateSortHistory = [...history].sort(
+    (a, b) => new Date(a.date) - new Date(b.date),
+  );
   return (
     <>
       <h2>りれき</h2>
       <ul>
-        {history.map((item, index) => {
+        {dateSortHistory.map((item, index) => {
           const categoryName = resolveCategoryById(
             item.categoryId,
             activeCategories,
