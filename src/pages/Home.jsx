@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { getYearMonth } from "../dateUtils";
 import { getDummyData, getDummySummary } from "../dummyData";
@@ -10,7 +10,12 @@ import MonthSummary from "../components/MonthSummary";
 
 export default function Home() {
   const [summary, setSummary] = useState(getDummySummary());
-  const [history, setHistory] = useState(getDummyData);
+  // const [history, setHistory] = useState(getDummyData);
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem("my_kakeibo_data");
+    // 保存されたデータがあればそれを使い、なければダミーデータを返す
+    return saved ? JSON.parse(saved) : getDummyData;
+  });
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
 
@@ -37,6 +42,9 @@ export default function Home() {
     });
   };
 
+useEffect(() => {
+    localStorage.setItem("my_kakeibo_data", JSON.stringify(history));
+  }, [history]);
   return (
     <main>
       <h1>おおまか家計簿</h1>
