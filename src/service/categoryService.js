@@ -149,6 +149,7 @@ export const saveAllCategories = (activeCat, archivedCat) => {
   localStorage.setItem(STORAGE_KEY_ACTIVE, JSON.stringify(activeMap));
   localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
 
+  // 保存されたカテゴリをコンソール表示
   console.log("activeMap:");
   console.table(activeMap);
   console.log("archivedMap:");
@@ -168,10 +169,8 @@ export const resolveCategoryById = (id, activeList, archiveList) => {
 
   //無ければarchiveから探す
   if (!target) {
-    console.log("id", id);
     const archiveArray = Object.values(archiveList);
     target = archiveArray.find((c) => {
-      console.log("c.id", c);
       return c.id && c.id.startsWith(id);
     });
   }
