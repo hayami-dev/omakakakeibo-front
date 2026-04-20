@@ -31,14 +31,14 @@ export default function InputForm() {
   const displayCategories = useMemo(() => {
     let list = [...activeCategories];
 
-    if (editItem?.category) {
+    if (editItem?.categoryId) {
       const isActive = activeCategories.some(
-        (cat) => cat.id === editItem.category,
+        (cat) => cat.id === editItem.categoryId,
       );
 
       if (!isActive) {
         const archivedTarget = resolveCategoryById(
-          editItem.category,
+          editItem.categoryId,
           activeCategories,
           archivedCategories,
         );
@@ -54,8 +54,8 @@ export default function InputForm() {
 
   // 選択中のカテゴリの初期値を取得
   const [selectCategory, setSelectCategory] = useState(() => {
-    if (editItem?.category) {
-      return displayCategories.find((c) => c.id === editItem.category) || "";
+    if (editItem?.categoryId) {
+      return displayCategories.find((c) => c.id === editItem.categoryId) || "";
     }
   });
 
@@ -75,16 +75,17 @@ export default function InputForm() {
       return;
     }
     // タグ未選択の場合
-    if (selectCategory == "") {
+    if (!selectCategory?.id?.trim()) {
       alert("タグを選択してください");
       return;
     }
 
+    // データ送信(カテゴリはidのみ渡す)
     if (editItem) {
-      onUpdate(editItem.id, amount, selectCategory, inputDate);
+      onUpdate(editItem.id, amount, selectCategory.id, inputDate);
     } else {
       // Javaだと total = total + Integer.parseInt(inputValue);
-      onSend(amount, selectCategory, inputDate); // 入力値を結果にセット
+      onSend(amount, selectCategory.id, inputDate); // 入力値を結果にセット
     }
 
     setInputValue(""); //入力欄を空にする
@@ -129,9 +130,6 @@ export default function InputForm() {
       />
       <div>
         {displayCategories.map((cat) => {
-          // console.log("displayCategories cat", cat);
-          // console.log("displayCategories cat", cat.id);
-          // console.log("displayCategories cat", selectCategory.id);
           return (
             <button
               key={cat.id}

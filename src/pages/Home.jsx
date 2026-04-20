@@ -56,19 +56,19 @@ export default function Home() {
       {/* InputFormのコンテキスト */}
       <Outlet
         context={{
-          onSend: (amount, category, inputDate) => {
+          onSend: (amount, categoryId, inputDate) => {
             setSummary(summary + amount);
             setHistory([
               ...history,
               {
                 id: crypto.randomUUID(),
                 amount: amount,
-                category: category,
+                categoryId: categoryId,
                 date: inputDate,
               },
             ]);
           },
-          onUpdate: (editItemId, amount, selectCategory, inputDate) => {
+          onUpdate: (editItemId, amount, selectCategoryId, inputDate) => {
             const newHistory = [...history];
             setHistory(newHistory);
             const targetHistoryIndex = newHistory.findIndex(
@@ -79,7 +79,7 @@ export default function Home() {
               newHistory[targetHistoryIndex] = {
                 id: editItemId,
                 amount,
-                category: selectCategory,
+                categoryId: selectCategoryId,
                 date: inputDate,
               };
             }

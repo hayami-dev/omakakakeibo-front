@@ -2,12 +2,12 @@ import { atom } from "jotai";
 
 // 初期値
 export const INITIAL_CATEGORIES = [
-  { id: "c1", name: "必要経費", colorIndex: 0 },
-  { id: "c2", name: "ごほうび", colorIndex: 1 },
-  { id: "c3", name: "推し活", colorIndex: 2 },
-  { id: "c4", name: "カフェ", colorIndex: 3 },
-  { id: "c5", name: "わからない", colorIndex: 4 },
-  { id: "c6", name: "ああああああああああ", colorIndex: 5 },
+  { id: "initial_c1", name: "必要経費", colorIndex: 0 },
+  { id: "initial_c2", name: "ごほうび", colorIndex: 1 },
+  { id: "initial_c3", name: "推し活", colorIndex: 2 },
+  { id: "initial_c4", name: "カフェ", colorIndex: 3 },
+  { id: "initial_c5", name: "わからない", colorIndex: 4 },
+  { id: "initial_c6", name: "ああああああああああ", colorIndex: 5 },
 ];
 
 // 色のマスター定義

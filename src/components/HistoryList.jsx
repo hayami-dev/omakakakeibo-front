@@ -16,7 +16,7 @@ export default function HistoryList({ history, onEdit }) {
       <ul>
         {history.map((item, index) => {
           const categoryName = resolveCategoryById(
-            item.category,
+            item.categoryId,
             activeCategories,
             archivedCategories,
           );
@@ -25,7 +25,8 @@ export default function HistoryList({ history, onEdit }) {
               <time dateTime={item.date}>
                 {item.date.toString().replaceAll("-", "/")}
               </time>
-              【{categoryName.name}】{item.amount.toLocaleString("ja-JP")}円
+              【{categoryName?.name || "不明なカテゴリ"}】
+              {item.amount.toLocaleString("ja-JP")}円
               <AiFillEdit onClick={() => onEdit(index)} />
             </li>
           );
