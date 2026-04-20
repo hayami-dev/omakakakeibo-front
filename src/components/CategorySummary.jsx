@@ -1,9 +1,9 @@
 export default function CategorySummary({ history }) {
   const categoryTotals = history.reduce(
     (acc, cur) => {
-      const { category, amount } = cur;
+      const { categoryId, amount } = cur;
       // Mapの中にそのカテゴリがすでにあれば加算、なければ初期値から加算
-      acc[category] = (acc[category] || 0) + amount;
+      acc[categoryId] = (acc[categoryId] || 0) + amount;
       return acc;
     },
     {}, // 👈初期値

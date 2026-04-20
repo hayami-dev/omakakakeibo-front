@@ -1,22 +1,63 @@
-import { useState } from "react";
-import { CATEGORIES } from "../categories";
+import { useMemo, useState } from "react";
+import { useAtom } from "jotai";
+// import { CATEGORIES } from "../categories";
+import {
+  COLOR_MAP,
+  activeCategoriesAtom,
+  archivedCategoriesAtom,
+  resolveCategoryById,
+} from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
 
 export default function InputForm() {
+  // カテゴリを取得
+  const [activeCategories] = useAtom(activeCategoriesAtom);
+  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+
+  // 日付関係の取得
+  const today = getFormattedDate(); // 今日の日付を取得
+  const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
+
   // Homeからデータを受け取る
   const location = useLocation();
   const editItem = location.state?.item;
 
-  const today = getFormattedDate(); // 今日の日付を取得
-
+  // 入力値の取得
   const [inputValue, setInputValue] = useState(editItem ? editItem.amount : ""); // 金額のValue
   const [inputDate, setInputDate] = useState(editItem ? editItem.date : today); // 日付のValue
-  const [selectCategory, setSelectCategory] = useState(
-    editItem ? editItem.category : "",
-  ); // タグ選択のValue
 
-  const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
+  // 表示するカテゴリ一覧をidをもとに作成
+  const displayCategories = useMemo(() => {
+    let list = [...activeCategories];
+
+    if (editItem?.categoryId) {
+      const isActive = activeCategories.some(
+        (cat) => cat.id === editItem.categoryId,
+      );
+
+      if (!isActive) {
+        const archivedTarget = resolveCategoryById(
+          editItem.categoryId,
+          activeCategories,
+          archivedCategories,
+        );
+        if (archivedTarget) {
+          list.push(archivedTarget);
+        }
+      }
+    }
+    return list
+      .filter((cat) => cat.name && cat.name.trim() !== "")
+      .sort((a, b) => a.colorIndex - b.colorIndex);
+  }, [activeCategories, archivedCategories, editItem]);
+
+  // 選択中のカテゴリの初期値を取得
+  const [selectCategory, setSelectCategory] = useState(() => {
+    if (editItem?.categoryId) {
+      return displayCategories.find((c) => c.id === editItem.categoryId) || "";
+    }
+  });
 
   const { onSend } = useOutletContext();
   const { onUpdate } = useOutletContext();
@@ -34,16 +75,17 @@ export default function InputForm() {
       return;
     }
     // タグ未選択の場合
-    if (selectCategory == "") {
+    if (!selectCategory?.id?.trim()) {
       alert("タグを選択してください");
       return;
     }
 
+    // データ送信(カテゴリはidのみ渡す)
     if (editItem) {
-      onUpdate(editItem.id, amount, selectCategory, inputDate);
+      onUpdate(editItem.id, amount, selectCategory.id, inputDate);
     } else {
       // Javaだと total = total + Integer.parseInt(inputValue);
-      onSend(amount, selectCategory, inputDate); // 入力値を結果にセット
+      onSend(amount, selectCategory.id, inputDate); // 入力値を結果にセット
     }
 
     setInputValue(""); //入力欄を空にする
@@ -87,21 +129,24 @@ export default function InputForm() {
         onChange={(e) => setInputDate(e.target.value)}
       />
       <div>
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectCategory(cat)}
-            style={{
-              backgroundColor: selectCategory === cat ? "yellow" : "white",
-            }}
-          >
-            {cat}
-          </button>
-        ))}
+        {displayCategories.map((cat) => {
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setSelectCategory(cat)}
+              style={{
+                backgroundColor:
+                  selectCategory?.id === cat.id ? "yellow" : "white",
+              }}
+            >
+              {cat.name}
+            </button>
+          );
+        })}
       </div>
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
-      <button onClick={handleRemove}> 削除</button>
+      {editItem && <button onClick={handleRemove}> 削除</button>}
     </section>
   );
 }

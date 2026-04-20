@@ -1,19 +1,36 @@
 import { AiFillEdit } from "react-icons/ai";
+import {
+  activeCategoriesAtom,
+  archivedCategoriesAtom,
+  resolveCategoryById,
+} from "../service/categoryService";
+import { useAtom } from "jotai";
 
 export default function HistoryList({ history, onEdit }) {
+  // activeとarchiveのカテゴリを取得
+  const [activeCategories] = useAtom(activeCategoriesAtom);
+  const [archivedCategories] = useAtom(archivedCategoriesAtom);
   return (
     <>
       <h2>りれき</h2>
       <ul>
-        {history.map((item, index) => (
-          <li key={index}>
-            <time dateTime={item.date}>
-              {item.date.toString().replaceAll("-", "/")}
-            </time>
-            【{item.category}】{item.amount.toLocaleString("ja-JP")}円
-            <AiFillEdit onClick={() => onEdit(index)} />
-          </li>
-        ))}
+        {history.map((item, index) => {
+          const categoryName = resolveCategoryById(
+            item.categoryId,
+            activeCategories,
+            archivedCategories,
+          );
+          return (
+            <li key={item.id}>
+              <time dateTime={item.date}>
+                {item.date.toString().replaceAll("-", "/")}
+              </time>
+              【{categoryName?.name || "不明なカテゴリ"}】
+              {item.amount.toLocaleString("ja-JP")}円
+              <AiFillEdit onClick={() => onEdit(index)} />
+            </li>
+          );
+        })}
       </ul>
     </>
   );
