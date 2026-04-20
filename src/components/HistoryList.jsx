@@ -20,7 +20,7 @@ export default function HistoryList({ history, onEdit }) {
       <h2>りれき</h2>
       <ul>
         {dateSortHistory.map((item, index) => {
-          const categoryName = resolveCategoryById(
+          const category = resolveCategoryById(
             item.categoryId,
             activeCategories,
             archivedCategories,
@@ -30,7 +30,13 @@ export default function HistoryList({ history, onEdit }) {
               <time dateTime={item.date}>
                 {item.date.toString().replaceAll("-", "/")}
               </time>
-              【{categoryName?.name || "不明なカテゴリ"}】
+              <span
+                style={{
+                  color: category?.style?.code,
+                }}
+              >
+                ●{category?.name || "不明なカテゴリ"}
+              </span>
               {item.amount.toLocaleString("ja-JP")}円
               <AiFillEdit onClick={() => onEdit(index)} />
             </li>
