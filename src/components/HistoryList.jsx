@@ -10,12 +10,17 @@ export default function HistoryList({ history, onEdit }) {
   // activeとarchiveのカテゴリを取得
   const [activeCategories] = useAtom(activeCategoriesAtom);
   const [archivedCategories] = useAtom(archivedCategoriesAtom);
+
+  // 日付を昇順にソート
+  const dateSortHistory = [...history].sort(
+    (a, b) => new Date(a.date) - new Date(b.date),
+  );
   return (
     <>
       <h2>りれき</h2>
       <ul>
-        {history.map((item, index) => {
-          const categoryName = resolveCategoryById(
+        {dateSortHistory.map((item) => {
+          const category = resolveCategoryById(
             item.categoryId,
             activeCategories,
             archivedCategories,
@@ -25,9 +30,15 @@ export default function HistoryList({ history, onEdit }) {
               <time dateTime={item.date}>
                 {item.date.toString().replaceAll("-", "/")}
               </time>
-              【{categoryName?.name || "不明なカテゴリ"}】
+              <span
+                style={{
+                  color: category?.style?.code,
+                }}
+              >
+                ●{category?.name || "不明なカテゴリ"}
+              </span>
               {item.amount.toLocaleString("ja-JP")}円
-              <AiFillEdit onClick={() => onEdit(index)} />
+              <AiFillEdit onClick={() => onEdit(item.id)} />
             </li>
           );
         })}
