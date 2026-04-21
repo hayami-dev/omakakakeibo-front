@@ -19,7 +19,7 @@ export default function HistoryList({ history, onEdit }) {
     <>
       <h2>りれき</h2>
       <ul>
-        {dateSortHistory.map((item, index) => {
+        {dateSortHistory.map((item) => {
           const category = resolveCategoryById(
             item.categoryId,
             activeCategories,
@@ -38,7 +38,7 @@ export default function HistoryList({ history, onEdit }) {
                 ●{category?.name || "不明なカテゴリ"}
               </span>
               {item.amount.toLocaleString("ja-JP")}円
-              <AiFillEdit onClick={() => onEdit(index)} />
+              <AiFillEdit onClick={() => onEdit(item.id)} />
             </li>
           );
         })}
