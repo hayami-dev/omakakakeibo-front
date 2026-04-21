@@ -166,6 +166,7 @@ export const saveAllCategories = (activeCat, archivedCat) => {
 export const resolveCategoryById = (id, activeList, archiveList) => {
   // activeから探す
   let target = activeList.find((c) => c.id === id);
+  let isArchived = false;
 
   //無ければarchiveから探す
   if (!target) {
@@ -173,11 +174,25 @@ export const resolveCategoryById = (id, activeList, archiveList) => {
     target = archiveArray.find((c) => {
       return c.id && c.id.startsWith(id);
     });
+    if (target) isArchived = true;
   }
   if (target) {
+    // colorIndexを使ってベースのスタイルを付ける
+    const baseStyle = COLOR_MAP[target.colorIndex] || {
+      label: "不明",
+      code: "gray",
+      disabledCode: "gray",
+    };
     return {
       ...target,
-      style: COLOR_MAP[target.colorIndex] || { label: "不明", code: "gray" },
+      // アーカイブなら末尾に飛ばす (+10)
+      colorIndex: isArchived ? target.colorIndex + 10 : target.colorIndex,
+      // styleオブジェクトを構成
+      style: {
+        ...baseStyle,
+        // アーカイブなら code を disabledCode で上書き、そうでなければ元の code
+        code: isArchived ? baseStyle.disabledCode || "gray" : baseStyle.code,
+      },
     };
   }
   return null;

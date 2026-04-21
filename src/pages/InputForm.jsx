@@ -135,8 +135,9 @@ export default function InputForm() {
               key={cat.id}
               onClick={() => setSelectCategory(cat)}
               style={{
+                color: selectCategory?.id === cat.id ? "white" : cat.style.code,
                 backgroundColor:
-                  selectCategory?.id === cat.id ? "yellow" : "white",
+                  selectCategory?.id === cat.id ? cat.style.code : "white",
               }}
             >
               {cat.name}
