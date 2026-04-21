@@ -52,12 +52,13 @@ export default function Home() {
       </nav>
       {/* 結果表示 */}
       <section>
-        <Summary total={filteredTotal} />
+        <Summary total={filteredTotal} selectMonth={selectMonth} />
       </section>
       <section>
         <p>フィルター後</p>
         <HistoryList history={filteredHistory} onEdit={onEdit} />
         <CategorySummary history={filteredHistory} />
+        <MonthSummary history={history} />
       </section>
       {/* InputFormのコンテキスト */}
       <Outlet
