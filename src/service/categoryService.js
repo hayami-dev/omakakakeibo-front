@@ -51,10 +51,10 @@ export const COLOR_MAP = [
 ];
 
 // 現役のカテゴリー
-const STORAGE_KEY_ACTIVE = "myCategories_active";
+const STORAGE_KEY_ACTIVE = "my_categories_active";
 
 // 過去のカテゴリー
-const STORAGE_KEY_ARCHIVED = "myCategories_archived";
+const STORAGE_KEY_ARCHIVED = "my_categories_archived";
 
 /**
  * カテゴリ一覧を取得する
