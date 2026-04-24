@@ -1,6 +1,8 @@
 import { atom } from "jotai";
 
 export const INITIAL_MONTHLY_BUDGET = 50000;
+export const BUDGET_MIN_AMOUNT = 1000;
+export const BUDGET_MAX_AMOUNT = 9999999;
 
 const STORAGE_KEY_BUDGET_MONTHLY = "my_budget_monthly";
 
