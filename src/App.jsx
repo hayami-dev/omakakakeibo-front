@@ -5,6 +5,7 @@ import InputForm from "./pages/InputForm";
 import User from "./pages/User";
 import CategoryEdit from "./pages/user/CategoryEdit";
 import Header from "./components/Header";
+import BudgetEdit from "./pages/user/BudgetEdit";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         {/* ユーザーページ */}
         <Route path="user" element={<User />} />
         <Route path="user/categoryEdit" element={<CategoryEdit />} />
+        <Route path="user/budgetEdit" element={<BudgetEdit />} />
       </Routes>
     </>
   );
