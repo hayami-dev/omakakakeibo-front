@@ -75,7 +75,7 @@ export default function Home() {
         <p>フィルター後</p>
         <HistoryList history={filteredHistory} onEdit={onEdit} />
         <CategorySummary history={filteredHistory} />
-        <MonthSummary history={history} />
+        <MonthSummary history={history} monthlyBudget={monthlyBudget} />
       </section>
       {/* InputFormのコンテキスト */}
       <Outlet
