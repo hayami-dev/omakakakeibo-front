@@ -37,7 +37,7 @@ export default function HistoryList({ history, onEdit }) {
               >
                 ●{category?.name || "不明なカテゴリ"}
               </span>
-              {item.amount.toLocaleString("ja-JP")}円
+              {item.amount.toLocaleString()}円
               <AiFillEdit onClick={() => onEdit(item.id)} />
             </li>
           );

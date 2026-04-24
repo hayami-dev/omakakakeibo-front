@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { getYearMonth } from "../dateUtils";
 import { getDummyData } from "../dummyData";
@@ -8,6 +9,7 @@ import CategorySummary from "../components/CategorySummary";
 import SelectMonth from "../components/SelectMonth";
 import MonthSummary from "../components/MonthSummary";
 import { createHistoryItem } from "../service/historyService";
+import { monthlyBudgetAtom } from "../service/budgetService";
 
 export default function Home() {
   const [history, setHistory] = useState(() => {
@@ -15,6 +17,10 @@ export default function Home() {
     // 保存されたデータがあればそれを使い、なければダミーデータを返す
     return saved ? JSON.parse(saved) : getDummyData;
   });
+
+  // 目標金額の取得
+  const [monthlyBudget] = useAtom(monthlyBudgetAtom);
+
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
 
@@ -59,7 +65,11 @@ export default function Home() {
       </nav>
       {/* 結果表示 */}
       <section>
-        <Summary total={filteredTotal} selectMonth={selectMonth} />
+        <Summary
+          total={filteredTotal}
+          selectMonth={selectMonth}
+          monthlyBudget={monthlyBudget}
+        />
       </section>
       <section>
         <p>フィルター後</p>

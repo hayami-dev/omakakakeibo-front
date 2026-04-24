@@ -6,6 +6,7 @@ export default function User() {
   return (
     <>
       <NavLink to="/user/categoryEdit">📝 カテゴリー</NavLink>
+      <NavLink to="/user/budgetEdit">💰 目標金額の変更</NavLink>
     </>
   );
 }
