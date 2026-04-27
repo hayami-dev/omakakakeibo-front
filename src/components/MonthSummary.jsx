@@ -31,6 +31,9 @@ export default function MonthSummary({ history, monthlyBudget }) {
   // Chart.jsの設定
   const graphOptions = {
     responsive: true,
+    hover: {
+      mode: null,
+    },
     scales: {
       y: {
         stacked: true, // 積み上げを可能に
@@ -85,8 +88,8 @@ export default function MonthSummary({ history, monthlyBudget }) {
 
   return (
     <section>
-      <h3>月別の集計(あとでグラフになる)</h3>
-      {monthTotals.length === 0 ? (
+      <h3>月別の集計</h3>
+      {/* {monthTotals.length === 0 ? (
         <p>データがありません</p>
       ) : (
         <ul>
@@ -97,7 +100,7 @@ export default function MonthSummary({ history, monthlyBudget }) {
             </li>
           ))}
         </ul>
-      )}
+      )} */}
       <div>
         <Bar options={graphOptions} data={chartData} />
         <span>{monthlyBudget}円 ▶</span>
