@@ -6,33 +6,63 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import { calcMonthSummary } from "../service/historyService";
+import { useState, useEffect } from "react";
 
 // Chart.jsの機能を登録
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
-export default function MonthSummary({ history, monthlyBudget }) {
+export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
   const monthTotals = calcMonthSummary(history) || [];
 
-  // 目標金額と超過分を区切る線の太さ
-  const lineWidth = monthlyBudget * 0.02;
-  // 目標金額内の合計値
-  const budgetData = monthTotals.map((item) =>
-    Math.min(item.sum, monthlyBudget - lineWidth),
+  // 💡 最初はすべてのデータを「0」で初期化しておく
+  const [chartDataValues, setChartDataValues] = useState({
+    budget: monthTotals.map(() => 0),
+    over: monthTotals.map(() => 0),
+    border: monthTotals.map(() => 0),
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setChartDataValues({
+        budget: monthTotals.map((item) =>
+          Math.max(0, Math.min(item.sum, monthlyBudget) - monthlyBudget * 0.01),
+        ),
+        border: monthTotals.map((item) =>
+          item.sum >= monthlyBudget ? monthlyBudget * 0.02 : 0,
+        ),
+        over: monthTotals.map((item) => Math.max(0, item.sum - monthlyBudget)),
+      });
+    }, 50);
+
+    return () => clearTimeout(timer); // 💡 コンポーネント破棄時にタイマーを掃除（Javaのメモリリーク対策と同じ）
+  }, [history, monthlyBudget]);
+
+  // 選択中の月を取得
+  const activeMonthBar = monthTotals.findIndex(
+    (item) => item.month === selectMonth,
   );
-  // 境界線用
-  const borderLineData = monthTotals.map((item) =>
-    item.sum >= monthlyBudget ? lineWidth : 0,
-  );
-  // 超過分の合計値
-  const overData = monthTotals.map((item) =>
-    Math.max(0, item.sum - monthlyBudget),
-  );
+  console.log(activeMonthBar);
 
   // Chart.jsの設定
   const graphOptions = {
     responsive: true,
     hover: {
       mode: null,
+    },
+    animation: {
+      duration: 1000,
+      easing: "easeOutQuart",
+    },
+    animations: {
+      y: {
+        type: "number",
+        duration: 1000,
+        loop: false,
+      },
+      colors: {
+        type: "color",
+        duration: 0, // 月を切り替えた時は即座に変化
+      },
     },
     scales: {
       y: {
@@ -67,20 +97,26 @@ export default function MonthSummary({ history, monthlyBudget }) {
     datasets: [
       {
         label: "目標内",
-        data: budgetData,
-        backgroundColor: "rgba(75, 192, 192, 0.5)",
+        data: chartDataValues.budget,
+        backgroundColor: monthTotals.map((_, index) =>
+          index === activeMonthBar ? "#F57D5FFF" : "#F57D5F66",
+        ),
         stack: "stack",
       },
       {
         label: "境界線",
-        data: borderLineData,
-        backgroundColor: "rgba(226, 226, 226, 0.8)",
+        data: chartDataValues.border,
+        backgroundColor: monthTotals.map((_, index) =>
+          index === activeMonthBar ? "#FEEFECFF" : "#FEEFEC66",
+        ),
         stack: "stack",
       },
       {
         label: "超過分",
-        data: overData,
-        backgroundColor: "rgba(255, 99, 132, 0.8)",
+        data: chartDataValues.over,
+        backgroundColor: monthTotals.map((_, index) =>
+          index === activeMonthBar ? "#F2542DFF" : "#F2542D66",
+        ),
         stack: "stack",
       },
     ],
