@@ -12,7 +12,6 @@ ChartJS.register(CategoryScale, LinearScale, BarElement);
 
 export default function MonthSummary({ history, monthlyBudget }) {
   const monthTotals = calcMonthSummary(history) || [];
-  const labels = monthTotals.map((item) => item.month);
   const dataValues = monthTotals.map((item) => item.sum);
 
   // Chart.jsの設定
@@ -21,10 +20,15 @@ export default function MonthSummary({ history, monthlyBudget }) {
     scales: {
       y: {
         beginAtZero: true, // Y軸を0から始める
+        max: monthlyBudget * 2,
         ticks: {
-          callback: (value) => value.toLocaleString() + "円", // 単位をつける
+          // 目標金額だけ表示させる
+          callback: function (value) {
+            if (value === monthlyBudget) {
+              return value.toLocaleString() + "円";
+            }
+          },
           stepSize: monthlyBudget,
-          maxTicksLimit: 3,
         },
         grid: {
           display: false, // 背景の縦線を非表示
@@ -38,7 +42,8 @@ export default function MonthSummary({ history, monthlyBudget }) {
     },
   };
   const chartData = {
-    labels: labels,
+    // データの数だけ空文字を入れる
+    labels: monthTotals.map(() => ""),
     datasets: [
       {
         label: "支出額",
@@ -65,6 +70,25 @@ export default function MonthSummary({ history, monthlyBudget }) {
       )}
       <div>
         <Bar options={graphOptions} data={chartData} />
+        <span>{monthlyBudget}円 ▶</span>
+        {monthTotals.map((item) => {
+          const [year, month] = item.month.split("-");
+          const monthNum = parseInt(month, 10);
+          return (
+            <div key={item.month}>
+              {(month === "12" || month === "01") && (
+                <p>
+                  {year}
+                  <span>年</span>
+                </p>
+              )}
+              <p>
+                {monthNum}
+                <span>月</span>
+              </p>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
