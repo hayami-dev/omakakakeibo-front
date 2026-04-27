@@ -36,14 +36,9 @@ export default function MonthSummary({ history, monthlyBudget }) {
         stacked: true, // 積み上げを可能に
         beginAtZero: true, // Y軸を0から始める
         max: monthlyBudget * 2,
+        display: false,
         ticks: {
-          // 目標金額だけ表示させる
-          callback: function (value) {
-            if (value === monthlyBudget) {
-              return value.toLocaleString() + "円";
-            }
-          },
-          stepSize: monthlyBudget,
+          display: false,
         },
         grid: {
           display: false, // 背景の縦線を非表示
