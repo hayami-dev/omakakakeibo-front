@@ -32,6 +32,7 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
       },
       x: {
         stacked: true,
+        display: false,
         grid: { display: false },
         border: { display: true, color: "#c5c5c5", width: 2 },
       },
@@ -75,13 +76,23 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
   return (
     <section>
       <h3>月別の集計</h3>
-      <div style={{ height: "300px", position: "relative" }}>
+      <div style={{ height: "300px", position: "relative", padding: "0 48px" }}>
         <Bar options={graphOptions} data={chartData} />
+        <span
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "0",
+            transform: "translateY(-50%)",
+          }}
+        >
+          {monthlyBudget}円 ▶
+        </span>
         {/* 月ラベルの表示ロジック */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-around",
+            justifyContent: "space-between",
             marginTop: "10px",
           }}
         >
