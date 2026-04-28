@@ -51,10 +51,13 @@ export const COLOR_MAP = [
 ];
 
 // 現役のカテゴリー
-const STORAGE_KEY_ACTIVE = "myCategories_active";
+const STORAGE_KEY_ACTIVE = "my_categories_active";
 
 // 過去のカテゴリー
-const STORAGE_KEY_ARCHIVED = "myCategories_archived";
+const STORAGE_KEY_ARCHIVED = "my_categories_archived";
+
+// 変更を加えた日時を保存するキー
+const STORAGE_KEY_LAST_EDIT = "category_last_edit_time";
 
 /**
  * カテゴリ一覧を取得する
@@ -135,7 +138,7 @@ export const archivedCategoriesAtom = atom(getArchivedCategories());
  * @param {Array} activeCat - 画面用のActive配列
  * @param {Object} archivedCat - ArchivedのMap
  */
-export const saveAllCategories = (activeCat, archivedCat) => {
+export const saveAllCategories = (activeCat, archivedCat, editDate) => {
   const activeMap = toPureMap(activeCat);
 
   // archiveするものは空欄を除去
@@ -149,11 +152,16 @@ export const saveAllCategories = (activeCat, archivedCat) => {
   localStorage.setItem(STORAGE_KEY_ACTIVE, JSON.stringify(activeMap));
   localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
 
+  // 変更を加えた日付を保存
+  localStorage.setItem(STORAGE_KEY_LAST_EDIT, JSON.stringify(editDate));
+
   // 保存されたカテゴリをコンソール表示
   console.log("activeMap:");
   console.table(activeMap);
   console.log("archivedMap:");
   console.table(archivedMap);
+  // 日時の確認用
+  console.log(editDate.toLocaleString());
 };
 
 /**
@@ -166,6 +174,7 @@ export const saveAllCategories = (activeCat, archivedCat) => {
 export const resolveCategoryById = (id, activeList, archiveList) => {
   // activeから探す
   let target = activeList.find((c) => c.id === id);
+  let isArchived = false;
 
   //無ければarchiveから探す
   if (!target) {
@@ -173,12 +182,50 @@ export const resolveCategoryById = (id, activeList, archiveList) => {
     target = archiveArray.find((c) => {
       return c.id && c.id.startsWith(id);
     });
+    if (target) isArchived = true;
   }
   if (target) {
+    // colorIndexを使ってベースのスタイルを付ける
+    const baseStyle = COLOR_MAP[target.colorIndex] || {
+      label: "不明",
+      code: "gray",
+      disabledCode: "gray",
+    };
     return {
       ...target,
-      style: COLOR_MAP[target.colorIndex] || { label: "不明", code: "gray" },
+      // アーカイブなら末尾に飛ばす (+10)
+      colorIndex: isArchived ? target.colorIndex + 10 : target.colorIndex,
+      // styleオブジェクトを構成
+      style: {
+        ...baseStyle,
+        // アーカイブなら code を disabledCode で上書き、そうでなければ元の code
+        code: isArchived ? baseStyle.disabledCode || "gray" : baseStyle.code,
+      },
     };
   }
   return null;
 };
+
+/**
+ * カテゴリの変更が可能かどうかを判定
+ * @param {*} today
+ * @returns boolean
+ */
+export const checkAlreadyEditCategory = (today) => {
+  const lastEditDateRaw = localStorage.getItem(STORAGE_KEY_LAST_EDIT);
+  // ローカルストレージにデータがなければ変更されたことがないため変更可
+  if (!lastEditDateRaw) return true;
+
+  const lastEditDate = new Date(JSON.parse(lastEditDateRaw));
+
+  // 日付が一致しなかったらtrueを返す
+  return today.toDateString() !== lastEditDate.toDateString();
+};
+
+/**
+ * TODO:開発用リセットボタンなので不要になったら消すこと
+ */
+export function resetLastEditDate() {
+  localStorage.removeItem(STORAGE_KEY_LAST_EDIT);
+  console.log("🛠️ カテゴリ変更制限をリセットしました");
+}

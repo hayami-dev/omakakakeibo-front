@@ -1,23 +1,33 @@
+import { useAtom } from "jotai";
+import {
+  activeCategoriesAtom,
+  archivedCategoriesAtom,
+} from "../service/categoryService";
+import { calcCategorySummary } from "../service/historyService";
+
 export default function CategorySummary({ history }) {
-  const categoryTotals = history.reduce(
-    (acc, cur) => {
-      const { categoryId, amount } = cur;
-      // Mapの中にそのカテゴリがすでにあれば加算、なければ初期値から加算
-      acc[categoryId] = (acc[categoryId] || 0) + amount;
-      return acc;
-    },
-    {}, // 👈初期値
+  const [activeCategories] = useAtom(activeCategoriesAtom);
+  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+
+  // カテゴリid毎の金額の合計値を計算
+  const categoryTotals = calcCategorySummary(
+    history,
+    activeCategories,
+    archivedCategories,
   );
 
   return (
     <>
       <h3>カテゴリ毎の集計</h3>
       <ul>
-        {Object.entries(categoryTotals).map(([cat, sum]) => (
-          <li key={cat}>
-            {cat}:{sum.toLocaleString()}円
-          </li>
-        ))}
+        {categoryTotals.map((item) => {
+          return (
+            <li key={item.id}>
+              <span style={{ color: item.color }}>●{item.name}</span>
+              {item.sum.toLocaleString()}円
+            </li>
+          );
+        })}
       </ul>
     </>
   );

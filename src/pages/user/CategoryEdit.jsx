@@ -1,8 +1,10 @@
 import {
   activeCategoriesAtom,
   archivedCategoriesAtom,
+  checkAlreadyEditCategory,
   getActiveCategories,
   saveAllCategories,
+  resetLastEditDate,
 } from "../../service/categoryService";
 import { useAtom } from "jotai";
 
@@ -11,6 +13,10 @@ export default function CategoryEdit() {
   const [archivedCategories, setArchivedCategories] = useAtom(
     archivedCategoriesAtom,
   );
+
+  //カテゴリの変更が可能かどうか
+  const today = new Date();
+  const isEdit = checkAlreadyEditCategory(today);
 
   // リアルタイムで変更を監視
   // 渡されたcat.id,e.target.valueをそれぞれ引数へ
@@ -64,11 +70,19 @@ export default function CategoryEdit() {
       }
     });
     // LocalStorageに保存
-    saveAllCategories(nextActive, nextArchived);
+    saveAllCategories(nextActive, nextArchived, today);
 
     //Atom更新
     setActiveCategories(nextActive);
     setArchivedCategories(nextArchived);
+  };
+
+  /**
+   * TODO:開発用リセットボタンなので不要になったら消すこと
+   */
+  const handleReset = () => {
+    resetLastEditDate();
+    window.location.reload();
   };
 
   return (
@@ -95,7 +109,18 @@ export default function CategoryEdit() {
           );
         })}
       </section>
-      <button onClick={onSend}>変更</button>
+      <button onClick={onSend} disabled={!isEdit}>
+        変更
+      </button>
+      <br />
+      {!isEdit && <span>カテゴリの変更は1日1回までです。</span>}
+      {/* デバッグ用：開発中だけ表示する */}
+      <button
+        onClick={handleReset}
+        style={{ opacity: 0.5, fontSize: "0.7rem", marginLeft: "10px" }}
+      >
+        (Debug) 制限リセット
+      </button>
     </>
   );
 }

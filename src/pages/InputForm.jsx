@@ -9,6 +9,7 @@ import {
 } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
+import "./InputForm.css";
 
 export default function InputForm() {
   // カテゴリを取得
@@ -108,7 +109,7 @@ export default function InputForm() {
   };
 
   return (
-    <section>
+    <div className="modal-dialog">
       <input
         type="number"
         value={inputValue}
@@ -135,8 +136,9 @@ export default function InputForm() {
               key={cat.id}
               onClick={() => setSelectCategory(cat)}
               style={{
+                color: selectCategory?.id === cat.id ? "white" : cat.style.code,
                 backgroundColor:
-                  selectCategory?.id === cat.id ? "yellow" : "white",
+                  selectCategory?.id === cat.id ? cat.style.code : "white",
               }}
             >
               {cat.name}
@@ -147,6 +149,6 @@ export default function InputForm() {
       <button onClick={handleLocalSend}>送信</button>
       <button onClick={handleClose}>✖ とじる</button>
       {editItem && <button onClick={handleRemove}> 削除</button>}
-    </section>
+    </div>
   );
 }

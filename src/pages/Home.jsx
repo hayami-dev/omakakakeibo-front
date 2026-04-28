@@ -1,16 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { getYearMonth } from "../dateUtils";
-import { getDummyData, getDummySummary } from "../dummyData";
+import { getDummyData } from "../dummyData";
 import Summary from "../components/Summary";
 import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
 import SelectMonth from "../components/SelectMonth";
 import MonthSummary from "../components/MonthSummary";
+import { createHistoryItem } from "../service/historyService";
+import { monthlyBudgetAtom } from "../service/budgetService";
 
 export default function Home() {
-  const [summary, setSummary] = useState(getDummySummary());
-  const [history, setHistory] = useState(getDummyData);
+  const [history, setHistory] = useState(() => {
+    const saved = localStorage.getItem("my_kakeibo_data");
+    // 保存されたデータがあればそれを使い、なければダミーデータを返す
+    return saved ? JSON.parse(saved) : getDummyData;
+  });
+
+  // 目標金額の取得
+  const [monthlyBudget] = useAtom(monthlyBudgetAtom);
+
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
 
@@ -20,7 +30,7 @@ export default function Home() {
 
   // historyを月毎にフィルターにかける
   const filteredHistory = selectMonth
-    ? history.filter((item) => item.date.startsWith(selectMonth))
+    ? history.filter((item) => item?.date.startsWith(selectMonth))
     : history; // 何も選ばれてなければ今月
 
   // フィルタリングした内容の合計値を出す
@@ -30,12 +40,21 @@ export default function Home() {
   );
 
   const navigate = useNavigate();
-  const onEdit = (targetHistoryIndex) => {
-    const targetHistoryItem = filteredHistory[targetHistoryIndex];
+  const onEdit = (targetId) => {
+    const targetHistoryItem = history.find((item) => item.id === targetId);
     navigate("/input", {
       state: { item: targetHistoryItem },
     });
   };
+
+  // history、ローカルストレージへの保存処理
+  const updateAndSaveHistory = (newHistory) => {
+    setHistory(newHistory);
+  };
+  // historyに変更がかかった時に自動的に見てくれる
+  useEffect(() => {
+    localStorage.setItem("my_kakeibo_data", JSON.stringify(history));
+  }, [history]);
 
   return (
     <main>
@@ -46,57 +65,46 @@ export default function Home() {
       </nav>
       {/* 結果表示 */}
       <section>
-        <Summary total={filteredTotal} />
+        <Summary
+          total={filteredTotal}
+          selectMonth={selectMonth}
+          monthlyBudget={monthlyBudget}
+        />
       </section>
       <section>
         <p>フィルター後</p>
         <HistoryList history={filteredHistory} onEdit={onEdit} />
         <CategorySummary history={filteredHistory} />
+        <MonthSummary
+          history={history}
+          monthlyBudget={monthlyBudget}
+          selectMonth={selectMonth}
+        />
       </section>
       {/* InputFormのコンテキスト */}
       <Outlet
         context={{
           onSend: (amount, categoryId, inputDate) => {
-            setSummary(summary + amount);
-            setHistory([
-              ...history,
-              {
-                id: crypto.randomUUID(),
-                amount: amount,
-                categoryId: categoryId,
-                date: inputDate,
-              },
-            ]);
+            const newItem = createHistoryItem(amount, categoryId, inputDate);
+            updateAndSaveHistory([...history, newItem]);
           },
           onUpdate: (editItemId, amount, selectCategoryId, inputDate) => {
-            const newHistory = [...history];
-            setHistory(newHistory);
-            const targetHistoryIndex = newHistory.findIndex(
-              (item) => item.id === editItemId,
+            const newHistory = history.map((item) =>
+              item.id === editItemId
+                ? createHistoryItem(
+                    amount,
+                    selectCategoryId,
+                    inputDate,
+                    editItemId,
+                  )
+                : item,
             );
-
-            if (targetHistoryIndex !== -1) {
-              newHistory[targetHistoryIndex] = {
-                id: editItemId,
-                amount,
-                categoryId: selectCategoryId,
-                date: inputDate,
-              };
-            }
-            setHistory(newHistory);
-            const newTotal = newHistory.reduce(
-              (acc, cur) => acc + cur.amount,
-              0,
-            );
-            setSummary(newTotal);
+            updateAndSaveHistory(newHistory);
           },
           onRemove: (editItemId) => {
-            const newHistory = history.filter((item) => item.id !== editItemId);
-            setHistory(newHistory);
-            const deletedItem = history.find((item) => item.id === editItemId);
-            if (deletedItem) {
-              setSummary(summary - deletedItem.amount);
-            }
+            updateAndSaveHistory(
+              history.filter((item) => item.id !== editItemId),
+            );
           },
         }}
       />
