@@ -59,14 +59,19 @@ export default function MonthSummary({
     datasets: [
       {
         label: "目標内",
-        data: monthTotals.map((item) =>
-          Math.max(0, Math.min(item.sum, monthlyBudget) - monthlyBudget * 0.01),
-        ),
+        data: monthTotals.map((item) => {
+          if (item.sum === 0) return 0;
+
+          const baseValue = Math.min(item.sum, monthlyBudget);
+          return Math.max(
+            monthlyBudget * 0.02,
+            baseValue - monthlyBudget * 0.01,
+          );
+        }),
         backgroundColor: monthTotals.map((_, index) =>
           index === activeMonthBar ? "#F57D5FFF" : "#F57D5F66",
         ),
         stack: "stack",
-        minBarLength: 3,
       },
       {
         label: "境界線",
