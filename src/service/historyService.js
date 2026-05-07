@@ -33,17 +33,12 @@ const calcHistoryByGroup = (history, keySelector) => {
 };
 
 /**
- * 渡された月のの合計値を返す
+ * 渡された月の合計値を返す
  * @param {*} history
  * @returns 合計値
  */
 export const calcMonthSummary = (history) => {
-  const totals = calcHistoryByGroup(history, (item) =>
-    item.date.substring(0, 7),
-  );
-  return Object.entries(totals)
-    .map(([month, sum]) => ({ month, sum }))
-    .sort((a, b) => a.month.localeCompare(b.month));
+  return calcHistoryByGroup(history, (item) => item.date.substring(0, 7));
 };
 
 /**
@@ -76,3 +71,15 @@ export const calcCategorySummary = (
     })
     .sort((a, b) => a.colorIndex - b.colorIndex);
 };
+
+/**
+ * 指定された月に含まれるデータだけを抽出する
+ * @param {*} history
+ * @param {*} targetMonths
+ * @returns 6ヶ月間のデータ
+ */
+export function filterHistoryByMonths(history, targetMonths) {
+  return history.filter((item) =>
+    targetMonths.includes(item.date.substring(0, 7)),
+  );
+}
