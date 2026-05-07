@@ -37,6 +37,11 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
         border: { display: true, color: "#c5c5c5", width: 2 },
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
   };
 
   const chartData = {

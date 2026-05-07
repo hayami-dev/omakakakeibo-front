@@ -8,8 +8,12 @@ import HistoryList from "../components/HistoryList";
 import CategorySummary from "../components/CategorySummary";
 import SelectMonth from "../components/SelectMonth";
 import MonthSummary from "../components/MonthSummary";
-import { createHistoryItem } from "../service/historyService";
+import {
+  createHistoryItem,
+  filterHistoryByMonths,
+} from "../service/historyService";
 import { monthlyBudgetAtom } from "../service/budgetService";
+import { getRecentMonthsRange } from "../dateUtils";
 
 export default function Home() {
   const [history, setHistory] = useState(() => {
@@ -29,15 +33,19 @@ export default function Home() {
   };
 
   // historyを月毎にフィルターにかける
-  const filteredHistory = selectMonth
+  const selectFilteredHistory = selectMonth
     ? history.filter((item) => item?.date.startsWith(selectMonth))
     : history; // 何も選ばれてなければ今月
 
   // フィルタリングした内容の合計値を出す
-  const filteredTotal = filteredHistory.reduce(
+  const filteredTotal = selectFilteredHistory.reduce(
     (acc, cur) => acc + cur.amount,
     0,
   );
+
+  // historyを6ヶ月間に絞り込む
+  const targetMonth = getRecentMonthsRange();
+  const targetFilteredHistory = filterHistoryByMonths(history, targetMonth);
 
   const navigate = useNavigate();
   const onEdit = (targetId) => {
@@ -73,10 +81,10 @@ export default function Home() {
       </section>
       <section>
         <p>フィルター後</p>
-        <HistoryList history={filteredHistory} onEdit={onEdit} />
-        <CategorySummary history={filteredHistory} />
+        <HistoryList history={selectFilteredHistory} onEdit={onEdit} />
+        <CategorySummary history={selectFilteredHistory} />
         <MonthSummary
-          history={history}
+          history={targetFilteredHistory}
           monthlyBudget={monthlyBudget}
           selectMonth={selectMonth}
         />
