@@ -9,8 +9,18 @@ import { calcMonthSummary } from "../service/historyService";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
-export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
-  const monthTotals = calcMonthSummary(history) || [];
+export default function MonthSummary({
+  history,
+  monthlyBudget,
+  selectMonth,
+  targetMonth,
+}) {
+  const totalMap = calcMonthSummary(history) || [];
+
+  const monthTotals = targetMonth.map((month) => ({
+    month: month,
+    sum: totalMap[month] || 0,
+  }));
 
   // 選択中の月のインデックス
   const activeMonthBar = monthTotals.findIndex(
@@ -37,6 +47,11 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
         border: { display: true, color: "#c5c5c5", width: 2 },
       },
     },
+    plugins: {
+      legend: {
+        display: false,
+      },
+    },
   };
 
   const chartData = {
@@ -44,9 +59,15 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
     datasets: [
       {
         label: "目標内",
-        data: monthTotals.map((item) =>
-          Math.max(0, Math.min(item.sum, monthlyBudget) - monthlyBudget * 0.01),
-        ),
+        data: monthTotals.map((item) => {
+          if (item.sum === 0) return 0;
+
+          const baseValue = Math.min(item.sum, monthlyBudget);
+          return Math.max(
+            monthlyBudget * 0.02,
+            baseValue - monthlyBudget * 0.01,
+          );
+        }),
         backgroundColor: monthTotals.map((_, index) =>
           index === activeMonthBar ? "#F57D5FFF" : "#F57D5F66",
         ),

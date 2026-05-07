@@ -43,3 +43,14 @@ export function extractMonth(yearMonthStr) {
   }
   return parseInt(yearMonthStr.substring(5, 7));
 }
+
+// 今月から6か月前までを取得
+export function getRecentMonthsRange(count = 6) {
+  const months = [];
+  for (let i = 0; i < count; i++) {
+    const formattedDate = getYearMonth(0, -i);
+    const yearMonth = formattedDate.substring(0, 7);
+    months.push(yearMonth);
+  }
+  return months.reverse();
+}
