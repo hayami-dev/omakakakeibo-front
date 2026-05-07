@@ -1,11 +1,9 @@
-import { extractMonth, getRecentMonthsRange } from "../dateUtils";
+import { extractMonth } from "../dateUtils";
 
-export default function SelectMonth({ changeDisplayMonth }) {
-  const sixMonths = getRecentMonthsRange();
-
+export default function SelectMonth({ changeDisplayMonth, targetMonth }) {
   return (
     <ul>
-      {sixMonths.map((yearMonth) => {
+      {targetMonth.map((yearMonth) => {
         const displayMonth = extractMonth(yearMonth);
         return (
           <li key={yearMonth}>

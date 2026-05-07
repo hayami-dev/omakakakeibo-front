@@ -69,7 +69,10 @@ export default function Home() {
       <h1>おおまか家計簿</h1>
       <nav>
         <NavLink to="/input">📝 入力</NavLink>
-        <SelectMonth changeDisplayMonth={changeDisplayMonth}></SelectMonth>
+        <SelectMonth
+          changeDisplayMonth={changeDisplayMonth}
+          targetMonth={targetMonth}
+        ></SelectMonth>
       </nav>
       {/* 結果表示 */}
       <section>
@@ -87,6 +90,7 @@ export default function Home() {
           history={targetFilteredHistory}
           monthlyBudget={monthlyBudget}
           selectMonth={selectMonth}
+          targetMonth={targetMonth}
         />
       </section>
       {/* InputFormのコンテキスト */}

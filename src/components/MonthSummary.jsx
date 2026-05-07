@@ -9,8 +9,18 @@ import { calcMonthSummary } from "../service/historyService";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
-export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
-  const monthTotals = calcMonthSummary(history) || [];
+export default function MonthSummary({
+  history,
+  monthlyBudget,
+  selectMonth,
+  targetMonth,
+}) {
+  const totalMap = calcMonthSummary(history) || [];
+
+  const monthTotals = targetMonth.map((month) => ({
+    month: month,
+    sum: totalMap[month] || 0,
+  }));
 
   // 選択中の月のインデックス
   const activeMonthBar = monthTotals.findIndex(
@@ -56,6 +66,7 @@ export default function MonthSummary({ history, monthlyBudget, selectMonth }) {
           index === activeMonthBar ? "#F57D5FFF" : "#F57D5F66",
         ),
         stack: "stack",
+        minBarLength: 3,
       },
       {
         label: "境界線",

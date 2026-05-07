@@ -48,8 +48,8 @@ export function extractMonth(yearMonthStr) {
 export function getRecentMonthsRange(count = 6) {
   const months = [];
   for (let i = 0; i < count; i++) {
-    const formmaedDate = getYearMonth(0, -i);
-    const yearMonth = formmaedDate.substring(0, 7);
+    const formattedDate = getYearMonth(0, -i);
+    const yearMonth = formattedDate.substring(0, 7);
     months.push(yearMonth);
   }
   return months.reverse();
