@@ -126,8 +126,15 @@ export const activeCategoriesAtom = atom(
       typeof newValue === "function"
         ? newValue(get(activeCategoriesAtom))
         : newValue;
-    // newValue(配列)を保存用Mapへ変換する
-    const nextMap = toPureMap(nextValue);
+
+    // DBデータ(activeCatId)かLocalStorageデータ(id)かを判定してMapを作る
+    const nextMap = nextValue.reduce((acc, cat) => {
+      const { style: _style, ...pureCat } = cat;
+      const key = cat.activeCatId || cat.id; // 両方に対応！
+      acc[key] = pureCat;
+      return acc;
+    }, {});
+
     set(activeBaseAtom, nextMap);
   },
 );
@@ -229,3 +236,36 @@ export function resetLastEditDate() {
   localStorage.removeItem(STORAGE_KEY_LAST_EDIT);
   console.log("🛠️ カテゴリ変更制限をリセットしました");
 }
+
+/* TODO：DBとのつなぎこみ */
+const getStyleByRemoteIndex = (index) => {
+  return {
+    main: `var(--cat-color-${index})`,
+    bg: `var(--cat-bg-${index})`,
+    disabled: `var(--cat-disabled-${index})`,
+  };
+};
+
+export const categoryService = {
+  // ユーザーIDを渡してカテゴリ6つを取得する
+  async fetchActiveCategories(userId) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/categories/active/${userId}`,
+      );
+      if (!response.ok) throw new Error("ネットワークエラー");
+
+      const data = await response.json();
+
+      return data
+        .map((cat) => ({
+          ...cat,
+          style: getStyleByRemoteIndex(cat.colorIndex),
+        }))
+        .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
+    } catch (error) {
+      console.error("データ取得に失敗...", error);
+      return [];
+    }
+  },
+};
