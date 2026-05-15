@@ -42,6 +42,11 @@
   --cat-bg-5: #e9f6ff;
   --cat-disabled-5: #316285;
 
+  /* 6: グレー（未設定） */
+  --cat-color-6: #5a5a5a;
+  --cat-bg-6: #c5c5c5;
+  --cat-disabled-6: #5a5a5a;
+
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
