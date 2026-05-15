@@ -1,79 +1,38 @@
 import { atom } from "jotai";
+import { getCategoryColorSet } from "../categoryColor.js";
 
-// 初期値
-export const INITIAL_CATEGORIES = [
-  { id: "initial_c1", name: "必要経費", colorIndex: 0 },
-  { id: "initial_c2", name: "ごほうび", colorIndex: 1 },
-  { id: "initial_c3", name: "推し活", colorIndex: 2 },
-  { id: "initial_c4", name: "カフェ", colorIndex: 3 },
-  { id: "initial_c5", name: "わからない", colorIndex: 4 },
-  { id: "initial_c6", name: "ああああああああああ", colorIndex: 5 },
-];
+/**
+ * userIdをもとにDBからactive_categoriesテーブルを取得する
+ */
+export const categoryService = {
+  // http://localhost:8080/api/categories/active/1
+  async fetchActiveCategories(userId) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/categories/active/${userId}`,
+      );
+      if (!response.ok) throw new Error("ネットワークエラー");
 
-// 色のマスター定義
-export const COLOR_MAP = [
-  {
-    label: "グリーン",
-    code: "#44AF69",
-    bgCode: "#EFF8F2",
-    disabledCode: "#476A54",
-  },
-  {
-    label: "イエロー",
-    code: "#F8BE10",
-    bgCode: "#FEF9EA",
-    disabledCode: "#867035",
-  },
-  {
-    label: "レッド",
-    code: "#F22C22",
-    bgCode: "#FEECEB",
-    disabledCode: "#833C38",
-  },
-  {
-    label: "ピンク",
-    code: "#E66BC7",
-    bgCode: "#FDF1FA",
-    disabledCode: "#8E4B7D",
-  },
-  {
-    label: "パープル",
-    code: "#9747FF",
-    bgCode: "#F6EEFF",
-    disabledCode: "#633A99",
-  },
-  {
-    label: "ブルー",
-    code: "#0D99FF",
-    bgCode: "#E9F6FF",
-    disabledCode: "#316285",
-  },
-];
+      const data = await response.json();
 
-// 現役のカテゴリー
-const STORAGE_KEY_ACTIVE = "my_categories_active";
+      return data
+        .map((cat) => ({
+          ...cat,
+          style: getCategoryColorSet(cat.colorIndex),
+        }))
+        .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
+    } catch (error) {
+      console.error("アクティブデータ取得に失敗...", error);
+      return [];
+    }
+  },
+};
 
 // 過去のカテゴリー
 const STORAGE_KEY_ARCHIVED = "my_categories_archived";
 
 // 変更を加えた日時を保存するキー
 const STORAGE_KEY_LAST_EDIT = "category_last_edit_time";
-
-/**
- * カテゴリ一覧を取得する
- * @returns {Array} カテゴリオブジェクトの配列 (LocalStorageが空なら初期値)
- */
-export const getActiveCategories = () => {
-  const saved = localStorage.getItem(STORAGE_KEY_ACTIVE);
-  if (!saved) {
-    // 初回は初期配列をMapに変換して返す
-    return INITIAL_CATEGORIES.reduce(
-      (acc, cur) => ({ ...acc, [cur.id]: cur }),
-      {},
-    );
-  }
-  return JSON.parse(saved);
-};
 
 /**
  * 過去ログを取得
@@ -89,17 +48,17 @@ export const getArchivedCategories = () => {
  * @param {*} list
  * @returns styleを外した後のカテゴリ情報
  */
-const toPureMap = (list) => {
-  return list.reduce((acc, cat) => {
-    const { style: _style, ...pureCat } = cat;
-    acc[cat.id] = pureCat;
-    return acc;
-  }, {});
-};
+// const toPureMap = (list) => {
+//   return list.reduce((acc, cat) => {
+//     const { style: _style, ...pureCat } = cat;
+//     acc[cat.id] = pureCat;
+//     return acc;
+//   }, {});
+// };
 
 /* Atomの定義 */
 // 大元のAtom id,name,colorIndexのみ
-const activeBaseAtom = atom(getActiveCategories());
+const activeBaseAtom = atom([]);
 
 // baseDataをもとに整形
 export const activeCategoriesAtom = atom(
@@ -115,8 +74,8 @@ export const activeCategoriesAtom = atom(
     return categoriesArray
       .map((cat) => ({
         ...cat,
-        // マスタ情報をJoin
-        style: COLOR_MAP[cat.colorIndex] || { label: "未設定", code: "gray" },
+        // 色の情報を入れる
+        style: getCategoryColorSet(cat.colorIndex),
       }))
       .sort((a, b) => a.colorIndex - b.colorIndex);
   },
@@ -145,31 +104,27 @@ export const archivedCategoriesAtom = atom(getArchivedCategories());
  * @param {Array} activeCat - 画面用のActive配列
  * @param {Object} archivedCat - ArchivedのMap
  */
-export const saveAllCategories = (activeCat, archivedCat, editDate) => {
-  const activeMap = toPureMap(activeCat);
+// export const saveAllCategories = (activeCat, archivedCat, editDate) => {
+//   const activeMap = toPureMap(activeCat);
 
-  // archiveするものは空欄を除去
-  const archiveArray = Object.values(archivedCat).filter((cat) => {
-    const isNotBlank = !cat.id.includes("_blank");
-    const isNotEmptyName = cat.name.trim() !== "";
-    return isNotBlank && isNotEmptyName;
-  });
-  const archivedMap = toPureMap(archiveArray);
+//   // archiveするものは空欄を除去
+//   const archiveArray = Object.values(archivedCat).filter((cat) => {
+//     const isNotBlank = !cat.id.includes("_blank");
+//     const isNotEmptyName = cat.name.trim() !== "";
+//     return isNotBlank && isNotEmptyName;
+//   });
+//   const archivedMap = toPureMap(archiveArray);
 
-  localStorage.setItem(STORAGE_KEY_ACTIVE, JSON.stringify(activeMap));
-  localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
+//   localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
 
-  // 変更を加えた日付を保存
-  localStorage.setItem(STORAGE_KEY_LAST_EDIT, JSON.stringify(editDate));
+//   // 変更を加えた日付を保存
+//   localStorage.setItem(STORAGE_KEY_LAST_EDIT, JSON.stringify(editDate));
 
-  // 保存されたカテゴリをコンソール表示
-  console.log("activeMap:");
-  console.table(activeMap);
-  console.log("archivedMap:");
-  console.table(archivedMap);
-  // 日時の確認用
-  console.log(editDate.toLocaleString());
-};
+//   console.log("archivedMap:");
+//   console.table(archivedMap);
+//   // 日時の確認用
+//   console.log(editDate.toLocaleString());
+// };
 
 /**
  * 渡されたidをもとにカテゴリリストから実体を取り出す
@@ -193,7 +148,7 @@ export const resolveCategoryById = (id, activeList, archiveList) => {
   }
   if (target) {
     // colorIndexを使ってベースのスタイルを付ける
-    const baseStyle = COLOR_MAP[target.colorIndex] || {
+    const baseStyle = getCategoryColorSet[target.colorIndex] || {
       label: "不明",
       code: "gray",
       disabledCode: "gray",
@@ -236,36 +191,3 @@ export function resetLastEditDate() {
   localStorage.removeItem(STORAGE_KEY_LAST_EDIT);
   console.log("🛠️ カテゴリ変更制限をリセットしました");
 }
-
-/* TODO：DBとのつなぎこみ */
-const getStyleByRemoteIndex = (index) => {
-  return {
-    main: `var(--cat-color-${index})`,
-    bg: `var(--cat-bg-${index})`,
-    disabled: `var(--cat-disabled-${index})`,
-  };
-};
-
-export const categoryService = {
-  // ユーザーIDを渡してカテゴリ6つを取得する
-  async fetchActiveCategories(userId) {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/categories/active/${userId}`,
-      );
-      if (!response.ok) throw new Error("ネットワークエラー");
-
-      const data = await response.json();
-
-      return data
-        .map((cat) => ({
-          ...cat,
-          style: getStyleByRemoteIndex(cat.colorIndex),
-        }))
-        .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
-    } catch (error) {
-      console.error("データ取得に失敗...", error);
-      return [];
-    }
-  },
-};

@@ -15,7 +15,7 @@ export default function User() {
       {/* DBからアクティブカテゴリの取得 */}
       <ul>
         {categories.map((cat, index) => (
-          <li key={cat.activeCatId || index} style={{ color: cat.style.code }}>
+          <li key={cat.activeCatId || index} style={{ color: cat.style.color }}>
             {cat.categoryName}
           </li>
         ))}
