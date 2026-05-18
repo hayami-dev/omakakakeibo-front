@@ -77,25 +77,18 @@ export const calcMonthSummary = (history) => {
  * @param {*} archivedCategories
  * @returns historyに存在するカテゴリ毎の合計値
  */
-export const calcCategorySummary = (
-  history,
-  activeCategories,
-  archivedCategories,
-) => {
+export const calcCategorySummary = (history, masterList) => {
   const totals = calcHistoryByGroup(history, (item) => item.categoryId);
   return Object.entries(totals)
     .map(([id, sum]) => {
-      const category = resolveCategoryById(
-        id,
-        activeCategories,
-        archivedCategories,
-      );
+      const category = resolveCategoryById(Number(id), masterList);
       return {
         id,
         sum,
-        name: category?.name || "不明なカテゴリ",
-        color: category?.style.code || "gray",
+        name: category?.categoryName || "不明なカテゴリ",
+        color: category?.style.color || "gray",
         colorIndex: category?.colorIndex ?? 999,
+        isActive: category?.isActive ?? false,
       };
     })
     .sort((a, b) => a.colorIndex - b.colorIndex);

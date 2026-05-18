@@ -1,8 +1,5 @@
 import { useAtom } from "jotai";
-import {
-  activeCategoriesAtom,
-  archivedCategoriesAtom,
-} from "../service/categoryService";
+import { categoriesMasterAtom } from "../service/categoryService";
 import { calcCategorySummary } from "../service/historyService";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
@@ -11,14 +8,16 @@ import { Pie } from "react-chartjs-2";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function CategorySummary({ history }) {
-  const [activeCategories] = useAtom(activeCategoriesAtom);
-  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+  const [categoriesMaster] = useAtom(categoriesMasterAtom);
 
   // カテゴリid毎の金額の合計値を計算
-  const categoryTotals = calcCategorySummary(
-    history,
-    activeCategories,
-    archivedCategories,
+  const categoryTotals = calcCategorySummary(history, categoriesMaster).sort(
+    (a, b) => {
+      if (a.isActive !== b.isActive) {
+        return b.isActive - a.isActive;
+      }
+      return a.colorIndex - b.colorIndex;
+    },
   );
 
   // データがあるかどうかの判定
@@ -41,13 +40,22 @@ export default function CategorySummary({ history }) {
     },
   };
 
+  // var(--cat-color-0) などの文字列から実際の値を取り出す
+  const getCanvasColor = (varName) => {
+    return (
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(varName.replace("var(", "").replace(")", ""))
+        .trim() || "#ccc"
+    );
+  };
+
   const chartData = {
     labels: hasData ? categoryTotals.map((item) => item.name) : ["データなし"],
     datasets: [
       {
         data: hasData ? categoryTotals.map((item) => item.sum) : [1],
         backgroundColor: hasData
-          ? categoryTotals.map((item) => item.color)
+          ? categoryTotals.map((item) => getCanvasColor(item.color))
           : ["gray"],
         borderWidth: false,
       },
