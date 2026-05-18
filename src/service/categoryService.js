@@ -49,14 +49,11 @@ export const categoryService = {
   },
 };
 
-// 過去のカテゴリー
+// TODO:削除 過去のカテゴリー
 const STORAGE_KEY_ARCHIVED = "my_categories_archived";
 
-// 変更を加えた日時を保存するキー
-const STORAGE_KEY_LAST_EDIT = "category_last_edit_time";
-
 /**
- * 過去ログを取得
+ * TODO:削除 過去ログを取得
  * @returns {Array} カテゴリオブジェクトの配列
  */
 export const getArchivedCategories = () => {
@@ -65,7 +62,7 @@ export const getArchivedCategories = () => {
 };
 
 /**
- * LocalStorageに保存時、styleを外す
+ * TODO:削除 LocalStorageに保存時、styleを外す
  * @param {*} list
  * @returns styleを外した後のカテゴリ情報
  */
@@ -118,12 +115,13 @@ export const activeCategoriesAtom = atom(
     set(activeBaseAtom, nextMap);
   },
 );
+// TODO:削除 アーカイブカテゴリのatom
 export const archivedCategoriesAtom = atom(getArchivedCategories());
 // TODO
 export const categoriesMasterAtom = atom([]);
 
 /**
- * カテゴリ一覧をLocalStorageに保存する
+ * TODO:削除 カテゴリ一覧をLocalStorageに保存する
  * @param {Array} activeCat - 画面用のActive配列
  * @param {Object} archivedCat - ArchivedのMap
  */
@@ -196,25 +194,30 @@ export const resolveCategoryById = (id, activeList, archiveList) => {
 };
 
 /**
- * カテゴリの変更が可能かどうかを判定
+ * カテゴリの変更が可能かどうかを判定(月1回)
+ * activeCategoriesからupdateAtをうけとって変更月を判定する
  * @param {*} today
+ * @param {*} activeCategories
  * @returns boolean
  */
-export const checkAlreadyEditCategory = (today) => {
-  const lastEditDateRaw = localStorage.getItem(STORAGE_KEY_LAST_EDIT);
-  // ローカルストレージにデータがなければ変更されたことがないため変更可
-  if (!lastEditDateRaw) return true;
+export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
+  if (!activeCategories || activeCategories.length === 0) return true;
 
-  const lastEditDate = new Date(JSON.parse(lastEditDateRaw));
+  const latestDateStr = activeCategories.reduce((prev, current) => {
+    return prev.updatedAt > current.updatedAt ? prev : current;
+  }).updatedAt;
 
-  // 日付が一致しなかったらtrueを返す
-  return today.toDateString() !== lastEditDate.toDateString();
+  // 最後に変更のあった日を取得
+  const latestDateObj = latestDateStr ? new Date(latestDateStr) : null;
+
+  if (!latestDateObj) return true;
+
+  // 月に変換
+  const todayMonth = `${todayObj.getFullYear()}-${todayObj.getMonth()}`;
+  const latestMonth = `${latestDateObj.getFullYear()}-${latestDateObj.getMonth()}`;
+
+  console.log("今月:", todayMonth, "最新の更新月:", latestMonth);
+
+  // 日付が一致しなかったらtrue(編集可)を返す
+  return todayMonth !== latestMonth;
 };
-
-/**
- * TODO:開発用リセットボタンなので不要になったら消すこと
- */
-export function resetLastEditDate() {
-  localStorage.removeItem(STORAGE_KEY_LAST_EDIT);
-  console.log("🛠️ カテゴリ変更制限をリセットしました");
-}
