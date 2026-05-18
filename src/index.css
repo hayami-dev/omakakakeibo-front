@@ -11,8 +11,44 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* カテゴリのカラー */
+  /* 0: グリーン */
+  --cat-color-0: #44af69;
+  --cat-bg-0: #eff8f2;
+  --cat-disabled-0: #476a54;
+
+  /* 1: イエロー */
+  --cat-color-1: #f8be10;
+  --cat-bg-1: #fef9ea;
+  --cat-disabled-1: #867035;
+
+  /* 2: レッド */
+  --cat-color-2: #f22c22;
+  --cat-bg-2: #feeceb;
+  --cat-disabled-2: #833c38;
+
+  /* 3: ピンク */
+  --cat-color-3: #e66bc7;
+  --cat-bg-3: #fdf1fa;
+  --cat-disabled-3: #8e4b7d;
+
+  /* 4: パープル */
+  --cat-color-4: #9747ff;
+  --cat-bg-4: #f6eeff;
+  --cat-disabled-4: #633a99;
+
+  /* 5: ブルー */
+  --cat-color-5: #0d99ff;
+  --cat-bg-5: #e9f6ff;
+  --cat-disabled-5: #316285;
+
+  /* 6: グレー（未設定） */
+  --cat-color-6: #5a5a5a;
+  --cat-bg-6: #c5c5c5;
+  --cat-disabled-6: #5a5a5a;
+
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --heading: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);

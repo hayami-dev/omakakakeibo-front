@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { useAtom } from "jotai";
 // import { CATEGORIES } from "../categories";
 import {
-  COLOR_MAP,
   activeCategoriesAtom,
   archivedCategoriesAtom,
   resolveCategoryById,
@@ -31,24 +30,32 @@ export default function InputForm() {
   // 表示するカテゴリ一覧をidをもとに作成
   const displayCategories = useMemo(() => {
     let list = [...activeCategories];
+    console.log(list);
 
-    if (editItem?.categoryId) {
-      const isActive = activeCategories.some(
-        (cat) => cat.id === editItem.categoryId,
-      );
+    // 編集時
+    // if (editItem?.categoryId) {
+    //   const isActive = activeCategories.some(
+    //     (cat) => cat.id === editItem.categoryId,
+    //   );
 
-      if (!isActive) {
-        const archivedTarget = resolveCategoryById(
-          editItem.categoryId,
-          activeCategories,
-          archivedCategories,
-        );
-        if (archivedTarget) {
-          list.push(archivedTarget);
-        }
-      }
-    }
-    return list
+    //   if (!isActive) {
+    //     const archivedTarget = resolveCategoryById(
+    //       editItem.categoryId,
+    //       activeCategories,
+    //       archivedCategories,
+    //     );
+    //     if (archivedTarget) {
+    //       list.push(archivedTarget);
+    //     }
+    //   }
+    // }
+    const displayList = list.map((cat) => ({
+      ...cat,
+      name: cat.categoryName,
+      id: cat.activeCatId || cat.categoryId,
+    }));
+
+    return displayList
       .filter((cat) => cat.name && cat.name.trim() !== "")
       .sort((a, b) => a.colorIndex - b.colorIndex);
   }, [activeCategories, archivedCategories, editItem]);
@@ -136,9 +143,10 @@ export default function InputForm() {
               key={cat.id}
               onClick={() => setSelectCategory(cat)}
               style={{
-                color: selectCategory?.id === cat.id ? "white" : cat.style.code,
+                color:
+                  selectCategory?.id === cat.id ? "white" : cat.style.color,
                 backgroundColor:
-                  selectCategory?.id === cat.id ? cat.style.code : "white",
+                  selectCategory?.id === cat.id ? cat.style.color : "white",
               }}
             >
               {cat.name}
