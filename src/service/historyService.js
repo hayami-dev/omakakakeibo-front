@@ -1,20 +1,47 @@
 /* Homeに表示する各履歴(history)の共通項目 */
 import { resolveCategoryById } from "./categoryService";
+import { atom } from "jotai";
+
+export const historyService = {
+  // http://localhost:8080/histories/1
+  async fetchHistories(userId) {
+    try {
+      const response = await fetch(`http://localhost:8080/histories/${userId}`);
+      if (!response) throw new Error("ネットワークエラー：historyService");
+
+      const data = await response.json();
+      return data.map((item) => ({
+        ...item,
+      }));
+    } catch (error) {
+      console.error("ヒストリーデータ取得に失敗...", error);
+      return [];
+    }
+  },
+};
+
+// 履歴データの配列
+export const historiesAtom = atom([]);
 
 /**
  * InputFormから渡される履歴オブジェクト
  * @param {*} amount
  * @param {*} categoryId
- * @param {*} date
+ * @param {*} historyDate
  * @param {*} id
  * @returns
  */
-export const createHistoryItem = (amount, categoryId, date, id = null) => {
+export const createHistoryItem = (
+  amount,
+  categoryId,
+  historyDate,
+  id = null,
+) => {
   return {
     id: id || crypto.randomUUID(),
     amount: Number(amount),
     categoryId: categoryId,
-    date: date,
+    historyDate: historyDate,
   };
 };
 
@@ -38,7 +65,9 @@ const calcHistoryByGroup = (history, keySelector) => {
  * @returns 合計値
  */
 export const calcMonthSummary = (history) => {
-  return calcHistoryByGroup(history, (item) => item.date.substring(0, 7));
+  return calcHistoryByGroup(history, (item) =>
+    item.historyDate.substring(0, 7),
+  );
 };
 
 /**
@@ -80,6 +109,6 @@ export const calcCategorySummary = (
  */
 export function filterHistoryByMonths(history, targetMonths) {
   return history.filter((item) =>
-    targetMonths.includes(item.date.substring(0, 7)),
+    targetMonths.includes(item.historyDate.substring(0, 7)),
   );
 }
