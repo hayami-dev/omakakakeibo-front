@@ -13,13 +13,13 @@ export const COLOR_MAP = [
  * 受け取ったcolorIndexを元に、CSS変数を含んだスタイルオブジェクトを返す
  */
 export const getCategoryColorSet = (index) => {
-  // 範囲外のインデックスが来たら 0番（グリーン）をデフォルトにする
+  // 範囲外のインデックスが来たら 0番（グレー）をデフォルトにする
   const config = COLOR_MAP[index] || COLOR_MAP[6];
 
   return {
     label: config.label,
     color: `var(--cat-color-${index})`,
     backgroundColor: `var(--cat-bg-${index})`,
-    borderColor: `var(--cat-disabled-${index})`,
+    disabledColor: `var(--cat-disabled-${index})`,
   };
 };

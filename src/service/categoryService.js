@@ -121,75 +121,44 @@ export const archivedCategoriesAtom = atom(getArchivedCategories());
 export const categoriesMasterAtom = atom([]);
 
 /**
- * TODO:削除 カテゴリ一覧をLocalStorageに保存する
- * @param {Array} activeCat - 画面用のActive配列
- * @param {Object} archivedCat - ArchivedのMap
- */
-// export const saveAllCategories = (activeCat, archivedCat, editDate) => {
-//   const activeMap = toPureMap(activeCat);
-
-//   // archiveするものは空欄を除去
-//   const archiveArray = Object.values(archivedCat).filter((cat) => {
-//     const isNotBlank = !cat.id.includes("_blank");
-//     const isNotEmptyName = cat.name.trim() !== "";
-//     return isNotBlank && isNotEmptyName;
-//   });
-//   const archivedMap = toPureMap(archiveArray);
-
-//   localStorage.setItem(STORAGE_KEY_ARCHIVED, JSON.stringify(archivedMap));
-
-//   // 変更を加えた日付を保存
-//   localStorage.setItem(STORAGE_KEY_LAST_EDIT, JSON.stringify(editDate));
-
-//   console.log("archivedMap:");
-//   console.table(archivedMap);
-//   // 日時の確認用
-//   console.log(editDate.toLocaleString());
-// };
-
-/**
  * 渡されたidをもとにマスタテーブルから1件取得
  */
 
 /**
  * 渡されたidをもとにカテゴリリストから実体を取り出す
- * @param {string} id
- * @param {Array} activeList
- * @param {Object} archiveList
- * @returns
+ * @param {number|string} id 探したいID
+ * @param {Array} activeList 現在使用中のリスト
+ * @param {Array} masterList 全カテゴリのリスト（アーカイブ検索用）
  */
-export const resolveCategoryById = (id, activeList, archiveList) => {
-  // activeから探す
-  let target = activeList.find((c) => c.id === id);
-  let isArchived = false;
+export const resolveCategoryById = (id, masterList) => {
+  if (!masterList) null;
 
-  //無ければarchiveから探す
-  if (!target) {
-    const archiveArray = Object.values(archiveList);
-    target = archiveArray.find((c) => {
-      return c.id && c.id.startsWith(id);
-    });
-    if (target) isArchived = true;
-  }
+  // masterList が配列なら .find()、オブジェクトなら values を配列にしてから探す
+  const masterArray = Array.isArray(masterList)
+    ? masterList
+    : Object.values(masterList);
+
+  const target = masterArray.find((c) => c.categoryId === id);
+
   if (target) {
-    // colorIndexを使ってベースのスタイルを付ける
-    const baseStyle = getCategoryColorSet[target.colorIndex] || {
-      label: "不明",
-      code: "gray",
-      disabledCode: "gray",
-    };
+    // 見つかった target の中にある isActive を参照する
+    const isActive = target.isActive;
+
+    // 共通の getCategoryColorSet を使って基本スタイルを取得
+    const baseStyle = getCategoryColorSet(target.colorIndex);
     return {
       ...target,
-      // アーカイブなら末尾に飛ばす (+10)
-      colorIndex: isArchived ? target.colorIndex + 10 : target.colorIndex,
+      isActive: isActive,
+
       // styleオブジェクトを構成
       style: {
         ...baseStyle,
-        // アーカイブなら code を disabledCode で上書き、そうでなければ元の code
-        code: isArchived ? baseStyle.disabledCode || "gray" : baseStyle.code,
+        // アーカイブなら disabledColor、そうでなければ color を使う
+        color: isActive ? baseStyle.color : baseStyle.disabledColor,
       },
     };
   }
+
   return null;
 };
 
@@ -215,8 +184,6 @@ export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
   // 月に変換
   const todayMonth = `${todayObj.getFullYear()}-${todayObj.getMonth()}`;
   const latestMonth = `${latestDateObj.getFullYear()}-${latestDateObj.getMonth()}`;
-
-  console.log("今月:", todayMonth, "最新の更新月:", latestMonth);
 
   // 日付が一致しなかったらtrue(編集可)を返す
   return todayMonth !== latestMonth;
