@@ -26,6 +26,27 @@ export const categoryService = {
       return [];
     }
   },
+  // http://localhost:8080/api/categories/master/1
+  async fetchCategoriesMaster(userId) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/categories/master/${userId}`,
+      );
+      if (!response.ok) throw new Error("ネットワークエラー");
+
+      const data = await response.json();
+
+      return data
+        .map((cat) => ({
+          ...cat,
+          style: getCategoryColorSet(cat.colorIndex),
+        }))
+        .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
+    } catch (error) {
+      console.error("マスターデータ取得に失敗...", error);
+      return [];
+    }
+  },
 };
 
 // 過去のカテゴリー
@@ -98,6 +119,8 @@ export const activeCategoriesAtom = atom(
   },
 );
 export const archivedCategoriesAtom = atom(getArchivedCategories());
+// TODO
+export const categoriesMasterAtom = atom([]);
 
 /**
  * カテゴリ一覧をLocalStorageに保存する
@@ -125,6 +148,10 @@ export const archivedCategoriesAtom = atom(getArchivedCategories());
 //   // 日時の確認用
 //   console.log(editDate.toLocaleString());
 // };
+
+/**
+ * 渡されたidをもとにマスタテーブルから1件取得
+ */
 
 /**
  * 渡されたidをもとにカテゴリリストから実体を取り出す

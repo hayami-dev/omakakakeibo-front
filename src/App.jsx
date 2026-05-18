@@ -12,22 +12,36 @@ import BudgetEdit from "./pages/user/BudgetEdit";
 // DBからカテゴリを取得
 import {
   activeCategoriesAtom,
+  categoriesMasterAtom,
   categoryService,
 } from "./service/categoryService";
 
 function App() {
-  const setActiveCategories = useSetAtom(activeCategoriesAtom);
-  useEffect(() => {
-    const loadData = async () => {
-      // JavaAPIを叩いて加工済みデータを取得
-      // userId：1
-      const data = await categoryService.fetchActiveCategories(1);
+  const USER_ID = 1;
 
-      // 取得したデータをAtomに保存
-      setActiveCategories(data);
+  const setActiveCategories = useSetAtom(activeCategoriesAtom);
+  const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        // JavaAPIを叩いて加工済みデータを取得
+        // userId：1
+        const [activeData, masterData] = await Promise.all([
+          categoryService.fetchActiveCategories(USER_ID),
+          categoryService.fetchCategoriesMaster(USER_ID),
+        ]);
+
+        // 取得したデータをAtomに保存
+        setActiveCategories(activeData);
+        setCategoriesMaster(masterData);
+
+        console.log("データロード完了:", { activeData, masterData });
+      } catch (error) {
+        console.log("初期データのロードに失敗しました", error);
+      }
     };
-    loadData();
-  }, [setActiveCategories]); // 第2引数を空にすると初回のみ実行になる
+    loadInitialData();
+  }, [setActiveCategories, setCategoriesMaster]); // 第2引数を空にすると初回のみ実行になる
 
   return (
     <>
