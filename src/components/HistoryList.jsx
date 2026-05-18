@@ -1,15 +1,13 @@
 import { AiFillEdit } from "react-icons/ai";
 import {
-  activeCategoriesAtom,
-  archivedCategoriesAtom,
+  categoriesMasterAtom,
   resolveCategoryById,
 } from "../service/categoryService";
 import { useAtom } from "jotai";
 
 export default function HistoryList({ history, onEdit }) {
-  // activeとarchiveのカテゴリを取得
-  const [activeCategories] = useAtom(activeCategoriesAtom);
-  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+  // カテゴリを全件取得
+  const [masterCategories] = useAtom(categoriesMasterAtom);
 
   // 日付を昇順にソート
   const dateSortHistory = [...history].sort(
@@ -22,23 +20,22 @@ export default function HistoryList({ history, onEdit }) {
         {dateSortHistory.map((item) => {
           const category = resolveCategoryById(
             item.categoryId,
-            activeCategories,
-            archivedCategories,
+            masterCategories,
           );
           return (
-            <li key={item.id}>
-              <time dateTime={item.date}>
-                {item.date.toString().replaceAll("-", "/")}
+            <li key={item.historyId}>
+              <time dateTime={item.historyDate}>
+                {item.historyDate.toString().replaceAll("-", "/")}
               </time>
               <span
                 style={{
-                  color: category?.style?.code,
+                  color: category?.style?.color,
                 }}
               >
-                ●{category?.name || "不明なカテゴリ"}
+                ●{category?.categoryName || "不明なカテゴリ"}
               </span>
               {item.amount.toLocaleString()}円
-              <AiFillEdit onClick={() => onEdit(item.id)} />
+              <AiFillEdit onClick={() => onEdit(item.historyId)} />
             </li>
           );
         })}
