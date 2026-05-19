@@ -83,7 +83,7 @@ export default function InputForm() {
   const navigate = useNavigate();
 
   // 入力を登録
-  const handleLocalSend = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
 
     try {
@@ -113,9 +113,19 @@ export default function InputForm() {
         historyDate: inputDate,
       };
 
-      // POST送信
-      await historyService.saveHistory(currentUserId, historyItem);
-      console.log("DBへの登録が成功しました！");
+      if (editItem?.historyId) {
+        // PUT送信
+        await historyService.editHistory(
+          currentUserId,
+          editItem.historyId,
+          historyItem,
+        );
+        console.log("DBの変更が成功しました！");
+      } else {
+        // POST送信
+        await historyService.saveHistory(currentUserId, historyItem);
+        console.log("DBへの登録が成功しました！");
+      }
 
       // Atomを再取得
       const updatedHistories =
@@ -147,7 +157,7 @@ export default function InputForm() {
 
   return (
     <div className="modal-dialog">
-      <form action="" method="post" onSubmit={handleLocalSend}>
+      <form action="" onSubmit={handleSend}>
         <input
           type="number"
           value={inputAmount}

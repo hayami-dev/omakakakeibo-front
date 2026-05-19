@@ -3,6 +3,7 @@ import { resolveCategoryById } from "./categoryService";
 import { atom } from "jotai";
 
 export const historyService = {
+  // histories全件取得
   // http://localhost:8080/histories/1
   async fetchHistories(userId) {
     try {
@@ -18,6 +19,7 @@ export const historyService = {
       return [];
     }
   },
+  // 新規追加
   // http://localhost:8080/histories/add/1
   async saveHistory(userId, historyItem) {
     const bodyData = {
@@ -28,6 +30,23 @@ export const historyService = {
 
     await fetch(`http://localhost:8080/histories/add/${userId}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyData),
+    });
+  },
+  // 編集
+  // http://localhost:8080/histories/edit/1/{historyId}
+  async editHistory(userId, historyId, historyItem) {
+    const bodyData = {
+      categoryId: historyItem.categoryId,
+      amount: historyItem.amount,
+      historyDate: historyItem.historyDate,
+    };
+
+    await fetch(`http://localhost:8080/histories/edit/${userId}/${historyId}`, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
