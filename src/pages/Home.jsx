@@ -45,7 +45,10 @@ export default function Home() {
 
   const navigate = useNavigate();
   const onEdit = (targetId) => {
-    const targetHistoryItem = histories.find((item) => item.id === targetId);
+    const targetHistoryItem = histories.find(
+      (item) => item.historyId === targetId,
+    );
+
     navigate("/input", {
       state: { item: targetHistoryItem },
     });

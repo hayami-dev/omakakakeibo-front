@@ -3,7 +3,7 @@ import { useAtom } from "jotai";
 // import { CATEGORIES } from "../categories";
 import {
   activeCategoriesAtom,
-  archivedCategoriesAtom,
+  categoriesMasterAtom,
   resolveCategoryById,
 } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
@@ -13,7 +13,7 @@ import "./InputForm.css";
 export default function InputForm() {
   // カテゴリを取得
   const [activeCategories] = useAtom(activeCategoriesAtom);
-  const [archivedCategories] = useAtom(archivedCategoriesAtom);
+  const [categoriesMaster] = useAtom(categoriesMasterAtom);
 
   // 日付関係の取得
   const today = getFormattedDate(); // 今日の日付を取得
@@ -25,30 +25,33 @@ export default function InputForm() {
 
   // 入力値の取得
   const [inputValue, setInputValue] = useState(editItem ? editItem.amount : ""); // 金額のValue
-  const [inputDate, setInputDate] = useState(editItem ? editItem.date : today); // 日付のValue
+  const [inputDate, setInputDate] = useState(
+    editItem ? editItem.historyDate : today,
+  ); // 日付のValue
 
   // 表示するカテゴリ一覧をidをもとに作成
   const displayCategories = useMemo(() => {
     let list = [...activeCategories];
-    console.log(list);
+
+    console.log(editItem);
 
     // 編集時
-    // if (editItem?.categoryId) {
-    //   const isActive = activeCategories.some(
-    //     (cat) => cat.id === editItem.categoryId,
-    //   );
+    if (editItem?.categoryId) {
+      // activeテーブルにmasterのどれが含まれているか
+      const isActive = activeCategories.some(
+        (cat) => cat.categoryId === editItem.categoryId,
+      );
 
-    //   if (!isActive) {
-    //     const archivedTarget = resolveCategoryById(
-    //       editItem.categoryId,
-    //       activeCategories,
-    //       archivedCategories,
-    //     );
-    //     if (archivedTarget) {
-    //       list.push(archivedTarget);
-    //     }
-    //   }
-    // }
+      if (!isActive) {
+        const archivedTarget = resolveCategoryById(
+          editItem.categoryId,
+          categoriesMaster,
+        );
+        if (archivedTarget) {
+          list.push(archivedTarget);
+        }
+      }
+    }
     const displayList = list.map((cat) => ({
       ...cat,
       name: cat.categoryName,
@@ -58,7 +61,7 @@ export default function InputForm() {
     return displayList
       .filter((cat) => cat.name && cat.name.trim() !== "")
       .sort((a, b) => a.colorIndex - b.colorIndex);
-  }, [activeCategories, archivedCategories, editItem]);
+  }, [activeCategories, categoriesMaster, editItem]);
 
   // 選択中のカテゴリの初期値を取得
   const [selectCategory, setSelectCategory] = useState(() => {
