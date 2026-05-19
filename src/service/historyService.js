@@ -18,6 +18,22 @@ export const historyService = {
       return [];
     }
   },
+  // http://localhost:8080/histories/add/1
+  async saveHistory(userId, historyItem) {
+    const bodyData = {
+      categoryId: historyItem.categoryId,
+      amount: historyItem.amount,
+      historyDate: historyItem.historyDate,
+    };
+
+    await fetch(`http://localhost:8080/histories/add/${userId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyData),
+    });
+  },
 };
 
 // 履歴データの配列
