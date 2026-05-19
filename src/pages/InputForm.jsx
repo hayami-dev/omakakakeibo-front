@@ -142,12 +142,23 @@ export default function InputForm() {
     }
   };
 
-  const handleRemove = () => {
-    if (!window.confirm("削除しますか？")) {
-      return;
+  const handleRemove = async () => {
+    try {
+      if (!window.confirm("削除しますか？")) {
+        return;
+      }
+      await historyService.deleteHistory(currentUserId, editItem.historyId);
+
+      // Atomを再取得
+      const updatedHistories =
+        await historyService.fetchHistories(currentUserId);
+      setHistories(updatedHistories);
+
+      navigate("/");
+    } catch (error) {
+      console.error("削除処理でエラーが発生しました:", error);
+      alert("削除に失敗しました。時間をおいて再度お試しください。");
     }
-    onRemove(editItem.id);
-    navigate("/");
   };
 
   // ダイアログを閉じる

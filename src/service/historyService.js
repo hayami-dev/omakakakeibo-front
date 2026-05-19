@@ -53,6 +53,16 @@ export const historyService = {
       body: JSON.stringify(bodyData),
     });
   },
+  // 削除
+  // http://localhost:8080/histories/delete/1/{historyId}
+  async deleteHistory(userId, historyId) {
+    await fetch(
+      `http://localhost:8080/histories/delete/${userId}/${historyId}`,
+      {
+        method: "DELETE",
+      },
+    );
+  },
 };
 
 // 履歴データの配列
