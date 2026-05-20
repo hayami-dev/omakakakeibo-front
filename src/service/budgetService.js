@@ -4,6 +4,34 @@ export const INITIAL_MONTHLY_BUDGET = 50000;
 export const BUDGET_MIN_AMOUNT = 1000;
 export const BUDGET_MAX_AMOUNT = 9999999;
 
+/**
+ * DBから目標金額を取得
+ **/
+export const budgetService = {
+  // http://localhost:8080/budget/1/2026-03
+  async fetchMonthlyBudget(userId, targetMonth) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/budget/${userId}/${targetMonth}`,
+      );
+      if (!response.ok) throw new Error("ネットワークエラー");
+
+      const data = await response.json();
+
+      console.log("fetchMonthlyBudget", data);
+      return data ? data.targetAmount : INITIAL_MONTHLY_BUDGET;
+    } catch (error) {
+      console.error("目標金額データ取得に失敗...", error);
+      return [];
+    }
+  },
+};
+
+/**
+ * Atom
+ */
+export const monthlyBudgetAtom = atom([]);
+
 const STORAGE_KEY_BUDGET_MONTHLY = "my_budget_monthly";
 
 // ローカルストレージから目標金額を取得
@@ -13,7 +41,7 @@ const getMonthlyBudget = () => {
 };
 
 // Atomで目標金額の状態管理
-export const monthlyBudgetAtom = atom(getMonthlyBudget());
+// export const monthlyBudgetAtom = atom(getMonthlyBudget());
 
 // ローカルストレージに目標金額を保存
 export const saveMonthlyBudget = (value) => {

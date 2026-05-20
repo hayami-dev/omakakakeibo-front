@@ -12,17 +12,32 @@ import {
   createHistoryItem,
   filterHistoryByMonths,
 } from "../service/historyService";
-import { monthlyBudgetAtom } from "../service/budgetService";
+import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
 import { getRecentMonthsRange } from "../dateUtils";
 
 export default function Home() {
-  const [histories] = useAtom(historiesAtom);
+  // TODO:リファクタリングで消す ユーザーID
+  const USER_ID = 1;
 
-  // 目標金額の取得
-  const [monthlyBudget] = useAtom(monthlyBudgetAtom);
+  const [histories] = useAtom(historiesAtom);
 
   // 選択中の月
   const [selectMonth, setSelectMonth] = useState(getYearMonth());
+
+  // 目標金額の取得
+  const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
+
+  useEffect(() => {
+    const loadBudget = async () => {
+      const budget = await budgetService.fetchMonthlyBudget(
+        USER_ID,
+        selectMonth,
+      );
+      setMonthlyBudget(budget);
+    };
+
+    loadBudget();
+  }, [selectMonth, setMonthlyBudget]);
 
   const changeDisplayMonth = (yearMonth) => {
     setSelectMonth(yearMonth);
