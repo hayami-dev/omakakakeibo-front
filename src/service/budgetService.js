@@ -4,20 +4,55 @@ export const INITIAL_MONTHLY_BUDGET = 50000;
 export const BUDGET_MIN_AMOUNT = 1000;
 export const BUDGET_MAX_AMOUNT = 9999999;
 
-const STORAGE_KEY_BUDGET_MONTHLY = "my_budget_monthly";
+/**
+ * DBとの通信
+ **/
+export const budgetService = {
+  // DBから目標金額を取得
+  // http://localhost:8080/budget/1/2026-03
+  async fetchMonthlyBudget(userId, targetMonth) {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/budget/${userId}/${targetMonth}`,
+      );
+      if (!response.ok) throw new Error("ネットワークエラー");
 
-// ローカルストレージから目標金額を取得
-const getMonthlyBudget = () => {
-  const saved = localStorage.getItem(STORAGE_KEY_BUDGET_MONTHLY);
-  return saved ? JSON.parse(saved) : INITIAL_MONTHLY_BUDGET;
+      const data = await response.json();
+
+      return data ? data.targetAmount : INITIAL_MONTHLY_BUDGET;
+    } catch (error) {
+      console.error("目標金額データ取得に失敗...", error);
+      return [];
+    }
+  },
 };
 
-// Atomで目標金額の状態管理
-export const monthlyBudgetAtom = atom(getMonthlyBudget());
+/**
+ * Atom
+ */
+export const monthlyBudgetAtom = atom(INITIAL_MONTHLY_BUDGET);
 
-// ローカルストレージに目標金額を保存
-export const saveMonthlyBudget = (value) => {
-  localStorage.setItem(STORAGE_KEY_BUDGET_MONTHLY, JSON.stringify(value));
+/**
+ * DBに目標金額を保存
+ **/
+export const saveMonthlyBudget = async (value) => {
+  // http://localhost:8080/budget/add/1
+  try {
+    const response = await fetch(`http://localhost:8080/budget/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+    if (!response.ok) throw new Error("ネットワークエラー");
+
+    const data = await response.text();
+    console.log("addMonthlyBudget成功:", data);
+
+    return data;
+  } catch (error) {
+    console.error("目標金額データ追加に失敗...", error);
+    return null;
+  }
 };
 
 /**

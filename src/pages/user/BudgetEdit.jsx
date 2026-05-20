@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
@@ -6,15 +6,42 @@ import {
   BUDGET_MAX_AMOUNT,
   monthlyBudgetAtom,
   saveMonthlyBudget,
+  budgetService,
 } from "../../service/budgetService";
+import { getYearMonth } from "../../dateUtils";
 
 export default function BudgetEdit() {
+  // 今月を取得
+  const currentMonth = getYearMonth();
+
+  // DBからの目標金額
   const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
+
+  // inputの入力値
   const [inputValue, setInputValue] = useState(monthlyBudget);
 
+  // デフォルト値、最大値、最小値を取得
   const strInitialMonthlyBudget = INITIAL_MONTHLY_BUDGET.toLocaleString();
   const strMonthlyBudgetMin = BUDGET_MIN_AMOUNT.toLocaleString();
   const strMonthlyBudgetMax = BUDGET_MAX_AMOUNT.toLocaleString();
+
+  // 画面更新（リロード）対策の読み込み処理
+  useEffect(() => {
+    const loadBudget = async () => {
+      // TODO: リファクタリングでユーザーIDは共通化する
+      const budgetAmount = await budgetService.fetchMonthlyBudget(
+        1,
+        currentMonth,
+      );
+      setMonthlyBudget(budgetAmount);
+    };
+    loadBudget();
+  }, [currentMonth, setMonthlyBudget]);
+
+  // 目標金額の変更（ロード完了など）と同時にinputValueに挿入
+  useEffect(() => {
+    setInputValue(String(monthlyBudget));
+  }, [monthlyBudget]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -31,7 +58,7 @@ export default function BudgetEdit() {
     setInputValue(String(num));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const num = Number(inputValue);
     // 範囲外の入力だった場合はじく
     if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
@@ -40,9 +67,16 @@ export default function BudgetEdit() {
       );
       return;
     }
-    const finalValue = Number(inputValue);
-    setMonthlyBudget(finalValue);
-    saveMonthlyBudget(finalValue);
+    const sendData = {
+      userId: 1, // TODO: リファクタリングで正しい値を読ませる
+      targetMonth: currentMonth,
+      targetAmount: num,
+    };
+
+    console.log("sendData", sendData);
+
+    saveMonthlyBudget(sendData);
+    setMonthlyBudget(num);
     alert("保存しました");
   };
 
