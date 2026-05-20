@@ -11,7 +11,8 @@ export const categoryService = {
       const response = await fetch(
         `http://localhost:8080/api/categories/active/${userId}`,
       );
-      if (!response.ok) throw new Error("ネットワークエラー");
+      if (!response.ok)
+        throw new Error("ネットワークエラー：fetchActiveCategories");
 
       const data = await response.json();
 
@@ -32,7 +33,8 @@ export const categoryService = {
       const response = await fetch(
         `http://localhost:8080/api/categories/master/${userId}`,
       );
-      if (!response.ok) throw new Error("ネットワークエラー");
+      if (!response.ok)
+        throw new Error("ネットワークエラー：fetchCategoriesMaster");
 
       const data = await response.json();
 
@@ -45,6 +47,23 @@ export const categoryService = {
     } catch (error) {
       console.error("マスターデータ取得に失敗...", error);
       return [];
+    }
+  },
+  async saveCategories(newCategories) {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/categories/update",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCategories),
+        },
+      );
+      if (!response.ok) throw new Error("ネットワークエラー：onSend");
+
+      alert("保存しました！");
+    } catch (error) {
+      console.error("カテゴリの登録に失敗...", error);
     }
   },
 };
