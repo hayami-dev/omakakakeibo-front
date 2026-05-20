@@ -4,10 +4,12 @@ import { atom } from "jotai";
 
 export const historyService = {
   // histories全件取得
-  // http://localhost:8080/histories/1
+  // http://localhost:8080/api/histories/1
   async fetchHistories(userId) {
     try {
-      const response = await fetch(`http://localhost:8080/histories/${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/histories/${userId}`,
+      );
       if (!response) throw new Error("ネットワークエラー：historyService");
 
       const data = await response.json();
@@ -20,7 +22,7 @@ export const historyService = {
     }
   },
   // 新規追加
-  // http://localhost:8080/histories/add
+  // http://localhost:8080/api/histories/add
   async saveHistory(historyItem) {
     try {
       const bodyData = {
@@ -30,7 +32,7 @@ export const historyService = {
         historyDate: historyItem.historyDate,
       };
 
-      await fetch(`http://localhost:8080/histories/add`, {
+      await fetch(`http://localhost:8080/api/histories/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +45,7 @@ export const historyService = {
     }
   },
   // 編集
-  // http://localhost:8080/histories/edit/1/{historyId}
+  // http://localhost:8080/api/histories/edit/1/{historyId}
   async editHistory(userId, historyId, historyItem) {
     try {
       const bodyData = {
@@ -53,7 +55,7 @@ export const historyService = {
       };
 
       await fetch(
-        `http://localhost:8080/histories/edit/${userId}/${historyId}`,
+        `http://localhost:8080/api/histories/edit/${userId}/${historyId}`,
         {
           method: "PUT",
           headers: {
@@ -68,11 +70,11 @@ export const historyService = {
     }
   },
   // 削除
-  // http://localhost:8080/histories/delete/1/{historyId}
+  // http://localhost:8080/api/histories/delete/1/{historyId}
   async deleteHistory(userId, historyId) {
     try {
       await fetch(
-        `http://localhost:8080/histories/delete/${userId}/${historyId}`,
+        `http://localhost:8080/api/histories/delete/${userId}/${historyId}`,
         {
           method: "DELETE",
         },
