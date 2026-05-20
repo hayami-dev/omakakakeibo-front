@@ -68,18 +68,6 @@ export const categoryService = {
   },
 };
 
-// TODO:削除 過去のカテゴリー
-const STORAGE_KEY_ARCHIVED = "my_categories_archived";
-
-/**
- * TODO:削除 過去ログを取得
- * @returns {Array} カテゴリオブジェクトの配列
- */
-export const getArchivedCategories = () => {
-  const saved = localStorage.getItem(STORAGE_KEY_ARCHIVED);
-  return saved ? JSON.parse(saved) : {};
-};
-
 /* Atomの定義 */
 // 大元のAtom id,name,colorIndexのみ
 const activeBaseAtom = atom([]);

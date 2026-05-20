@@ -94,28 +94,6 @@ export const historyService = {
 export const historiesAtom = atom([]);
 
 /**
- * InputFormから渡される履歴オブジェクト
- * @param {*} amount
- * @param {*} categoryId
- * @param {*} historyDate
- * @param {*} id
- * @returns
- */
-export const createHistoryItem = (
-  amount,
-  categoryId,
-  historyDate,
-  id = null,
-) => {
-  return {
-    id: id || crypto.randomUUID(),
-    amount: Number(amount),
-    categoryId: categoryId,
-    historyDate: historyDate,
-  };
-};
-
-/**
  * key毎の集計を行うロジック
  * @param {*} history
  * @param {*} keySelector

@@ -9,7 +9,6 @@ import SelectMonth from "../components/SelectMonth";
 import MonthSummary from "../components/MonthSummary";
 import {
   historiesAtom,
-  createHistoryItem,
   filterHistoryByMonths,
 } from "../service/historyService";
 import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
@@ -102,32 +101,7 @@ export default function Home() {
         />
       </section>
       {/* InputFormのコンテキスト */}
-      <Outlet
-        context={{
-          onSend: (amount, categoryId, inputDate) => {
-            const newItem = createHistoryItem(amount, categoryId, inputDate);
-            // updateAndSaveHistory([...history, newItem]);
-          },
-          onUpdate: (editItemId, amount, selectCategoryId, inputDate) => {
-            const newHistory = history.map((item) =>
-              item.id === editItemId
-                ? createHistoryItem(
-                    amount,
-                    selectCategoryId,
-                    inputDate,
-                    editItemId,
-                  )
-                : item,
-            );
-            // updateAndSaveHistory(newHistory);
-          },
-          onRemove: (editItemId) => {
-            updateAndSaveHistory(
-              history.filter((item) => item.id !== editItemId),
-            );
-          },
-        }}
-      />
+      <Outlet />
     </main>
   );
 }

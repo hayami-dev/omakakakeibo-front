@@ -7,7 +7,7 @@ import {
   resolveCategoryById,
 } from "../service/categoryService";
 import { getFormattedDate } from "../dateUtils";
-import { useOutletContext, useNavigate, useLocation } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import "./InputForm.css";
 import { historyService, historiesAtom } from "../service/historyService";
 import { userIdAtom } from "../authService";
@@ -76,10 +76,6 @@ export default function InputForm() {
       return displayCategories.find((c) => c.id === editItem.categoryId) || "";
     }
   });
-
-  const { onSend } = useOutletContext();
-  const { onUpdate } = useOutletContext();
-  const { onRemove } = useOutletContext();
 
   const navigate = useNavigate();
 
