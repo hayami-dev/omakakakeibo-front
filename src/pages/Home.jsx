@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { getYearMonth } from "../dateUtils";
 import Summary from "../components/Summary";
@@ -14,11 +14,13 @@ import {
 } from "../service/historyService";
 import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
 import { getRecentMonthsRange } from "../dateUtils";
+import { userIdAtom } from "../authService";
 
 export default function Home() {
-  // TODO:リファクタリングで消す ユーザーID
-  const USER_ID = 1;
+  // ユーザーIDを取得
+  const USER_ID = useAtomValue(userIdAtom);
 
+  // 支出の履歴を取得
   const [histories] = useAtom(historiesAtom);
 
   // 選択中の月

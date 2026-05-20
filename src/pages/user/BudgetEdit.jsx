@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
   BUDGET_MIN_AMOUNT,
@@ -8,8 +8,12 @@ import {
   budgetService,
 } from "../../service/budgetService";
 import { getYearMonth } from "../../dateUtils";
+import { userIdAtom } from "../../authService";
 
 export default function BudgetEdit() {
+  // ユーザーIDを取得
+  const USER_ID = useAtomValue(userIdAtom);
+
   // 今月を取得
   const currentMonth = getYearMonth();
 
@@ -27,9 +31,8 @@ export default function BudgetEdit() {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      // TODO: リファクタリングでユーザーIDは共通化する
       const budgetAmount = await budgetService.fetchMonthlyBudget(
-        1,
+        USER_ID,
         currentMonth,
       );
       setMonthlyBudget(budgetAmount);
@@ -67,7 +70,7 @@ export default function BudgetEdit() {
       return;
     }
     const sendData = {
-      userId: 1, // TODO: リファクタリングで正しい値を読ませる
+      userId: USER_ID,
       targetMonth: currentMonth,
       targetAmount: num,
     };

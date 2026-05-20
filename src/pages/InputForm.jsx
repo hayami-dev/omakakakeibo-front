@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 // import { CATEGORIES } from "../categories";
 import {
   activeCategoriesAtom,
@@ -10,10 +10,11 @@ import { getFormattedDate } from "../dateUtils";
 import { useOutletContext, useNavigate, useLocation } from "react-router";
 import "./InputForm.css";
 import { historyService, historiesAtom } from "../service/historyService";
+import { userIdAtom } from "../authService";
 
 export default function InputForm() {
-  // TODO：リファクタリングで削除 ユーザーID
-  const currentUserId = 1;
+  // ユーザーID
+  const USER_ID = useAtomValue(userIdAtom);
 
   const [histories, setHistories] = useAtom(historiesAtom);
 
@@ -115,7 +116,7 @@ export default function InputForm() {
     if (editItem?.historyId) {
       // PUT送信
       await historyService.editHistory(
-        currentUserId,
+        USER_ID,
         editItem.historyId,
         historyItem,
       );
@@ -127,7 +128,7 @@ export default function InputForm() {
     }
 
     // Atomを再取得
-    const updatedHistories = await historyService.fetchHistories(currentUserId);
+    const updatedHistories = await historyService.fetchHistories(USER_ID);
     setHistories(updatedHistories);
 
     setInputAmount(""); //入力欄を空にする
@@ -140,10 +141,10 @@ export default function InputForm() {
     if (!window.confirm("削除しますか？")) {
       return;
     }
-    await historyService.deleteHistory(currentUserId, editItem.historyId);
+    await historyService.deleteHistory(USER_ID, editItem.historyId);
 
     // Atomを再取得
-    const updatedHistories = await historyService.fetchHistories(currentUserId);
+    const updatedHistories = await historyService.fetchHistories(USER_ID);
     setHistories(updatedHistories);
 
     navigate("/");

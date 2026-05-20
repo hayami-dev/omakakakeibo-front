@@ -1,6 +1,10 @@
 /* Homeに表示する各履歴(history)の共通項目 */
+import { userIdAtom } from "../authService";
 import { resolveCategoryById } from "./categoryService";
-import { atom } from "jotai";
+import { atom, getDefaultStore } from "jotai";
+
+const store = getDefaultStore();
+const USER_ID = store.get(userIdAtom);
 
 export const historyService = {
   // histories全件取得
@@ -26,7 +30,7 @@ export const historyService = {
   async saveHistory(historyItem) {
     try {
       const bodyData = {
-        userId: 1, //TODO:リファクタ作業で一元管理する
+        userId: USER_ID,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,

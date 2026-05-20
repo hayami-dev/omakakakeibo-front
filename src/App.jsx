@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useSetAtom } from "jotai";
+import { useSetAtom, useAtomValue } from "jotai";
 // ルート
 import "./App.css";
 import { Route, Routes } from "react-router";
@@ -16,9 +16,10 @@ import {
   categoryService,
 } from "./service/categoryService";
 import { historiesAtom, historyService } from "./service/historyService";
+import { userIdAtom } from "./authService";
 
 function App() {
-  const USER_ID = 1;
+  const USER_ID = useAtomValue(userIdAtom);
 
   const setActiveCategories = useSetAtom(activeCategoriesAtom);
   const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
@@ -28,7 +29,6 @@ function App() {
     const loadInitialData = async () => {
       try {
         // JavaAPIを叩いて加工済みデータを取得
-        // userId：1
         const [activeData, masterData, historyData] = await Promise.all([
           categoryService.fetchActiveCategories(USER_ID),
           categoryService.fetchCategoriesMaster(USER_ID),
