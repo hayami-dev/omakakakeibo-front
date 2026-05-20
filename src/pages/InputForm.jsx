@@ -86,79 +86,67 @@ export default function InputForm() {
   const handleSend = async (e) => {
     e.preventDefault();
 
-    try {
-      // 入力チェック
-      const amountNum = Number(inputAmount);
+    // 入力チェック
+    const amountNum = Number(inputAmount);
 
-      // 金額が未入力の場合
-      if (!inputAmount || isNaN(amountNum) || amountNum <= 0) {
-        alert("1円以上で入力してください");
-        return;
-      }
-      // 日付が未入力の場合
-      if (!inputDate) {
-        alert("日付を選択してください");
-        return;
-      }
-      // タグ未選択の場合
-      if (!selectCategory) {
-        alert("タグを選択してください");
-        return;
-      }
-
-      // 登録用オブジェクト作成
-      const historyItem = {
-        categoryId: selectCategory.categoryId,
-        amount: amountNum,
-        historyDate: inputDate,
-      };
-
-      if (editItem?.historyId) {
-        // PUT送信
-        await historyService.editHistory(
-          currentUserId,
-          editItem.historyId,
-          historyItem,
-        );
-        console.log("DBの変更が成功しました！");
-      } else {
-        // POST送信
-        await historyService.saveHistory(currentUserId, historyItem);
-        console.log("DBへの登録が成功しました！");
-      }
-
-      // Atomを再取得
-      const updatedHistories =
-        await historyService.fetchHistories(currentUserId);
-      setHistories(updatedHistories);
-
-      setInputAmount(""); //入力欄を空にする
-      setSelectCategory("");
-      setInputDate(today);
-      handleClose();
-    } catch (error) {
-      console.error("登録処理でエラーが発生しました:", error);
-      alert("登録に失敗しました。時間をおいて再度お試しください。");
+    // 金額が未入力の場合
+    if (!inputAmount || isNaN(amountNum) || amountNum <= 0) {
+      alert("1円以上で入力してください");
+      return;
     }
+    // 日付が未入力の場合
+    if (!inputDate) {
+      alert("日付を選択してください");
+      return;
+    }
+    // タグ未選択の場合
+    if (!selectCategory) {
+      alert("タグを選択してください");
+      return;
+    }
+
+    // 登録用オブジェクト作成
+    const historyItem = {
+      categoryId: selectCategory.categoryId,
+      amount: amountNum,
+      historyDate: inputDate,
+    };
+
+    if (editItem?.historyId) {
+      // PUT送信
+      await historyService.editHistory(
+        currentUserId,
+        editItem.historyId,
+        historyItem,
+      );
+      console.log("DBの変更が成功しました！");
+    } else {
+      // POST送信
+      await historyService.saveHistory(historyItem);
+      console.log("DBへの登録が成功しました！");
+    }
+
+    // Atomを再取得
+    const updatedHistories = await historyService.fetchHistories(currentUserId);
+    setHistories(updatedHistories);
+
+    setInputAmount(""); //入力欄を空にする
+    setSelectCategory("");
+    setInputDate(today);
+    handleClose();
   };
 
   const handleRemove = async () => {
-    try {
-      if (!window.confirm("削除しますか？")) {
-        return;
-      }
-      await historyService.deleteHistory(currentUserId, editItem.historyId);
-
-      // Atomを再取得
-      const updatedHistories =
-        await historyService.fetchHistories(currentUserId);
-      setHistories(updatedHistories);
-
-      navigate("/");
-    } catch (error) {
-      console.error("削除処理でエラーが発生しました:", error);
-      alert("削除に失敗しました。時間をおいて再度お試しください。");
+    if (!window.confirm("削除しますか？")) {
+      return;
     }
+    await historyService.deleteHistory(currentUserId, editItem.historyId);
+
+    // Atomを再取得
+    const updatedHistories = await historyService.fetchHistories(currentUserId);
+    setHistories(updatedHistories);
+
+    navigate("/");
   };
 
   // ダイアログを閉じる

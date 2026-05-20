@@ -20,48 +20,67 @@ export const historyService = {
     }
   },
   // 新規追加
-  // http://localhost:8080/histories/add/1
-  async saveHistory(userId, historyItem) {
-    const bodyData = {
-      categoryId: historyItem.categoryId,
-      amount: historyItem.amount,
-      historyDate: historyItem.historyDate,
-    };
+  // http://localhost:8080/histories/add
+  async saveHistory(historyItem) {
+    try {
+      const bodyData = {
+        userId: 1, //TODO:リファクタ作業で一元管理する
+        categoryId: historyItem.categoryId,
+        amount: historyItem.amount,
+        historyDate: historyItem.historyDate,
+      };
 
-    await fetch(`http://localhost:8080/histories/add/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyData),
-    });
+      await fetch(`http://localhost:8080/histories/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
+    } catch (error) {
+      console.error("ヒストリーデータ送信に失敗...", error);
+      return [];
+    }
   },
   // 編集
   // http://localhost:8080/histories/edit/1/{historyId}
   async editHistory(userId, historyId, historyItem) {
-    const bodyData = {
-      categoryId: historyItem.categoryId,
-      amount: historyItem.amount,
-      historyDate: historyItem.historyDate,
-    };
+    try {
+      const bodyData = {
+        categoryId: historyItem.categoryId,
+        amount: historyItem.amount,
+        historyDate: historyItem.historyDate,
+      };
 
-    await fetch(`http://localhost:8080/histories/edit/${userId}/${historyId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyData),
-    });
+      await fetch(
+        `http://localhost:8080/histories/edit/${userId}/${historyId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        },
+      );
+    } catch (error) {
+      console.error("ヒストリーデータ変更に失敗...", error);
+      return [];
+    }
   },
   // 削除
   // http://localhost:8080/histories/delete/1/{historyId}
   async deleteHistory(userId, historyId) {
-    await fetch(
-      `http://localhost:8080/histories/delete/${userId}/${historyId}`,
-      {
-        method: "DELETE",
-      },
-    );
+    try {
+      await fetch(
+        `http://localhost:8080/histories/delete/${userId}/${historyId}`,
+        {
+          method: "DELETE",
+        },
+      );
+    } catch (error) {
+      console.error("ヒストリーデータ削除に失敗...", error);
+      return [];
+    }
   },
 };
 
