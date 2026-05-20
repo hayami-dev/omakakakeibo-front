@@ -5,7 +5,6 @@ import {
   BUDGET_MIN_AMOUNT,
   BUDGET_MAX_AMOUNT,
   monthlyBudgetAtom,
-  saveMonthlyBudget,
   budgetService,
 } from "../../service/budgetService";
 import { getYearMonth } from "../../dateUtils";
@@ -75,7 +74,7 @@ export default function BudgetEdit() {
 
     console.log("sendData", sendData);
 
-    saveMonthlyBudget(sendData);
+    budgetService.saveMonthlyBudget(sendData);
     setMonthlyBudget(num);
     alert("保存しました");
   };

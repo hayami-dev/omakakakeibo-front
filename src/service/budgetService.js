@@ -9,11 +9,11 @@ export const BUDGET_MAX_AMOUNT = 9999999;
  **/
 export const budgetService = {
   // DBから目標金額を取得
-  // http://localhost:8080/budget/1/2026-03
+  // http://localhost:8080/api/budget/1/2026-03
   async fetchMonthlyBudget(userId, targetMonth) {
     try {
       const response = await fetch(
-        `http://localhost:8080/budget/${userId}/${targetMonth}`,
+        `http://localhost:8080/api/budget/${userId}/${targetMonth}`,
       );
       if (!response.ok) throw new Error("ネットワークエラー");
 
@@ -25,35 +25,32 @@ export const budgetService = {
       return [];
     }
   },
+  // DBに目標金額を保存
+  // http://localhost:8080/api/budget/add/1
+  async saveMonthlyBudget(value) {
+    try {
+      const response = await fetch(`http://localhost:8080/api/budget/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(value),
+      });
+      if (!response.ok) throw new Error("ネットワークエラー");
+
+      const data = await response.text();
+      console.log("addMonthlyBudget成功:", data);
+
+      return data;
+    } catch (error) {
+      console.error("目標金額データ追加に失敗...", error);
+      return null;
+    }
+  },
 };
 
 /**
  * Atom
  */
 export const monthlyBudgetAtom = atom(INITIAL_MONTHLY_BUDGET);
-
-/**
- * DBに目標金額を保存
- **/
-export const saveMonthlyBudget = async (value) => {
-  // http://localhost:8080/budget/add/1
-  try {
-    const response = await fetch(`http://localhost:8080/budget/add`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(value),
-    });
-    if (!response.ok) throw new Error("ネットワークエラー");
-
-    const data = await response.text();
-    console.log("addMonthlyBudget成功:", data);
-
-    return data;
-  } catch (error) {
-    console.error("目標金額データ追加に失敗...", error);
-    return null;
-  }
-};
 
 /**
  * 月の合計金額と目標金額の差額を計算
