@@ -70,15 +70,6 @@ export default function Home() {
     });
   };
 
-  // history、ローカルストレージへの保存処理
-  const updateAndSaveHistory = (newHistory) => {
-    // setHistory(newHistory);
-  };
-  // historyに変更がかかった時に自動的に見てくれる
-  useEffect(() => {
-    localStorage.setItem("my_kakeibo_data", JSON.stringify(histories));
-  }, [histories]);
-
   return (
     <main>
       <h1>おおまか家計簿</h1>

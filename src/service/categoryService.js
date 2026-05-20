@@ -80,19 +80,6 @@ export const getArchivedCategories = () => {
   return saved ? JSON.parse(saved) : {};
 };
 
-/**
- * TODO:削除 LocalStorageに保存時、styleを外す
- * @param {*} list
- * @returns styleを外した後のカテゴリ情報
- */
-// const toPureMap = (list) => {
-//   return list.reduce((acc, cat) => {
-//     const { style: _style, ...pureCat } = cat;
-//     acc[cat.id] = pureCat;
-//     return acc;
-//   }, {});
-// };
-
 /* Atomの定義 */
 // 大元のAtom id,name,colorIndexのみ
 const activeBaseAtom = atom([]);
@@ -123,7 +110,7 @@ export const activeCategoriesAtom = atom(
         ? newValue(get(activeCategoriesAtom))
         : newValue;
 
-    // DBデータ(activeCatId)かLocalStorageデータ(id)かを判定してMapを作る
+    // DBデータ(activeCatId)かLocalデータ(id)かを判定してMapを作る
     const nextMap = nextValue.reduce((acc, cat) => {
       const { style: _style, ...pureCat } = cat;
       const key = cat.activeCatId || cat.id; // 両方に対応！
@@ -134,14 +121,11 @@ export const activeCategoriesAtom = atom(
     set(activeBaseAtom, nextMap);
   },
 );
-// TODO:削除 アーカイブカテゴリのatom
-export const archivedCategoriesAtom = atom(getArchivedCategories());
-// TODO
-export const categoriesMasterAtom = atom([]);
 
 /**
- * 渡されたidをもとにマスタテーブルから1件取得
+ * masterAtom定義
  */
+export const categoriesMasterAtom = atom([]);
 
 /**
  * 渡されたidをもとにカテゴリリストから実体を取り出す
