@@ -27,6 +27,7 @@ export default function Home() {
   // 目標金額の取得
   const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
 
+  // DBから目標金額を取得
   useEffect(() => {
     const loadBudget = async () => {
       const budget = await budgetService.fetchMonthlyBudget(
