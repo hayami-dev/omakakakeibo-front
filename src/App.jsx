@@ -4,7 +4,7 @@ import { useSetAtom, useAtomValue } from "jotai";
 import "./App.css";
 import { Route, Routes } from "react-router";
 import Home from "./pages/Home";
-import InputForm from "./pages/InputForm";
+import InputHistory from "./pages/InputHistory";
 import User from "./pages/User";
 import CategoryEdit from "./pages/user/CategoryEdit";
 import Header from "./components/Header";
@@ -59,7 +59,7 @@ function App() {
         {/* ホーム */}
         <Route path="/" element={<Home />}>
           {/* ダイアログ */}
-          <Route path="input" element={<InputForm />} />
+          <Route path="input" element={<InputHistory />} />
         </Route>
         {/* ユーザーページ */}
         <Route path="user" element={<User />} />

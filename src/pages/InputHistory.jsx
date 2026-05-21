@@ -1,32 +1,43 @@
+/* 支出の入力をするダイアログ */
+
 import { useMemo, useState } from "react";
-import { useAtom, useAtomValue } from "jotai";
-// import { CATEGORIES } from "../categories";
+import { useSetAtom, useAtomValue } from "jotai";
+import { useNavigate, useLocation } from "react-router";
+/*
+ * utils
+ */
+import { getFormattedDate } from "../dateUtils";
+/*
+ * service
+ */
 import {
   activeCategoriesAtom,
   categoriesMasterAtom,
   resolveCategoryById,
 } from "../service/categoryService";
-import { getFormattedDate } from "../dateUtils";
-import { useNavigate, useLocation } from "react-router";
-import "./InputForm.css";
 import { historyService, historiesAtom } from "../service/historyService";
 import { userIdAtom } from "../authService";
+/*
+ * css
+ */
+import "./InputHistory.css";
 
 export default function InputForm() {
-  // ユーザーID
+  // ユーザーIDを取得
   const USER_ID = useAtomValue(userIdAtom);
 
-  const [histories, setHistories] = useAtom(historiesAtom);
+  // 支出の履歴を取得
+  const setHistories = useSetAtom(historiesAtom);
 
   // カテゴリを取得
-  const [activeCategories] = useAtom(activeCategoriesAtom);
-  const [categoriesMaster] = useAtom(categoriesMasterAtom);
+  const activeCategories = useAtomValue(activeCategoriesAtom);
+  const categoriesMaster = useAtomValue(categoriesMasterAtom);
 
   // 日付関係の取得
   const today = getFormattedDate(); // 今日の日付を取得
   const limitDate = getFormattedDate(0, -5, 1); // 今日から６か月間
 
-  // Homeからデータを受け取る
+  // HistoryListからデータを受け取る
   const location = useLocation();
   const editItem = location.state?.item;
 
