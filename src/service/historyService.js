@@ -106,7 +106,7 @@ export const currentMonthAtom = atom(getYearMonth());
  * @returns 合計値
  */
 const calcHistoryByGroup = (history, keySelector) => {
-  return history.reduce((acc, cur) => {
+  return history?.reduce((acc, cur) => {
     const key = keySelector(cur);
     acc[key] = (acc[key] || 0) + cur.amount;
     return acc;
@@ -120,7 +120,7 @@ const calcHistoryByGroup = (history, keySelector) => {
  */
 export const calcMonthSummary = (history) => {
   return calcHistoryByGroup(history, (item) =>
-    item.historyDate.substring(0, 7),
+    item?.historyDate?.substring(0, 7),
   );
 };
 
@@ -156,6 +156,6 @@ export const calcCategorySummary = (history, masterList) => {
  */
 export function filterHistoryByMonths(history, targetMonths) {
   return history.filter((item) =>
-    targetMonths.includes(item.historyDate.substring(0, 7)),
+    targetMonths?.includes(item?.historyDate?.substring(0, 7)),
   );
 }

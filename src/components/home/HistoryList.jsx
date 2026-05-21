@@ -28,8 +28,8 @@ export default function HistoryList() {
   const filterHistories = filterHistoryByMonths(histories, currentMonth);
 
   // 日付を昇順にソート
-  const dateSortHistory = filterHistories.sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
+  const dateSortHistory = [...filterHistories].sort(
+    (a, b) => new Date(a.historyDate) - new Date(b.historyDate),
   );
 
   const navigate = useNavigate();
@@ -54,7 +54,9 @@ export default function HistoryList() {
           return (
             <li key={item.historyId}>
               <time dateTime={item.historyDate}>
-                {item.historyDate.toString().replaceAll("-", "/")}
+                {item.historyDate
+                  ? item.historyDate.toString().replaceAll("-", "/")
+                  : "日付なし"}
               </time>
               <span
                 style={{
@@ -63,7 +65,7 @@ export default function HistoryList() {
               >
                 ●{category?.categoryName || "不明なカテゴリ"}
               </span>
-              {item.amount.toLocaleString()}円
+              {item?.amount?.toLocaleString() ?? "0"}円
               <AiFillEdit onClick={() => onEdit(item.historyId)} />
             </li>
           );
