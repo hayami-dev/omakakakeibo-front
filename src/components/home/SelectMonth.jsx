@@ -1,4 +1,4 @@
-import { extractMonth } from "../dateUtils";
+import { extractMonth } from "../../dateUtils";
 
 export default function SelectMonth({ changeDisplayMonth, targetMonth }) {
   return (

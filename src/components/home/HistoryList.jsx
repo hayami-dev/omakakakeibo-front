@@ -2,7 +2,7 @@ import { AiFillEdit } from "react-icons/ai";
 import {
   categoriesMasterAtom,
   resolveCategoryById,
-} from "../service/categoryService";
+} from "../../service/categoryService";
 import { useAtom } from "jotai";
 
 export default function HistoryList({ history, onEdit }) {

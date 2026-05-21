@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
-import { categoriesMasterAtom } from "../service/categoryService";
-import { calcCategorySummary } from "../service/historyService";
+import { categoriesMasterAtom } from "../../service/categoryService";
+import { calcCategorySummary } from "../../service/historyService";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 

@@ -1,18 +1,26 @@
 import { useEffect, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { getYearMonth } from "../dateUtils";
-import Summary from "../components/Summary";
-import HistoryList from "../components/HistoryList";
-import CategorySummary from "../components/CategorySummary";
-import SelectMonth from "../components/SelectMonth";
-import MonthSummary from "../components/MonthSummary";
+/**
+ * utils
+ */
+import { getYearMonth, getRecentMonthsRange } from "../dateUtils";
+/**
+ * components
+ */
+import Summary from "../components/home/Summary";
+import HistoryList from "../components/home/HistoryList";
+import CategorySummary from "../components/home/CategorySummary";
+import SelectMonth from "../components/home/SelectMonth";
+import MonthSummary from "../components/home/MonthSummary";
+/**
+ * service
+ */
 import {
   historiesAtom,
   filterHistoryByMonths,
 } from "../service/historyService";
 import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
-import { getRecentMonthsRange } from "../dateUtils";
 import { userIdAtom } from "../authService";
 
 export default function Home() {
@@ -41,6 +49,7 @@ export default function Home() {
     loadBudget();
   }, [selectMonth, setMonthlyBudget]);
 
+  // 表示中の月を切り替え
   const changeDisplayMonth = (yearMonth) => {
     setSelectMonth(yearMonth);
   };
@@ -84,7 +93,7 @@ export default function Home() {
       {/* 結果表示 */}
       <section>
         <Summary
-          total={filteredTotal}
+          histories={histories}
           selectMonth={selectMonth}
           monthlyBudget={monthlyBudget}
         />
