@@ -1,9 +1,24 @@
-import { extractMonth } from "../../dateUtils";
+/* Homeでの月の切り替え用コンポーネント */
 
-export default function SelectMonth({ changeDisplayMonth, targetMonth }) {
+import { useSetAtom } from "jotai";
+import { extractMonth, getRecentMonthsRange } from "../../dateUtils";
+import { currentMonthAtom } from "../../service/historyService";
+
+export default function SelectMonth() {
+  // 選択中の月を取得
+  const setCurrentMonth = useSetAtom(currentMonthAtom);
+
+  // 表示中の月を切り替え
+  const changeDisplayMonth = (yearMonth) => {
+    setCurrentMonth(yearMonth);
+  };
+
+  // 今日から6ヶ月間を取得
+  const activeMonthList = getRecentMonthsRange();
+
   return (
     <ul>
-      {targetMonth.map((yearMonth) => {
+      {activeMonthList?.map((yearMonth) => {
         const displayMonth = extractMonth(yearMonth);
         return (
           <li key={yearMonth}>

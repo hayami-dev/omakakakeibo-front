@@ -1,7 +1,9 @@
 /* Homeに表示する各履歴(history)の共通項目 */
+
+import { atom, getDefaultStore } from "jotai";
 import { userIdAtom } from "../authService";
 import { resolveCategoryById } from "./categoryService";
-import { atom, getDefaultStore } from "jotai";
+import { getYearMonth } from "../dateUtils";
 
 const store = getDefaultStore();
 const USER_ID = store.get(userIdAtom);
@@ -92,6 +94,10 @@ export const historyService = {
 
 // 履歴データの配列
 export const historiesAtom = atom([]);
+
+// 選択中の月をAtom管理
+// 選択中の月
+export const currentMonthAtom = atom(getYearMonth());
 
 /**
  * key毎の集計を行うロジック

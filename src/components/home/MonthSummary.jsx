@@ -1,3 +1,6 @@
+/* 6ヶ月間の支出の棒グラフを表示 */
+
+import { useAtomValue } from "jotai";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -5,28 +8,44 @@ import {
   BarElement,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { calcMonthSummary } from "../../service/historyService";
+import {
+  calcMonthSummary,
+  currentMonthAtom,
+  historiesAtom,
+} from "../../service/historyService";
+import { monthlyBudgetAtom } from "../../service/budgetService";
+import { getRecentMonthsRange } from "../../dateUtils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
-export default function MonthSummary({
-  history,
-  monthlyBudget,
-  selectMonth,
-  targetMonth,
-}) {
-  const totalMap = calcMonthSummary(history) || [];
+export default function MonthSummary() {
+  // 支出の履歴を取得
+  const histories = useAtomValue(historiesAtom);
 
-  const monthTotals = targetMonth.map((month) => ({
+  // 目標金額を取得
+  const monthlyBudget = useAtomValue(monthlyBudgetAtom);
+
+  // 選択中の月を取得
+  const currentMonth = useAtomValue(currentMonthAtom);
+
+  // 今日から6ヶ月間を取得
+  const activeMonthList = getRecentMonthsRange();
+
+  // 全ての各月の合計値を計算
+  const totalMap = calcMonthSummary(histories) || [];
+
+  // 各月の合計値を返す
+  const monthTotals = activeMonthList.map((month) => ({
     month: month,
     sum: totalMap[month] || 0,
   }));
 
   // 選択中の月のインデックス
   const activeMonthBar = monthTotals.findIndex(
-    (item) => item.month === selectMonth,
+    (item) => item.month === currentMonth,
   );
 
+  // グラフの設定
   const graphOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -54,6 +73,7 @@ export default function MonthSummary({
     },
   };
 
+  // TODO：カラーコードをCSS変数で管理
   const chartData = {
     labels: monthTotals.map(() => ""),
     datasets: [
@@ -131,7 +151,7 @@ export default function MonthSummary({
                 <p
                   style={{
                     margin: 0,
-                    fontWeight: item.month === selectMonth ? "bold" : "normal",
+                    fontWeight: item.month === currentMonth ? "bold" : "normal",
                   }}
                 >
                   {parseInt(month, 10)}月

@@ -1,23 +1,52 @@
+/* ひと月に記録された支出の一覧 */
+
+import { useAtomValue } from "jotai";
 import { AiFillEdit } from "react-icons/ai";
+import { useNavigate } from "react-router";
+// service
 import {
   categoriesMasterAtom,
   resolveCategoryById,
 } from "../../service/categoryService";
-import { useAtom } from "jotai";
+import {
+  historiesAtom,
+  filterHistoryByMonths,
+  currentMonthAtom,
+} from "../../service/historyService";
 
-export default function HistoryList({ history, onEdit }) {
+export default function HistoryList() {
+  // 支出の履歴を取得
+  const histories = useAtomValue(historiesAtom);
+
+  // 選択中の月を取得
+  const currentMonth = useAtomValue(currentMonthAtom);
+
   // カテゴリを全件取得
-  const [masterCategories] = useAtom(categoriesMasterAtom);
+  const masterCategories = useAtomValue(categoriesMasterAtom);
+
+  // 各月の全履歴へ加工
+  const filterHistories = filterHistoryByMonths(histories, currentMonth);
 
   // 日付を昇順にソート
-  const dateSortHistory = [...history].sort(
+  const dateSortHistory = filterHistories.sort(
     (a, b) => new Date(a.date) - new Date(b.date),
   );
+
+  const navigate = useNavigate();
+  const onEdit = (targetId) => {
+    const targetHistoryItem = histories.find(
+      (item) => item.historyId === targetId,
+    );
+
+    navigate("/input", {
+      state: { item: targetHistoryItem },
+    });
+  };
   return (
     <>
       <h2>りれき</h2>
       <ul>
-        {dateSortHistory.map((item) => {
+        {dateSortHistory?.map((item) => {
           const category = resolveCategoryById(
             item.categoryId,
             masterCategories,
