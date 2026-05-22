@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 // ルート
-import "@/App.css";
 import { Route, Routes } from "react-router";
 import Home from "@/pages/Home";
 import InputHistory from "@/pages/InputHistory";
