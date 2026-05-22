@@ -1,13 +1,31 @@
-/* Homeに表示する各履歴(history)の共通項目 */
-import { resolveCategoryById } from "./categoryService";
-import { atom } from "jotai";
+/**
+ * @file 支出履歴（History）に関するデータ通信およびロジックを管理するサービス
+ * @description 履歴のCRUD（取得・追加・編集・削除）操作、および月別・カテゴリ別の集計を行うメソッド群
+ */
 
+import { atom, getDefaultStore } from "jotai";
+import { userIdAtom } from "@/service/authService";
+import { resolveCategoryById } from "@/service/categoryService";
+import { getYearMonth } from "@/dateUtils";
+
+const store = getDefaultStore();
+const USER_ID = store.get(userIdAtom);
+
+/**
+ * 支出履歴（History）に関するAPI通信メソッド群
+ */
 export const historyService = {
-  // histories全件取得
-  // http://localhost:8080/histories/1
+  /**
+   * 指定されたユーザーの全支出履歴を取得
+   * http://localhost:8080/api/histories/1
+   * @param {number} userId - ユーザーID
+   * @returns {Promise<Array<Object>>} 支出履歴オブジェクトの配列
+   */
   async fetchHistories(userId) {
     try {
-      const response = await fetch(`http://localhost:8080/histories/${userId}`);
+      const response = await fetch(
+        `http://localhost:8080/api/histories/${userId}`,
+      );
       if (!response) throw new Error("ネットワークエラー：historyService");
 
       const data = await response.json();
@@ -19,85 +37,113 @@ export const historyService = {
       return [];
     }
   },
-  // 新規追加
-  // http://localhost:8080/histories/add/1
-  async saveHistory(userId, historyItem) {
-    const bodyData = {
-      categoryId: historyItem.categoryId,
-      amount: historyItem.amount,
-      historyDate: historyItem.historyDate,
-    };
+  /**
+   * 新しい支出履歴をDBに登録
+   * http://localhost:8080/api/histories/add
+   * @param {Object} historyItem - 登録する履歴データ
+   * @param {number|string} historyItem.categoryId - カテゴリID
+   * @param {number} historyItem.amount - 金額
+   * @param {string} historyItem.historyDate - 履歴の日付 (yyyy-MM-dd)
+   * @returns {Promise<void>}
+   */
+  async saveHistory(historyItem) {
+    try {
+      const bodyData = {
+        userId: USER_ID,
+        categoryId: historyItem.categoryId,
+        amount: historyItem.amount,
+        historyDate: historyItem.historyDate,
+      };
 
-    await fetch(`http://localhost:8080/histories/add/${userId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyData),
-    });
+      await fetch(`http://localhost:8080/api/histories/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
+    } catch (error) {
+      console.error("ヒストリーデータ送信に失敗...", error);
+      return [];
+    }
   },
-  // 編集
-  // http://localhost:8080/histories/edit/1/{historyId}
+  /**
+   * 既存の支出履歴の内容を更新（編集）
+   * http://localhost:8080/api/histories/edit/1/{historyId}
+   * @param {number} userId - ユーザーID
+   * @param {number} historyId - 編集対象の履歴ID
+   * @param {Object} historyItem - 更新する履歴データ
+   * @param {number|string} historyItem.categoryId - カテゴリID
+   * @param {number} historyItem.amount - 金額
+   * @param {string} historyItem.historyDate - 履歴の日付 (yyyy-MM-dd)
+   * @returns {Promise<void>}
+   */
   async editHistory(userId, historyId, historyItem) {
-    const bodyData = {
-      categoryId: historyItem.categoryId,
-      amount: historyItem.amount,
-      historyDate: historyItem.historyDate,
-    };
+    try {
+      const bodyData = {
+        categoryId: historyItem.categoryId,
+        amount: historyItem.amount,
+        historyDate: historyItem.historyDate,
+      };
 
-    await fetch(`http://localhost:8080/histories/edit/${userId}/${historyId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyData),
-    });
+      await fetch(
+        `http://localhost:8080/api/histories/edit/${userId}/${historyId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        },
+      );
+    } catch (error) {
+      console.error("ヒストリーデータ変更に失敗...", error);
+      return [];
+    }
   },
-  // 削除
-  // http://localhost:8080/histories/delete/1/{historyId}
+  /**
+   * 指定された支出履歴をDBから削除
+   * http://localhost:8080/api/histories/delete/1/{historyId}
+   * @param {number} userId - ユーザーID
+   * @param {number} historyId - 削除対象の履歴ID
+   * @returns {Promise<void>}
+   */
   async deleteHistory(userId, historyId) {
-    await fetch(
-      `http://localhost:8080/histories/delete/${userId}/${historyId}`,
-      {
-        method: "DELETE",
-      },
-    );
+    try {
+      await fetch(
+        `http://localhost:8080/api/histories/delete/${userId}/${historyId}`,
+        {
+          method: "DELETE",
+        },
+      );
+    } catch (error) {
+      console.error("ヒストリーデータ削除に失敗...", error);
+      return [];
+    }
   },
 };
 
-// 履歴データの配列
+/* Atomの定義 */
+
+/**
+ * @type {import('jotai').PrimitiveAtom<Array<Object>>} 全支出履歴リストを管理するグローバルAtom状態
+ */
 export const historiesAtom = atom([]);
 
 /**
- * InputFormから渡される履歴オブジェクト
- * @param {*} amount
- * @param {*} categoryId
- * @param {*} historyDate
- * @param {*} id
- * @returns
+ * @type {import('jotai').PrimitiveAtom<string>} 現在アプリで選択中の月 (フォーマット: yyyy-MM)
  */
-export const createHistoryItem = (
-  amount,
-  categoryId,
-  historyDate,
-  id = null,
-) => {
-  return {
-    id: id || crypto.randomUUID(),
-    amount: Number(amount),
-    categoryId: categoryId,
-    historyDate: historyDate,
-  };
-};
+export const currentMonthAtom = atom(getYearMonth());
 
 /**
- * key毎の集計を行うロジック
- * @param {*} history
- * @param {*} keySelector
- * @returns 合計値
+ * 内部用：指定されたキー（グループ化関数）ごとに支出金額の合計を算出
+ * @private
+ * @param {Array<Object>} history - 計算対象の支出履歴配列
+ * @param {Function} keySelector - 各履歴からグループ化キーを抽出する関数
+ * @returns {Object} キーごとの合計金額を保持するオブジェクト（連想配列）
  */
 const calcHistoryByGroup = (history, keySelector) => {
-  return history.reduce((acc, cur) => {
+  return history?.reduce((acc, cur) => {
     const key = keySelector(cur);
     acc[key] = (acc[key] || 0) + cur.amount;
     return acc;
@@ -105,22 +151,21 @@ const calcHistoryByGroup = (history, keySelector) => {
 };
 
 /**
- * 渡された月の合計値を返す
- * @param {*} history
- * @returns 合計値
+ * 月ごとの支出合計金額を算出
+ * @param {Array<Object>} history - 計算対象の支出履歴配列
+ * @returns {Object} 「yyyy-MM」をキー、合計金額を値とするオブジェクト
  */
 export const calcMonthSummary = (history) => {
   return calcHistoryByGroup(history, (item) =>
-    item.historyDate.substring(0, 7),
+    item?.historyDate?.substring(0, 7),
   );
 };
 
 /**
- * カテゴリ毎の合計値を返す
- * @param {*} history
- * @param {*} activeCategories
- * @param {*} archivedCategories
- * @returns historyに存在するカテゴリ毎の合計値
+ * カテゴリごとの合計値を算出し、マスターリストの名称や色情報を紐付けた整形済みの配列を返す
+ * @param {Array<Object>} history - 計算対象の支出履歴配列
+ * @param {Array<Object>|Object} masterList - 全カテゴリのマスターリスト
+ * @returns {Array<Object>} 各カテゴリの合計金額およびスタイル情報を含むオブジェクト配列
  */
 export const calcCategorySummary = (history, masterList) => {
   const totals = calcHistoryByGroup(history, (item) => item.categoryId);
@@ -140,13 +185,13 @@ export const calcCategorySummary = (history, masterList) => {
 };
 
 /**
- * 指定された月に含まれるデータだけを抽出する
- * @param {*} history
- * @param {*} targetMonths
- * @returns 6ヶ月間のデータ
+ * 支出履歴の一覧から、指定された月群（targetMonths）に合致するデータのみを抽出
+ * @param {Array<Object>} history - 抽出元の支出履歴配列
+ * @param {string|Array<string>} targetMonths - 抽出対象の月（単一文字列または配列）
+ * @returns {Array<Object>} フィルタリング後の支出履歴配列
  */
 export function filterHistoryByMonths(history, targetMonths) {
   return history.filter((item) =>
-    targetMonths.includes(item.historyDate.substring(0, 7)),
+    targetMonths?.includes(item?.historyDate?.substring(0, 7)),
   );
 }

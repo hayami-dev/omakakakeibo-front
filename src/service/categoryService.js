@@ -1,17 +1,28 @@
+/**
+ * @file カテゴリ（Category）に関するデータ通信およびロジックを管理するサービス
+ * @description カテゴリ一覧の取得・一括保存、スタイル（色）の自動付与、編集ロック判定を行うメソッド群
+ */
+
 import { atom } from "jotai";
-import { getCategoryColorSet } from "../categoryColor.js";
+import { getCategoryColorSet } from "@/categoryColor.js";
 
 /**
- * userIdをもとにDBからactive_categoriesテーブルを取得する
+ * カテゴリに関するAPI通信メソッド群
  */
 export const categoryService = {
-  // http://localhost:8080/api/categories/active/1
+  /**
+   * DBから特定のユーザーが現在使用中のアクティブカテゴリ一覧を取得
+   * http://localhost:8080/api/categories/active/1
+   * @param {number} userId - ログイン中のユーザーID
+   * @returns {Promise<Array<Object>>} スタイル情報が付与され、activeCatId 順にソートされたカテゴリ配列
+   */
   async fetchActiveCategories(userId) {
     try {
       const response = await fetch(
         `http://localhost:8080/api/categories/active/${userId}`,
       );
-      if (!response.ok) throw new Error("ネットワークエラー");
+      if (!response.ok)
+        throw new Error("ネットワークエラー：fetchActiveCategories");
 
       const data = await response.json();
 
@@ -26,13 +37,19 @@ export const categoryService = {
       return [];
     }
   },
-  // http://localhost:8080/api/categories/master/1
+  /**
+   * DBから特定のユーザーのすべてのカテゴリ（アーカイブ済含む）を取得
+   * http://localhost:8080/api/categories/master/1
+   * @param {number} userId - ログイン中のユーザーID
+   * @returns {Promise<Array<Object>>} スタイル情報が付与され、activeCatId 順にソートされた全カテゴリ配列
+   */
   async fetchCategoriesMaster(userId) {
     try {
       const response = await fetch(
         `http://localhost:8080/api/categories/master/${userId}`,
       );
-      if (!response.ok) throw new Error("ネットワークエラー");
+      if (!response.ok)
+        throw new Error("ネットワークエラー：fetchCategoriesMaster");
 
       const data = await response.json();
 
@@ -47,38 +64,42 @@ export const categoryService = {
       return [];
     }
   },
+  /**
+   * 編集・並び替えされた新しいカテゴリリストをDBに送信して一括保存
+   * @param {Array<Object>} newCategories - 保存する新しいカテゴリデータの配列
+   * @returns {Promise<void>}
+   */
+  async saveCategories(newCategories) {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/categories/update",
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCategories),
+        },
+      );
+      if (!response.ok) throw new Error("ネットワークエラー：onSend");
+
+      alert("保存しました！");
+    } catch (error) {
+      console.error("カテゴリの登録に失敗...", error);
+    }
+  },
 };
-
-// TODO:削除 過去のカテゴリー
-const STORAGE_KEY_ARCHIVED = "my_categories_archived";
-
-/**
- * TODO:削除 過去ログを取得
- * @returns {Array} カテゴリオブジェクトの配列
- */
-export const getArchivedCategories = () => {
-  const saved = localStorage.getItem(STORAGE_KEY_ARCHIVED);
-  return saved ? JSON.parse(saved) : {};
-};
-
-/**
- * TODO:削除 LocalStorageに保存時、styleを外す
- * @param {*} list
- * @returns styleを外した後のカテゴリ情報
- */
-// const toPureMap = (list) => {
-//   return list.reduce((acc, cat) => {
-//     const { style: _style, ...pureCat } = cat;
-//     acc[cat.id] = pureCat;
-//     return acc;
-//   }, {});
-// };
 
 /* Atomの定義 */
-// 大元のAtom id,name,colorIndexのみ
+/**
+ * @private
+ * @type {import('jotai').PrimitiveAtom<Array|Object>} 生のカテゴリデータを一時保持する内部用ベースAtom
+ */
 const activeBaseAtom = atom([]);
 
-// baseDataをもとに整形
+/**
+ * Atom読み取り時にカラースタイルを自動付与し、書き込み時にオブジェクトを自動でMap（連想配列）化する
+ * 読み書き兼用の整形済みアクティブカテゴリAtom状態
+ * * @type {import('jotai').WritableAtom<Array<Object>, [newValue: Array<Object>|Function], void>}
+ */
 export const activeCategoriesAtom = atom(
   // 読み取り用
   (get) => {
@@ -104,7 +125,7 @@ export const activeCategoriesAtom = atom(
         ? newValue(get(activeCategoriesAtom))
         : newValue;
 
-    // DBデータ(activeCatId)かLocalStorageデータ(id)かを判定してMapを作る
+    // DBデータ(activeCatId)かLocalデータ(id)かを判定してMapを作る
     const nextMap = nextValue.reduce((acc, cat) => {
       const { style: _style, ...pureCat } = cat;
       const key = cat.activeCatId || cat.id; // 両方に対応！
@@ -115,20 +136,18 @@ export const activeCategoriesAtom = atom(
     set(activeBaseAtom, nextMap);
   },
 );
-// TODO:削除 アーカイブカテゴリのatom
-export const archivedCategoriesAtom = atom(getArchivedCategories());
-// TODO
+
+/**
+ * @type {import('jotai').PrimitiveAtom<Array<Object>>} 全カテゴリのマスターリストを管理するJotaiのグローバルAtom状態
+ */
 export const categoriesMasterAtom = atom([]);
 
 /**
- * 渡されたidをもとにマスタテーブルから1件取得
- */
-
-/**
- * 渡されたidをもとにカテゴリリストから実体を取り出す
- * @param {number|string} id 探したいID
- * @param {Array} activeList 現在使用中のリスト
- * @param {Array} masterList 全カテゴリのリスト（アーカイブ検索用）
+ * 渡されたカテゴリIDをもとに、マスターリストから該当するカテゴリの実体を取得
+ * 対象カテゴリがアーカイブ済の場合は自動的に文字色をdisabledColorに調整
+ * @param {number|string} id - 検索したいカテゴリID
+ * @param {Array<Object>|Object} masterList - 全カテゴリのマスターリスト（配列、またはオブジェクト形式）
+ * @returns {Object|null} スタイル調整済みのカテゴリ情報オブジェクト。見つからない場合は null
  */
 export const resolveCategoryById = (id, masterList) => {
   if (!masterList) null;
@@ -163,11 +182,10 @@ export const resolveCategoryById = (id, masterList) => {
 };
 
 /**
- * カテゴリの変更が可能かどうかを判定(月1回)
- * activeCategoriesからupdateAtをうけとって変更月を判定する
- * @param {*} today
- * @param {*} activeCategories
- * @returns boolean
+ * カテゴリの設定変更が今月すでに実行済みかどうか（月1回制限）を判定
+ * @param {Date} todayObj - 本日の日付オブジェクト（主に new Date()）
+ * @param {Array<Object>} activeCategories - 現在のアクティブカテゴリリスト
+ * @returns {boolean} 今月編集可能ならtrue、すでに今月は不可ならfalse
  */
 export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
   if (!activeCategories || activeCategories.length === 0) return true;

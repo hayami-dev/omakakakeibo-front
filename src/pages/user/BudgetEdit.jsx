@@ -1,16 +1,22 @@
+/* 目標金額(budget)の変更画面 */
+
 import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
   BUDGET_MIN_AMOUNT,
   BUDGET_MAX_AMOUNT,
   monthlyBudgetAtom,
-  saveMonthlyBudget,
   budgetService,
-} from "../../service/budgetService";
-import { getYearMonth } from "../../dateUtils";
+  updateBudget,
+} from "@/service/budgetService";
+import { getYearMonth } from "@/dateUtils";
+import { userIdAtom } from "@/service/authService";
 
 export default function BudgetEdit() {
+  // ユーザーIDを取得
+  const USER_ID = useAtomValue(userIdAtom);
+
   // 今月を取得
   const currentMonth = getYearMonth();
 
@@ -28,9 +34,8 @@ export default function BudgetEdit() {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      // TODO: リファクタリングでユーザーIDは共通化する
       const budgetAmount = await budgetService.fetchMonthlyBudget(
-        1,
+        USER_ID,
         currentMonth,
       );
       setMonthlyBudget(budgetAmount);
@@ -58,26 +63,18 @@ export default function BudgetEdit() {
     setInputValue(String(num));
   };
 
-  const handleSave = async () => {
-    const num = Number(inputValue);
-    // 範囲外の入力だった場合はじく
-    if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
-      alert(
-        `${strMonthlyBudgetMin}～${strMonthlyBudgetMax}円までの金額を入力してください`,
-      );
-      return;
+  const handleSave = async (e) => {
+    e.preventDefault();
+    const success = await updateBudget({
+      inputValue,
+      USER_ID,
+      currentMonth,
+      setMonthlyBudget,
+    });
+
+    if (success) {
+      alert("保存しました");
     }
-    const sendData = {
-      userId: 1, // TODO: リファクタリングで正しい値を読ませる
-      targetMonth: currentMonth,
-      targetAmount: num,
-    };
-
-    console.log("sendData", sendData);
-
-    saveMonthlyBudget(sendData);
-    setMonthlyBudget(num);
-    alert("保存しました");
   };
 
   return (
@@ -94,7 +91,7 @@ export default function BudgetEdit() {
         円までの金額を入力してください。
       </p>
       <br />
-      <form action="">
+      <form action="" onSubmit={handleSave}>
         <div>
           <label htmlFor="monthly-budget">目標金額</label>
           <input
@@ -107,9 +104,7 @@ export default function BudgetEdit() {
           />
           円
         </div>
-        <button type="button" onClick={handleSave}>
-          変更
-        </button>
+        <button type="submit">変更</button>
       </form>
     </>
   );

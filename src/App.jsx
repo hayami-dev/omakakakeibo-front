@@ -1,24 +1,25 @@
 import { useEffect } from "react";
-import { useSetAtom } from "jotai";
+import { useSetAtom, useAtomValue } from "jotai";
 // ルート
-import "./App.css";
+import "@/App.css";
 import { Route, Routes } from "react-router";
-import Home from "./pages/Home";
-import InputForm from "./pages/InputForm";
-import User from "./pages/User";
-import CategoryEdit from "./pages/user/CategoryEdit";
-import Header from "./components/Header";
-import BudgetEdit from "./pages/user/BudgetEdit";
+import Home from "@/pages/Home";
+import InputHistory from "@/pages/InputHistory";
+import User from "@/pages/User";
+import CategoryEdit from "@/pages/user/CategoryEdit";
+import Header from "@/components/Header";
+import BudgetEdit from "@/pages/user/BudgetEdit";
 // DBからカテゴリを取得
 import {
   activeCategoriesAtom,
   categoriesMasterAtom,
   categoryService,
-} from "./service/categoryService";
-import { historiesAtom, historyService } from "./service/historyService";
+} from "@/service/categoryService";
+import { historiesAtom, historyService } from "@/service/historyService";
+import { userIdAtom } from "@/service/authService";
 
 function App() {
-  const USER_ID = 1;
+  const USER_ID = useAtomValue(userIdAtom);
 
   const setActiveCategories = useSetAtom(activeCategoriesAtom);
   const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
@@ -28,7 +29,6 @@ function App() {
     const loadInitialData = async () => {
       try {
         // JavaAPIを叩いて加工済みデータを取得
-        // userId：1
         const [activeData, masterData, historyData] = await Promise.all([
           categoryService.fetchActiveCategories(USER_ID),
           categoryService.fetchCategoriesMaster(USER_ID),
@@ -59,7 +59,7 @@ function App() {
         {/* ホーム */}
         <Route path="/" element={<Home />}>
           {/* ダイアログ */}
-          <Route path="input" element={<InputForm />} />
+          <Route path="input" element={<InputHistory />} />
         </Route>
         {/* ユーザーページ */}
         <Route path="user" element={<User />} />

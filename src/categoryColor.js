@@ -1,4 +1,5 @@
-// index.cssの変数名とラベルを紐付けるマスター
+/* index.cssの変数名とラベルを紐付けるマスター */
+
 export const COLOR_MAP = [
   { label: "グリーン", id: 0 },
   { label: "イエロー", id: 1 },

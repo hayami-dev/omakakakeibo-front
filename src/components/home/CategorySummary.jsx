@@ -1,17 +1,23 @@
-import { useAtom } from "jotai";
-import { categoriesMasterAtom } from "../service/categoryService";
-import { calcCategorySummary } from "../service/historyService";
+/* ひと月に記録された各カテゴリの合計値を円グラフで表示 */
+
+import { useAtomValue } from "jotai";
+import { categoriesMasterAtom } from "@/service/categoryService";
+import { calcCategorySummary, historiesAtom } from "@/service/historyService";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 
 // Pieグラフには ArcElement（扇形）が必要
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function CategorySummary({ history }) {
-  const [categoriesMaster] = useAtom(categoriesMasterAtom);
+export default function CategorySummary() {
+  // 支出の履歴を取得
+  const histories = useAtomValue(historiesAtom);
+
+  // カテゴリマスタを取得
+  const categoriesMaster = useAtomValue(categoriesMasterAtom);
 
   // カテゴリid毎の金額の合計値を計算
-  const categoryTotals = calcCategorySummary(history, categoriesMaster).sort(
+  const categoryTotals = calcCategorySummary(histories, categoriesMaster).sort(
     (a, b) => {
       if (a.isActive !== b.isActive) {
         return b.isActive - a.isActive;
@@ -40,7 +46,7 @@ export default function CategorySummary({ history }) {
     },
   };
 
-  // var(--cat-color-0) などの文字列から実際の値を取り出す
+  // TODO：var(--cat-color-0) などの文字列から実際の値を取り出す
   const getCanvasColor = (varName) => {
     return (
       getComputedStyle(document.documentElement)
@@ -50,12 +56,12 @@ export default function CategorySummary({ history }) {
   };
 
   const chartData = {
-    labels: hasData ? categoryTotals.map((item) => item.name) : ["データなし"],
+    labels: hasData ? categoryTotals?.map((item) => item.name) : ["データなし"],
     datasets: [
       {
-        data: hasData ? categoryTotals.map((item) => item.sum) : [1],
+        data: hasData ? categoryTotals?.map((item) => item.sum) : [1],
         backgroundColor: hasData
-          ? categoryTotals.map((item) => getCanvasColor(item.color))
+          ? categoryTotals?.map((item) => getCanvasColor(item.color))
           : ["gray"],
         borderWidth: false,
       },
@@ -67,7 +73,7 @@ export default function CategorySummary({ history }) {
       <h3>カテゴリ毎の集計</h3>
       <Pie data={chartData} options={graphOptions}></Pie>
       <ul>
-        {categoryTotals.map((item) => {
+        {categoryTotals?.map((item) => {
           return (
             <li key={item.id}>
               <span style={{ color: item.color }}>●{item.name}</span>
