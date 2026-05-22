@@ -1,15 +1,37 @@
+/**
+ * @file 目標金額（Budget）に関するデータ通信およびロジックを管理するサービス
+ * @description DBとのAPI通信、差額計算、バリデーション、およびJotaiのAtom操作を一本化するメソッド群
+ */
+
 import { atom } from "jotai";
 
+/**
+ * @type {number} 初期状態の月間目標金額（デフォルト: 50,000円）
+ */
 export const INITIAL_MONTHLY_BUDGET = 50000;
+
+/**
+ * @type {number} 目標金額の最小許容値（1,000円）
+ */
 export const BUDGET_MIN_AMOUNT = 1000;
+
+/**
+ * @type {number} 目標金額の最大許容値（9,999,999円）
+ */
 export const BUDGET_MAX_AMOUNT = 9999999;
 
 /**
- * DBとの通信
+ * 目標金額（Budget）に関するAPI通信メソッド群
  **/
 export const budgetService = {
-  // DBから目標金額を取得
-  // http://localhost:8080/api/budget/1/2026-03
+  /**
+   * DBから特定のユーザー・対象月の目標金額を取得
+   * データが存在しない場合はデフォルトの初期値を返す
+   * http://localhost:8080/api/budget/1/2026-03
+   * @param {number} userId - ログイン中のユーザーID
+   * @param {string} targetMonth - 取得対象の月 (フォーマット: yyyy-MM)
+   * @returns {Promise<number>} DBから取得した目標金額、またはデフォルト値
+   */
   async fetchMonthlyBudget(userId, targetMonth) {
     try {
       const response = await fetch(
@@ -25,8 +47,15 @@ export const budgetService = {
       return [];
     }
   },
-  // DBに目標金額を保存
-  // http://localhost:8080/api/budget/add/1
+  /**
+   * DBに新しい目標金額を保存（更新）
+   * http://localhost:8080/api/budget/add/1
+   * @param {Object} value - 送信する予算データ
+   * @param {number} value.userId - ユーザーID
+   * @param {string} value.targetMonth - 対象月 (yyyy-MM)
+   * @param {number} value.targetAmount - 設定する目標金額
+   * @returns {Promise<string|null>} サーバーから返却されたテキスト、または失敗時 null
+   */
   async saveMonthlyBudget(value) {
     try {
       const response = await fetch(`http://localhost:8080/api/budget/add`, {
@@ -48,15 +77,16 @@ export const budgetService = {
 };
 
 /**
- * Atom
+ * @type {import('jotai').PrimitiveAtom<number>}
+ * 月間目標金額を管理するJotaiのグローバルAtom状態
  */
 export const monthlyBudgetAtom = atom(INITIAL_MONTHLY_BUDGET);
 
 /**
  * 月の合計金額と目標金額の差額を計算
- * @param {*} monthlyBudget
- * @param {*} monthlyTotal
- * @returns 差額(マイナス値を許容する)
+ * @param {number} monthlyTotal - 今月の支出合計額
+ * @param {number} monthlyBudget - 今月の目標予算額
+ * @returns {number} 差額（マイナス値も許容）
  */
 export const getRemainingMonthlyBudget = (monthlyTotal, monthlyBudget) => {
   return monthlyTotal - monthlyBudget;
@@ -64,8 +94,8 @@ export const getRemainingMonthlyBudget = (monthlyTotal, monthlyBudget) => {
 
 /**
  * 与えられた金額に+、-いずれかの記号を付けて返す
- * @param {*} amount
- * @returns +-の記号を付けて返す
+ * @param {number} amount - 符号を付与したい金額
+ * @returns {string} 符号付きのカンマ区切り金額文字列
  */
 export const formatAmountWithSign = (amount) => {
   return new Intl.NumberFormat("ja-JP", {
@@ -75,7 +105,7 @@ export const formatAmountWithSign = (amount) => {
 
 /**
  * ユーザーが入力した目標金額をバリデーションし、DBとAtomに保存
- * * @param {Object} params - 引数のオブジェクト
+ * @param {Object} params - 引数のオブジェクト
  * @param {string} params.inputValue - 入力欄から受け取った文字列の金額
  * @param {number} params.USER_ID - ログイン中のユーザーID
  * @param {string} params.currentMonth - 対象の月 (フォーマット: yyyy-MM)
