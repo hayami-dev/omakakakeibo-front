@@ -19,6 +19,7 @@ import DisplayCategories from "@/components/input/DisplayCategories";
 import AmountInput from "@/components/input/AmountInput";
 import DateInput from "@/components/input/DateInput";
 import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
+import { currentMonthAtom } from "@/service/historyService";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -26,6 +27,9 @@ export default function InputHistory() {
 
   // 支出の履歴を取得
   const setHistories = useSetAtom(historiesAtom);
+
+  // 選択中の月
+  const setCurrentMonth = useSetAtom(currentMonthAtom);
 
   // ページ切替のためのフック
   const navigate = useNavigate();
@@ -58,8 +62,12 @@ export default function InputHistory() {
       setHistories,
     });
 
+    console.log(formData);
+
     if (success) {
       handleClose();
+      const thisMonth = formData.finalDate.substring(0, 7);
+      setCurrentMonth(thisMonth);
     }
   };
 
@@ -73,12 +81,17 @@ export default function InputHistory() {
 
     if (success) {
       handleClose();
+      const thisMonth = editItem.historyDate.substring(0, 7);
+      setCurrentMonth(thisMonth);
     }
   };
 
   // ダイアログを閉じる
   function handleClose() {
     navigate("/");
+
+    // スクロール位置をリセット
+    window.scrollTo(0, 0);
   }
 
   return (
