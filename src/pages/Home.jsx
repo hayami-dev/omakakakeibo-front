@@ -1,3 +1,5 @@
+/* ユーザーが最初に訪れるホーム画面 */
+
 import { useEffect } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { NavLink, Outlet } from "react-router";

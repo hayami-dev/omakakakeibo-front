@@ -1,3 +1,5 @@
+/* 日付のフォーマットに関するメソッド群 */
+
 // yyyy-MM-dd
 // InputFormでの入力に使用
 export const getFormattedDate = (

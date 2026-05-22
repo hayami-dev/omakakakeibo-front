@@ -1,3 +1,5 @@
+/* ユーザー毎のカテゴリの変更画面 */
+
 import {
   categoryService,
   activeCategoriesAtom,

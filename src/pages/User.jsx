@@ -1,3 +1,5 @@
+/* ユーザー情報を表示する画面 */
+
 import { useAtomValue } from "jotai";
 import { NavLink } from "react-router";
 import {

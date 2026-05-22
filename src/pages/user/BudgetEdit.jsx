@@ -1,3 +1,5 @@
+/* 目標金額(budget)の変更画面 */
+
 import { useEffect, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {

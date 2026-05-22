@@ -1,4 +1,5 @@
-// 共通ヘッダー
+/* 共通ヘッダー */
+
 import { NavLink } from "react-router";
 
 export default function Header() {
