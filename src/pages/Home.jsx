@@ -14,7 +14,7 @@ import MonthSummary from "../components/home/MonthSummary";
  */
 import { currentMonthAtom } from "../service/historyService";
 import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
-import { userIdAtom } from "../authService";
+import { userIdAtom } from "../service/authService";
 
 export default function Home() {
   // ユーザーIDを取得

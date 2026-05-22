@@ -4,7 +4,7 @@
  */
 
 import { atom, getDefaultStore } from "jotai";
-import { userIdAtom } from "../authService";
+import { userIdAtom } from "../service/authService";
 import { resolveCategoryById } from "./categoryService";
 import { getYearMonth } from "../dateUtils";
 

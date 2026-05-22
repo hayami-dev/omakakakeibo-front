@@ -7,7 +7,7 @@ import { useNavigate, useLocation } from "react-router";
  * service
  */
 import { historiesAtom } from "../service/historyService";
-import { userIdAtom } from "../authService";
+import { userIdAtom } from "../service/authService";
 /*
  * css
  */

@@ -16,7 +16,7 @@ import {
   categoryService,
 } from "./service/categoryService";
 import { historiesAtom, historyService } from "./service/historyService";
-import { userIdAtom } from "./authService";
+import { userIdAtom } from "./service/authService";
 
 function App() {
   const USER_ID = useAtomValue(userIdAtom);
