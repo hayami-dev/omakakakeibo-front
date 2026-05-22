@@ -3,7 +3,7 @@
  * @description 入力フォームからのデータ回収、バリデーション、保存、および子コンポーネントのリセットを制御するメソッド群
  */
 
-import { historyService } from "./historyService";
+import { historyService } from "@/service/historyService";
 
 /**
  * 内部用：入力値の保存前バリデーション

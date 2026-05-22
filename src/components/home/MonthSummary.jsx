@@ -12,9 +12,9 @@ import {
   calcMonthSummary,
   currentMonthAtom,
   historiesAtom,
-} from "../../service/historyService";
-import { monthlyBudgetAtom } from "../../service/budgetService";
-import { getRecentMonthsRange } from "../../dateUtils";
+} from "@/service/historyService";
+import { monthlyBudgetAtom } from "@/service/budgetService";
+import { getRecentMonthsRange } from "@/dateUtils";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 

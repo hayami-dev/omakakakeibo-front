@@ -1,11 +1,8 @@
 /* ひと月に記録された各カテゴリの合計値を円グラフで表示 */
 
 import { useAtomValue } from "jotai";
-import { categoriesMasterAtom } from "../../service/categoryService";
-import {
-  calcCategorySummary,
-  historiesAtom,
-} from "../../service/historyService";
+import { categoriesMasterAtom } from "@/service/categoryService";
+import { calcCategorySummary, historiesAtom } from "@/service/historyService";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie } from "react-chartjs-2";
 

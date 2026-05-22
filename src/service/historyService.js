@@ -4,9 +4,9 @@
  */
 
 import { atom, getDefaultStore } from "jotai";
-import { userIdAtom } from "../service/authService";
-import { resolveCategoryById } from "./categoryService";
-import { getYearMonth } from "../dateUtils";
+import { userIdAtom } from "@/service/authService";
+import { resolveCategoryById } from "@/service/categoryService";
+import { getYearMonth } from "@/dateUtils";
 
 const store = getDefaultStore();
 const USER_ID = store.get(userIdAtom);

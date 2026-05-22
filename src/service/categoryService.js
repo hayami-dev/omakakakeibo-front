@@ -4,7 +4,7 @@
  */
 
 import { atom } from "jotai";
-import { getCategoryColorSet } from "../categoryColor.js";
+import { getCategoryColorSet } from "@/categoryColor.js";
 
 /**
  * カテゴリに関するAPI通信メソッド群

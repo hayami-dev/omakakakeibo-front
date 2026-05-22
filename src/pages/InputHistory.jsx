@@ -6,19 +6,19 @@ import { useNavigate, useLocation } from "react-router";
 /*
  * service
  */
-import { historiesAtom } from "../service/historyService";
-import { userIdAtom } from "../service/authService";
+import { historiesAtom } from "@/service/historyService";
+import { userIdAtom } from "@/service/authService";
 /*
  * css
  */
-import "./InputHistory.css";
+import "@/pages/InputHistory.css";
 /*
  * components
  */
-import DisplayCategories from "../components/input/DisplayCategories";
-import AmountInput from "../components/input/AmountInput";
-import DateInput from "../components/input/DateInput";
-import { deleteInputHistory, saveInputHistory } from "../service/inputService";
+import DisplayCategories from "@/components/input/DisplayCategories";
+import AmountInput from "@/components/input/AmountInput";
+import DateInput from "@/components/input/DateInput";
+import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
 
 export default function InputHistory() {
   // ユーザーIDを取得

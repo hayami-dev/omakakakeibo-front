@@ -6,17 +6,17 @@ import { NavLink, Outlet } from "react-router";
 /**
  * components
  */
-import Summary from "../components/home/Summary";
-import HistoryList from "../components/home/HistoryList";
-import CategorySummary from "../components/home/CategorySummary";
-import SelectMonth from "../components/home/SelectMonth";
-import MonthSummary from "../components/home/MonthSummary";
+import Summary from "@/components/home/Summary";
+import HistoryList from "@/components/home/HistoryList";
+import CategorySummary from "@/components/home/CategorySummary";
+import SelectMonth from "@/components/home/SelectMonth";
+import MonthSummary from "@/components/home/MonthSummary";
 /**
  * service
  */
-import { currentMonthAtom } from "../service/historyService";
-import { budgetService, monthlyBudgetAtom } from "../service/budgetService";
-import { userIdAtom } from "../service/authService";
+import { currentMonthAtom } from "@/service/historyService";
+import { budgetService, monthlyBudgetAtom } from "@/service/budgetService";
+import { userIdAtom } from "@/service/authService";
 
 export default function Home() {
   // ユーザーIDを取得

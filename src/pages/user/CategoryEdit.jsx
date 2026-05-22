@@ -4,7 +4,7 @@ import {
   categoryService,
   activeCategoriesAtom,
   checkAlreadyEditCategory,
-} from "../../service/categoryService";
+} from "@/service/categoryService";
 import { useAtom } from "jotai";
 
 export default function CategoryEdit() {

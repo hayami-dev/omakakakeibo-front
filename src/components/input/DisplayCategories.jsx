@@ -6,7 +6,7 @@ import {
   activeCategoriesAtom,
   categoriesMasterAtom,
   resolveCategoryById,
-} from "../../service/categoryService";
+} from "@/service/categoryService";
 
 const DisplayCategories = forwardRef(({ editItem }, ref) => {
   // カテゴリを取得

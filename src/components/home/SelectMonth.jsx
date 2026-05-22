@@ -1,8 +1,8 @@
 /* Homeでの月の切り替え用コンポーネント */
 
 import { useSetAtom } from "jotai";
-import { extractMonth, getRecentMonthsRange } from "../../dateUtils";
-import { currentMonthAtom } from "../../service/historyService";
+import { extractMonth, getRecentMonthsRange } from "@/dateUtils";
+import { currentMonthAtom } from "@/service/historyService";
 
 export default function SelectMonth() {
   // 選択中の月を取得

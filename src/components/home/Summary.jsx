@@ -5,12 +5,12 @@ import {
   monthlyBudgetAtom,
   getRemainingMonthlyBudget,
   formatAmountWithSign,
-} from "../../service/budgetService";
+} from "@/service/budgetService";
 import {
   historiesAtom,
   currentMonthAtom,
   calcMonthSummary,
-} from "../../service/historyService";
+} from "@/service/historyService";
 
 export default function Summary() {
   // 支出の履歴を取得

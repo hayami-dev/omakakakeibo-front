@@ -7,12 +7,12 @@ import { useNavigate } from "react-router";
 import {
   categoriesMasterAtom,
   resolveCategoryById,
-} from "../../service/categoryService";
+} from "@/service/categoryService";
 import {
   historiesAtom,
   filterHistoryByMonths,
   currentMonthAtom,
-} from "../../service/historyService";
+} from "@/service/historyService";
 
 export default function HistoryList() {
   // 支出の履歴を取得

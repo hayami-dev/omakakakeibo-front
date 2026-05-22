@@ -9,9 +9,9 @@ import {
   monthlyBudgetAtom,
   budgetService,
   updateBudget,
-} from "../../service/budgetService";
-import { getYearMonth } from "../../dateUtils";
-import { userIdAtom } from "../../service/authService";
+} from "@/service/budgetService";
+import { getYearMonth } from "@/dateUtils";
+import { userIdAtom } from "@/service/authService";
 
 export default function BudgetEdit() {
   // ユーザーIDを取得

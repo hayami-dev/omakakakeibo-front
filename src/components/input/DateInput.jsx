@@ -4,7 +4,7 @@ import { forwardRef, useImperativeHandle, useState } from "react";
 /*
  * utils
  */
-import { getFormattedDate } from "../../dateUtils";
+import { getFormattedDate } from "@/dateUtils";
 
 const DateInput = forwardRef(({ editItem }, ref) => {
   // 日付関係の取得
