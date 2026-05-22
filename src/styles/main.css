@@ -1,0 +1,6 @@
+/* 1. 一番最初にTailwindを読み込む */
+@import "tailwindcss";
+
+/* 2. 役割ごとに分けたCSSファイルをガッチャンコする */
+@import "./variables.css";
+@import "./base.css";
