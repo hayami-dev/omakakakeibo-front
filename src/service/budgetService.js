@@ -72,3 +72,46 @@ export const formatAmountWithSign = (amount) => {
     signDisplay: "always",
   }).format(amount);
 };
+
+/**
+ * ユーザーが入力した目標金額をバリデーションし、DBとAtomに保存
+ * * @param {Object} params - 引数のオブジェクト
+ * @param {string} params.inputValue - 入力欄から受け取った文字列の金額
+ * @param {number} params.USER_ID - ログイン中のユーザーID
+ * @param {string} params.currentMonth - 対象の月 (フォーマット: yyyy-MM)
+ * @param {Function} params.setMonthlyBudget - JotaiのAtomを更新するためのセッター関数
+ * @returns {Promise<boolean>} 保存が成功した場合は true、失敗・バリデーションNGの場合は false
+ */
+export const updateBudget = async ({
+  inputValue,
+  USER_ID,
+  currentMonth,
+  setMonthlyBudget,
+}) => {
+  const num = Number(inputValue);
+  // 範囲外の入力だった場合はじく
+  if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
+    alert(
+      `${BUDGET_MIN_AMOUNT.toLocaleString()}～${BUDGET_MAX_AMOUNT.toLocaleString()}円までの金額を入力してください`,
+    );
+    return false;
+  }
+
+  // DBへ送るデータ
+  const sendData = {
+    userId: USER_ID,
+    targetMonth: currentMonth,
+    targetAmount: num,
+  };
+
+  // 送信
+  try {
+    await budgetService.saveMonthlyBudget(sendData);
+    setMonthlyBudget(num);
+    return true;
+  } catch (error) {
+    console.error("目標金額の保存に失敗しました", error);
+    alert("保存に失敗しました。");
+    return false;
+  }
+};
