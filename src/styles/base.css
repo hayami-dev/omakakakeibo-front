@@ -44,8 +44,6 @@
 
 /* Tailwind v4専用のフォント上書き設定 */
 @theme {
-  --font-sans: "Zen Maru Gothic", sans-serif;
-
   /* p-space-400などの書き方ができるようになる */
   --spacing-space-0: 0px;
   --spacing-space-100: 4px;
@@ -105,4 +103,16 @@ h2 {
   p {
     margin: 0;
   }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* 装飾文字に付与するクラス */
+.font-deco {
+  font-family: var(--font-deco);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  transform: rotate(0.01deg);
 }
