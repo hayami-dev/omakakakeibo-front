@@ -11,6 +11,8 @@ import {
   currentMonthAtom,
   calcMonthSummary,
 } from "@/service/historyService";
+import { extractMonth } from "@/dateUtils";
+import HomeAmountDeco from "@/assets/home-amount-deco.svg";
 
 export default function Summary() {
   // 支出の履歴を取得
@@ -29,15 +31,39 @@ export default function Summary() {
   const remaining = getRemainingMonthlyBudget(total, monthlyBudget);
 
   return (
-    <>
-      <p>
-        {currentMonth}月の合計：
-        <strong>{total?.toLocaleString()}円</strong>
-      </p>
-      <p>目標金額{monthlyBudget?.toLocaleString()}円</p>
-      <p style={{ color: remaining >= 1 ? "red" : "green" }}>
-        目標金額との差額{formatAmountWithSign(remaining)}円
-      </p>
-    </>
+    <div className="grid grid-cols-12">
+      <div className="bg-bg-section2 justify-items-center col-span-8 px-space-400 py-space-200 rounded-3xl rounded-br-xs">
+        <div className="w-[fit-content]">
+          <p className="text-sm  font-bold tracking-wide">
+            <span className="text-xl pr-[0.1rem]">
+              {extractMonth(currentMonth)}
+            </span>
+            月のきろく
+          </p>
+          <p className="flex items-baseline tracking-wider font-extrabold text-xl">
+            <strong className="text-3xl pr-[0.25rem]">
+              {total?.toLocaleString()}
+            </strong>
+            <span className="pr-[0.25rem]">円</span>
+            <img src={HomeAmountDeco} alt="" className="w-[40px]" />
+          </p>
+        </div>
+        <p className="text-base w-[fit-content]">
+          目標金額：
+          <span
+            style={{
+              color:
+                remaining >= 1
+                  ? "var(--color-error-default)"
+                  : "var(--color-cat-color-0)",
+            }}
+            className="text-xl"
+          >
+            {formatAmountWithSign(remaining)}
+            <span className="text-base pl-[0.25rem]">円</span>
+          </span>
+        </p>
+      </div>
+    </div>
   );
 }
