@@ -2,5 +2,5 @@
 @import "tailwindcss";
 
 /* 2. 役割ごとに分けたCSSファイルをガッチャンコする */
-@import "./variables.css";
 @import "./base.css";
+@import "./variables.css";

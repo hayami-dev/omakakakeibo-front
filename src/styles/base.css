@@ -3,8 +3,15 @@
 
 /* ローカルのフォントファイル */
 @font-face {
+  font-family: "Nunito";
+  src: url("../assets/fonts/Nunito/Nunito-ExtraBold.ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
   font-family: "Zen Maru Gothic";
-  src: url("../assets/fonts/Zen_Maru_Gothic/ZenMaruGothic-Regular.ttf")
+  src: url("../assets/fonts/Zen_Maru_Gothic/ZenMaruGothic-Medium.ttf")
     format("truetype");
   font-weight: 400;
   font-style: normal;
