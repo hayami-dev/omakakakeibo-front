@@ -8,8 +8,7 @@
   --color-bg-section: #fff;
   --color-bg-section2: #f8f0e3;
   --color-border: #e2dedf;
-  --color-shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --color-shadow: rgba(0, 0, 0, 0.03);
 
   /* メインカラー */
   --color-main-default: #f2542d;
