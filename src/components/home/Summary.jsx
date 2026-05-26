@@ -98,8 +98,6 @@ export default function Summary() {
         </p>
       </div>
       <button
-        grid-cols-12
-        items-center
         disabled={isLastMonth}
         onClick={handleNextMonth}
         className="col-span-2 justify-items-center disabled:opacity-50 disabled:pointer-events-none"
