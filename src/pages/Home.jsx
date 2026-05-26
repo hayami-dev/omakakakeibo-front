@@ -55,6 +55,9 @@ export default function Home() {
         <Summary />
         <MonthSummary />
         {/* 各月の支出の詳細を表示 */}
+        <div className="bg-bg p-space-400">
+          <h2>きろくの明細</h2>
+        </div>
         <CategorySummary />
         <HistoryList />
         {/* InputFormをHome内に表示する */}

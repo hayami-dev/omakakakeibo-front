@@ -17,6 +17,7 @@ import { monthlyBudgetAtom } from "@/service/budgetService";
 import { getRecentMonthsRange } from "@/dateUtils";
 import SelectMonth from "@/components/home/SelectMonth";
 import BudgetArrow from "@/assets/icons/budget-arrow.svg";
+import { isClient, computedStyle } from "@/categoryColor";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
@@ -55,12 +56,6 @@ export default function MonthSummary() {
   const rightPosition = 54 * (activeMonthList.length - 1 - activeMonthBar + 1);
 
   /* グラフ */
-
-  // カラー変数をグラフに利用するための設定
-  const isClient = typeof window !== "undefined";
-  const computedStyle = isClient
-    ? getComputedStyle(document.documentElement)
-    : null;
 
   // グラフの下線
   const borderColor = isClient
