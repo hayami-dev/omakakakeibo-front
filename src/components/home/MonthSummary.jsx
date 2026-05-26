@@ -15,6 +15,9 @@ import {
 } from "@/service/historyService";
 import { monthlyBudgetAtom } from "@/service/budgetService";
 import { getRecentMonthsRange } from "@/dateUtils";
+import SelectMonth from "@/components/home/SelectMonth";
+import BudgetArrow from "@/assets/icons/budget-arrow.svg";
+import { isClient, computedStyle } from "@/categoryColor";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement);
 
@@ -45,6 +48,33 @@ export default function MonthSummary() {
     (item) => item.month === currentMonth,
   );
 
+  // 月の前半か後半かを区別
+  const isStart = activeMonthBar <= activeMonthList.length / 2 - 1;
+
+  // budgetAmountの左右位置を計算
+  const leftPosition = 54 * (activeMonthBar + 1);
+  const rightPosition = 54 * (activeMonthList.length - 1 - activeMonthBar + 1);
+
+  /* グラフ */
+
+  // グラフの下線
+  const borderColor = isClient
+    ? computedStyle.getPropertyValue("--color-border").trim()
+    : "#E2E8F0";
+
+  // グラフの超過分
+  const colorMainDefault = isClient
+    ? computedStyle.getPropertyValue("--color-main-default").trim()
+    : "#f2542d";
+  // 目標内
+  const colorMainSoft = isClient
+    ? computedStyle.getPropertyValue("--color-main-soft").trim()
+    : "#f57d5f";
+  // 目標内、超過分の区切り線
+  const colorMainBg = isClient
+    ? computedStyle.getPropertyValue("--color-main-bg").trim()
+    : "#feefec";
+
   // グラフの設定
   const graphOptions = {
     responsive: true,
@@ -56,14 +86,17 @@ export default function MonthSummary() {
       y: {
         stacked: true,
         beginAtZero: true,
-        max: monthlyBudget * 2,
+        max: monthlyBudget * 1.5,
         display: false,
       },
       x: {
         stacked: true,
-        display: false,
+        display: true,
         grid: { display: false },
-        border: { display: true, color: "#c5c5c5", width: 2 },
+        border: { display: true, color: borderColor, width: 2 },
+        ticks: {
+          display: false,
+        },
       },
     },
     plugins: {
@@ -73,7 +106,6 @@ export default function MonthSummary() {
     },
   };
 
-  // TODO：カラーコードをCSS変数で管理
   const chartData = {
     labels: monthTotals.map(() => ""),
     datasets: [
@@ -89,7 +121,9 @@ export default function MonthSummary() {
           );
         }),
         backgroundColor: monthTotals.map((_, index) =>
-          index === activeMonthBar ? "#F57D5FFF" : "#F57D5F66",
+          index === activeMonthBar
+            ? `${colorMainSoft}FF`
+            : `${colorMainSoft}66`,
         ),
         stack: "stack",
       },
@@ -99,7 +133,7 @@ export default function MonthSummary() {
           item.sum >= monthlyBudget ? monthlyBudget * 0.02 : 0,
         ),
         backgroundColor: monthTotals.map((_, index) =>
-          index === activeMonthBar ? "#FEEFECFF" : "#FEEFEC66",
+          index === activeMonthBar ? `${colorMainBg}FF` : `${colorMainBg}66`,
         ),
         stack: "stack",
       },
@@ -107,7 +141,9 @@ export default function MonthSummary() {
         label: "超過分",
         data: monthTotals.map((item) => Math.max(0, item.sum - monthlyBudget)),
         backgroundColor: monthTotals.map((_, index) =>
-          index === activeMonthBar ? "#F2542DFF" : "#F2542D66",
+          index === activeMonthBar
+            ? `${colorMainDefault}FF`
+            : `${colorMainDefault}66`,
         ),
         stack: "stack",
       },
@@ -115,52 +151,25 @@ export default function MonthSummary() {
   };
 
   return (
-    <section>
-      <h3>月別の集計</h3>
-      <div style={{ height: "300px", position: "relative", padding: "0 48px" }}>
+    <section className="px-space-400">
+      <div className="h-[120px] relative">
         <Bar options={graphOptions} data={chartData} />
-        <span
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "0",
-            transform: "translateY(-50%)",
-          }}
-        >
-          {monthlyBudget}円 ▶
-        </span>
-        {/* 月ラベルの表示ロジック */}
         <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginTop: "10px",
-          }}
+          className="flex items-center gap-1 text-text-cap text-sm absolute top-[22%]"
+          style={
+            isStart
+              ? { left: `${leftPosition}px` }
+              : { right: `${rightPosition}px` }
+          }
         >
-          {monthTotals.map((item) => {
-            const [year, month] = item.month.split("-");
-            const isJanOrDec = month === "12" || month === "01";
-            return (
-              <div
-                key={item.month}
-                style={{ textAlign: "center", fontSize: "12px" }}
-              >
-                {isJanOrDec && (
-                  <p style={{ margin: 0, color: "#888" }}>{year}年</p>
-                )}
-                <p
-                  style={{
-                    margin: 0,
-                    fontWeight: item.month === currentMonth ? "bold" : "normal",
-                  }}
-                >
-                  {parseInt(month, 10)}月
-                </p>
-              </div>
-            );
-          })}
+          {isStart && <img src={BudgetArrow} alt="" className="rotate-180" />}
+          {monthlyBudget?.toLocaleString()}
+          <span>円</span>
+          {!isStart && <img src={BudgetArrow} alt="" />}
         </div>
       </div>
+      {/* 月ラベルの表示ロジック */}
+      <SelectMonth />
     </section>
   );
 }

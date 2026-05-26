@@ -1,10 +1,17 @@
 /* ひと月に記録された各カテゴリの合計値を円グラフで表示 */
 
 import { useAtomValue } from "jotai";
-import { categoriesMasterAtom } from "@/service/categoryService";
-import { calcCategorySummary, historiesAtom } from "@/service/historyService";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
+import { categoriesMasterAtom } from "@/service/categoryService";
+import {
+  historiesAtom,
+  currentMonthAtom,
+  calcCategorySummary,
+  filterHistoryByMonths,
+} from "@/service/historyService";
+import { getSafeColor } from "@/categoryColor";
+import CategoryDisplay from "@/components/ui/CategoryDisplay";
 
 // Pieグラフには ArcElement（扇形）が必要
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -13,18 +20,25 @@ export default function CategorySummary() {
   // 支出の履歴を取得
   const histories = useAtomValue(historiesAtom);
 
+  // 選択中の月を取得
+  const currentMonth = useAtomValue(currentMonthAtom);
+
   // カテゴリマスタを取得
   const categoriesMaster = useAtomValue(categoriesMasterAtom);
 
+  // historiesを月毎にフィルター
+  const filterHistories = filterHistoryByMonths(histories, currentMonth);
+
   // カテゴリid毎の金額の合計値を計算
-  const categoryTotals = calcCategorySummary(histories, categoriesMaster).sort(
-    (a, b) => {
-      if (a.isActive !== b.isActive) {
-        return b.isActive - a.isActive;
-      }
-      return a.colorIndex - b.colorIndex;
-    },
-  );
+  const categoryTotals = calcCategorySummary(
+    filterHistories,
+    categoriesMaster,
+  ).sort((a, b) => {
+    if (a.isActive !== b.isActive) {
+      return b.isActive - a.isActive;
+    }
+    return a.colorIndex - b.colorIndex;
+  });
 
   // データがあるかどうかの判定
   const hasData =
@@ -32,7 +46,8 @@ export default function CategorySummary() {
 
   const graphOptions = {
     responsive: true,
-    // maintainAspectRatio: false, // TODO:cssの設定が効くようにする
+    maintainAspectRatio: false,
+    aspectRatio: 1,
     events: [],
     animation: false, // アニメーションをオフ
     animations: false, // 全ての個別アニメーションをオフ
@@ -46,42 +61,42 @@ export default function CategorySummary() {
     },
   };
 
-  // TODO：var(--cat-color-0) などの文字列から実際の値を取り出す
-  const getCanvasColor = (varName) => {
-    return (
-      getComputedStyle(document.documentElement)
-        .getPropertyValue(varName.replace("var(", "").replace(")", ""))
-        .trim() || "#ccc"
-    );
-  };
-
   const chartData = {
     labels: hasData ? categoryTotals?.map((item) => item.name) : ["データなし"],
     datasets: [
       {
         data: hasData ? categoryTotals?.map((item) => item.sum) : [1],
         backgroundColor: hasData
-          ? categoryTotals?.map((item) => getCanvasColor(item.color))
+          ? categoryTotals?.map((item) => getSafeColor(item.color))
           : ["gray"],
         borderWidth: false,
+        cutout: "30%",
       },
     ],
   };
 
   return (
-    <>
-      <h3>カテゴリ毎の集計</h3>
-      <Pie data={chartData} options={graphOptions}></Pie>
-      <ul>
-        {categoryTotals?.map((item) => {
-          return (
-            <li key={item.id}>
-              <span style={{ color: item.color }}>●{item.name}</span>
-              {item.sum.toLocaleString()}円
-            </li>
-          );
-        })}
-      </ul>
-    </>
+    <div className="grid grid-cols-12 items-center">
+      <div className="col-span-6 aspect-square mx-space-400">
+        <div className="w-full aspect-square relative">
+          <Doughnut data={chartData} options={graphOptions}></Doughnut>
+        </div>
+      </div>
+      <div className="col-span-6">
+        <ul className="h-full flex flex-col gap-1 justify-center">
+          {categoryTotals?.map((item) => {
+            return (
+              <li key={item.id} className="text-sm grid grid-cols-12">
+                <CategoryDisplay colorVar={item.color} catName={item.name} />
+                <span className="col-span-1">：</span>
+                <span className="col-span-5 break-all">
+                  {item.sum.toLocaleString()}円
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
   );
 }

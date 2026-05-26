@@ -1,0 +1,118 @@
+/* フォント、他ベースとなるcssプロパティ群 */
+@import "./variables.css";
+
+/* ローカルのフォントファイル */
+@font-face {
+  font-family: "Nunito";
+  src: url("../assets/fonts/Nunito/Nunito-ExtraBold.ttf");
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zen Maru Gothic";
+  src: url("../assets/fonts/Zen_Maru_Gothic/ZenMaruGothic-Medium.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zen Maru Gothic";
+  src: url("../assets/fonts/Zen_Maru_Gothic/ZenMaruGothic-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Zen Maru Gothic";
+  src: url("../assets/fonts/Zen_Maru_Gothic/ZenMaruGothic-Black.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* 装飾文字 */
+@font-face {
+  font-family: "Nicomoji Plus";
+  src: url("../assets/fonts/nicomoji-plus_v2.5/nicomoji-plus_v2-5.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Tailwind v4専用のフォント上書き設定 */
+@theme {
+  /* p-space-400などの書き方ができるようになる */
+  --spacing-space-0: 0px;
+  --spacing-space-100: 4px;
+  --spacing-space-200: 8px;
+  --spacing-space-300: 12px;
+  --spacing-space-400: 16px;
+  --spacing-space-500: 24px;
+  --spacing-space-600: 32px;
+  --spacing-space-800: 64px;
+}
+
+body {
+  margin: 0;
+  font: 16px/140% var(--font-sans);
+  letter-spacing: 0.01125em;
+  color-scheme: light dark;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+/* body直下のdiv */
+#root {
+  width: 375px;
+  height: 100vh;
+  max-width: 100%;
+  margin: 0 auto;
+  background: var(--color-bg-section);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  border-inline: 1px solid var(--color-border);
+  overflow-y: auto;
+}
+
+h1,
+h2 {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+@layer base {
+  h1 {
+    font-size: 24px;
+    margin: 32px 0;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  button {
+    cursor: pointer;
+  }
+}
+
+/* 装飾文字に付与するクラス */
+.font-deco {
+  font-family: var(--font-deco);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  transform: rotate(0.01deg);
+}

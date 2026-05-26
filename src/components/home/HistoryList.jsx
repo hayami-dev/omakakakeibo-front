@@ -13,6 +13,11 @@ import {
   filterHistoryByMonths,
   currentMonthAtom,
 } from "@/service/historyService";
+// utils
+import { extractMonthAndDay } from "@/dateUtils";
+// components・assets
+import CategoryDisplay from "@/components/ui/CategoryDisplay";
+import EditIcon from "@/assets/icons/EditIcon";
 
 export default function HistoryList() {
   // 支出の履歴を取得
@@ -43,34 +48,40 @@ export default function HistoryList() {
     });
   };
   return (
-    <>
-      <h2>りれき</h2>
-      <ul>
-        {dateSortHistory?.map((item) => {
-          const category = resolveCategoryById(
-            item.categoryId,
-            masterCategories,
-          );
-          return (
-            <li key={item.historyId}>
-              <time dateTime={item.historyDate}>
-                {item.historyDate
-                  ? item.historyDate.toString().replaceAll("-", "/")
-                  : "日付なし"}
-              </time>
-              <span
-                style={{
-                  color: category?.style?.color,
-                }}
+    <ul className="flex flex-col gap-2 px-space-400">
+      {dateSortHistory?.map((item) => {
+        const category = resolveCategoryById(item.categoryId, masterCategories);
+        return (
+          <li key={item.historyId} className="grid grid-cols-12 items-center">
+            <time
+              dateTime={item.historyDate}
+              className="col-span-2 text-sm text-text-cap text-center"
+            >
+              {item.historyDate
+                ? extractMonthAndDay(item.historyDate)
+                : "日付なし"}
+            </time>
+            <div className="col-span-5 text-xl text-right pr-space-400">
+              <span>{item?.amount?.toLocaleString() ?? "0"}</span>
+              <span className="text-base pl-[0.25rem]">円</span>
+            </div>
+            <div className="col-span-4 text-sm">
+              <CategoryDisplay
+                colorVar={category?.style?.color}
+                catName={category?.categoryName}
+              />
+            </div>
+            <div className="text-center col-span-1">
+              <button
+                onClick={() => onEdit(item.historyId)}
+                className="text-main-default w-[20px]"
               >
-                ●{category?.categoryName || "不明なカテゴリ"}
-              </span>
-              {item?.amount?.toLocaleString() ?? "0"}円
-              <AiFillEdit onClick={() => onEdit(item.historyId)} />
-            </li>
-          );
-        })}
-      </ul>
-    </>
+                <EditIcon />
+              </button>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
