@@ -1,6 +1,8 @@
 /* ひと月に記録された各カテゴリの合計値を円グラフで表示 */
 
 import { useAtomValue } from "jotai";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
 import { categoriesMasterAtom } from "@/service/categoryService";
 import {
   historiesAtom,
@@ -8,9 +10,8 @@ import {
   calcCategorySummary,
   filterHistoryByMonths,
 } from "@/service/historyService";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
 import { getSafeColor } from "@/categoryColor";
+import CategoryDisplay from "@/components/ui/CategoryDisplay";
 
 // Pieグラフには ArcElement（扇形）が必要
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -69,6 +70,7 @@ export default function CategorySummary() {
           ? categoryTotals?.map((item) => getSafeColor(item.color))
           : ["gray"],
         borderWidth: false,
+        cutout: "30%",
       },
     ],
   };
@@ -83,16 +85,9 @@ export default function CategorySummary() {
       <div className="col-span-6">
         <ul className="h-full flex flex-col gap-1 justify-center">
           {categoryTotals?.map((item) => {
-            const catColor = getSafeColor(item.color);
             return (
               <li key={item.id} className="text-sm grid grid-cols-12">
-                <div
-                  style={{ color: catColor }}
-                  className="col-span-6 flex gap-1"
-                >
-                  <span>●</span>
-                  <span className="break-words">{item.name}</span>
-                </div>
+                <CategoryDisplay colorVar={item.color} catName={item.name} />
                 <span className="col-span-1">：</span>
                 <span className="col-span-5 break-all">
                   {item.sum.toLocaleString()}円

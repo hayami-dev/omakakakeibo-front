@@ -46,6 +46,12 @@ export function extractMonth(yearMonthStr) {
   return parseInt(yearMonthStr.substring(5, 7));
 }
 
+// MM/ddに加工
+export function extractMonthAndDay(date) {
+  if (!date) return "";
+  return date.substring(5, 10).replaceAll("-", "/");
+}
+
 // 今月から6か月前までを取得
 export function getRecentMonthsRange(count = 6) {
   const months = [];
