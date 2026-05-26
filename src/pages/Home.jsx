@@ -9,7 +9,6 @@ import { NavLink, Outlet } from "react-router";
 import Summary from "@/components/home/Summary";
 import HistoryList from "@/components/home/HistoryList";
 import CategorySummary from "@/components/home/CategorySummary";
-import SelectMonth from "@/components/home/SelectMonth";
 import MonthSummary from "@/components/home/MonthSummary";
 import Footer from "@/components/Footer";
 /**
@@ -51,18 +50,13 @@ export default function Home() {
 
   return (
     <>
-      <main>
+      <main className="flex flex-col gap-5 pt-space-500 pb-space-800">
         {/* 各月の合計金額、目標金額の表示 */}
-        <section>
-          <SelectMonth />
-          <Summary />
-          <MonthSummary />
-        </section>
+        <Summary />
+        <MonthSummary />
         {/* 各月の支出の詳細を表示 */}
-        <section>
-          <CategorySummary />
-          <HistoryList />
-        </section>
+        <CategorySummary />
+        <HistoryList />
         {/* InputFormをHome内に表示する */}
         <Outlet />
       </main>
