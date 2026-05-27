@@ -14,7 +14,7 @@ export default function TextField({
 }) {
   // 基本スタイル
   const baseStyle =
-    "bg-input-bg border-text-cap border font-bold rounded-lg focus:border-main-default";
+    "bg-input-bg border-border border font-bold rounded-lg focus:border-main-default";
 
   // 文字サイズのバリエーション
   const sizeStyles = {

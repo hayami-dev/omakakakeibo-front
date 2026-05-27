@@ -4,9 +4,13 @@
   /* 点線 */
   .border-dot-underline {
     /* 線の太さ（高さ）を 2px に指定 */
-    background-size: 10px 2px;
+    background-size: 14px 3px;
     /* 2px分だけ色を塗り、残りの8px分は透明（transparent）にする */
-    background-image: linear-gradient(to right, #ccc 2px, transparent 2px);
+    background-image: linear-gradient(
+      to right,
+      var(--color-border) 3px,
+      transparent 3px
+    );
     /* 下側に配置して、横方向だけにリピートさせる */
     background-position: bottom;
     background-repeat: repeat-x;

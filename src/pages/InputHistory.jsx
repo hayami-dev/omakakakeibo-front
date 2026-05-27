@@ -101,11 +101,14 @@ export default function InputHistory() {
       <form
         action=""
         onSubmit={handleSend}
-        className="py-space-500 flex flex-col gap-6 items-center"
+        className="py-space-500 flex flex-col gap-6"
       >
-        {/* 金額の入力 */}
-        <AmountInput ref={amountRef} editItem={editItem} />
-        <DateInput ref={dateRef} editItem={editItem} />
+        <div className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
+          {/* 金額の入力 */}
+          <AmountInput ref={amountRef} editItem={editItem} />
+          {/* 日付の入力 */}
+          <DateInput ref={dateRef} editItem={editItem} />
+        </div>
         {/* カテゴリの一覧 */}
         <DisplayCategories ref={categoryRef} editItem={editItem} />
         <button type="submit">送信</button>
