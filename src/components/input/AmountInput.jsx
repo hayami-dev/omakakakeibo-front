@@ -1,6 +1,8 @@
 /* 支出金額の入力 */
 
 import { forwardRef, useImperativeHandle, useState } from "react";
+import TextField from "@/components/ui/TextField";
+import ImageSelect from "./ImageSelect";
 
 const AmountInput = forwardRef(({ editItem }, ref) => {
   // 入力値の取得
@@ -19,19 +21,26 @@ const AmountInput = forwardRef(({ editItem }, ref) => {
   }));
 
   return (
-    <>
-      <input
-        type="number"
-        value={inputAmount}
-        placeholder="金額を入力"
-        onChange={(e) => setInputAmount(e.target.value)}
-        // 👆のvalueに変更された値をセットする
-        onKeyDown={(e) =>
-          ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
-        }
-        // 一部の半角文字を入力できないようにする
-      />
-    </>
+    <fieldset className="flex  items-center gap-6 ">
+      <label htmlFor="amount" className="text-lg font-black text-nowrap">
+        つかった金額
+      </label>
+      <div className="relative">
+        <div className="absolute top-[-32px]">
+          <ImageSelect />
+        </div>
+        <TextField
+          size="lg"
+          type="number"
+          placeholder="100"
+          id="amount"
+          value={inputAmount}
+          onChange={setInputAmount}
+          className="w-full"
+        />
+      </div>
+      <span className="text-lg font-black">円</span>
+    </fieldset>
   );
 });
 export default AmountInput;

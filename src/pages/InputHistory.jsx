@@ -9,10 +9,6 @@ import { useNavigate, useLocation } from "react-router";
 import { historiesAtom } from "@/service/historyService";
 import { userIdAtom } from "@/service/authService";
 /*
- * css
- */
-import "@/pages/InputHistory.css";
-/*
  * components
  */
 import DisplayCategories from "@/components/input/DisplayCategories";
@@ -95,8 +91,18 @@ export default function InputHistory() {
   }
 
   return (
-    <div className="modal-dialog">
-      <form action="" onSubmit={handleSend}>
+    <div className="p-space-600  fixed bg-bg w-full z-99 h-full top-[5%] left-0  rounded-t-2xl shadow-[0_1px_12px]">
+      <h1 className="text-center pb-space-500 border-dot-underline">
+        おかねのきろく
+      </h1>
+      <button type="button" onClick={handleClose}>
+        ✖ とじる
+      </button>
+      <form
+        action=""
+        onSubmit={handleSend}
+        className="py-space-500 flex flex-col gap-6"
+      >
         {/* 金額の入力 */}
         <AmountInput ref={amountRef} editItem={editItem} />
         <DateInput ref={dateRef} editItem={editItem} />
@@ -104,9 +110,7 @@ export default function InputHistory() {
         <DisplayCategories ref={categoryRef} editItem={editItem} />
         <button type="submit">送信</button>
       </form>
-      <button type="button" onClick={handleClose}>
-        ✖ とじる
-      </button>
+
       {editItem && (
         <button type="button" onClick={handleRemove}>
           削除
