@@ -1,0 +1,128 @@
+/* カラーや余白値などのバリアブルを管理 */
+
+/* bg-main-defaultなどのクラスが使えるようになる */
+@theme {
+  --color-text: #54494b;
+  --color-text-cap: #827174;
+  --color-bg: #fdf9f2;
+  --color-bg-section: #fff;
+  --color-bg-section2: #f8f0e3;
+  --color-border: #e2dedf;
+  --color-shadow: rgba(0, 0, 0, 0.03);
+
+  /* メインカラー */
+  --color-main-default: #f2542d;
+  --color-main-soft: #f57d5f;
+  --color-main-bg: #feefec;
+
+  /* サブカラー */
+  --color-sub-default: #2b9eb3;
+  --color-sub-soft: #50c1d5;
+  --color-sub-bg: #e9f7f9;
+
+  /* エラーのカラー */
+  --color-error-default: #df2935;
+  --color-error-soft: #e75d66;
+  --color-error-bg: #fceced;
+
+  /* 無効のカラー */
+  --color-disabled-default: #a3a3a3;
+  --color-disabled-soft: #d5d5d5;
+  --color-disabled-bg: #ededed;
+
+  /* コンポーネントカラー */
+  --color-button-text: #f5f5f5;
+  --color-input-bg: #fff;
+
+  /* カテゴリのカラー */
+  /* 0: グリーン */
+  --color-cat-color-0: #44af69;
+  --color-cat-bg-0: #eff8f2;
+  --color-cat-disabled-0: #476a54;
+
+  /* 1: イエロー */
+  --color-cat-color-1: #f8be10;
+  --color-cat-bg-1: #fef9ea;
+  --color-cat-disabled-1: #867035;
+
+  /* 2: レッド */
+  --color-cat-color-2: #f22c22;
+  --color-cat-bg-2: #feeceb;
+  --color-cat-disabled-2: #833c38;
+
+  /* 3: ピンク */
+  --color-cat-color-3: #e66bc7;
+  --color-cat-bg-3: #fdf1fa;
+  --color-cat-disabled-3: #8e4b7d;
+
+  /* 4: パープル */
+  --color-cat-color-4: #9747ff;
+  --color-cat-bg-4: #f6eeff;
+  --color-cat-disabled-4: #633a99;
+
+  /* 5: ブルー */
+  --color-cat-color-5: #0d99ff;
+  --color-cat-bg-5: #e9f6ff;
+  --color-cat-disabled-5: #316285;
+
+  /* 6: グレー（未設定） */
+  --color-cat-color-6: #5a5a5a;
+  --color-cat-bg-6: #c5c5c5;
+  --color-cat-disabled-6: #5a5a5a;
+
+  /* フォント */
+  --font-sans: "Nunito", "Zen Maru Gothic", sans-serif;
+  --font-deco: "Nicomoji Plus", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* 📋 文字色とベース背景色（ダークモード用に反転） */
+    --color-text: #f5f5f5;
+    --color-text-cap: #a3a3a3;
+    --color-bg: #1a1617;
+    --color-bg-section: #262022;
+    --color-bg-section2: #332b2d;
+    --color-border: #443b3d;
+    --color-code-bg: #2d2527;
+    --color-shadow:
+      rgba(0, 0, 0, 0.5) 0 10px 15px -3px, rgba(0, 0, 0, 0.3) 0 4px 6px -2px;
+
+    /* 🎨 【入れ替え】メインカラー ＝ 元の「サブカラー（青）」 */
+    --color-main-default: #2b9eb3;
+    --color-main-soft: #50c1d5;
+    --color-main-bg: #1c3d45;
+
+    /* 🎨 【入れ替え】サブカラー ＝ 元の「メインカラー（赤）」 */
+    --color-sub-default: #f2542d;
+    --color-sub-soft: #f57d5f;
+    --color-sub-bg: #4c241b;
+
+    /* 🚨 エラーのカラー（微調整） */
+    --color-error-default: #e75d66;
+    --color-error-soft: #f19298;
+    --color-error-bg: #42181b;
+
+    /* 🔘 無効のカラー（トーンダウン） */
+    --color-disabled-default: #737373;
+    --color-disabled-soft: #404040;
+    --color-disabled-bg: #262626;
+
+    /* 🧱 コンポーネントカラー */
+    --color-button-text: #1a1617;
+    --color-input-bg: #262022;
+
+    /* 🏷️ カテゴリの「背景色」だけ（文字色は共通なので自動引き継ぎ） */
+    --color-cat-bg-0: #132a1b;
+    --color-cat-bg-1: #382d07;
+    --color-cat-bg-2: #3d1210;
+    --color-cat-bg-3: #3b1933;
+    --color-cat-bg-4: #25133d;
+    --color-cat-bg-5: #052640;
+    --color-cat-bg-6: #404040;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}

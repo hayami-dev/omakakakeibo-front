@@ -1,3 +1,5 @@
+/* 日付のフォーマットに関するメソッド群 */
+
 // yyyy-MM-dd
 // InputFormでの入力に使用
 export const getFormattedDate = (
@@ -7,11 +9,11 @@ export const getFormattedDate = (
 ) => {
   const date = new Date(); // 今日を取得
 
+  // 日付は直で日付を入力
+  if (dayOffset !== 0) date.setDate(dayOffset);
+
   if (yearOffset !== 0) date.setFullYear(date.getFullYear() + yearOffset);
   if (monthOffset !== 0) date.setMonth(date.getMonth() + monthOffset);
-
-  // 日付は直で入力
-  if (dayOffset !== 0) date.setDate(date.getDate(dayOffset));
 
   return new Intl.DateTimeFormat("ja-JP", {
     year: "numeric",
@@ -42,6 +44,12 @@ export function extractMonth(yearMonthStr) {
     return "";
   }
   return parseInt(yearMonthStr.substring(5, 7));
+}
+
+// MM/ddに加工
+export function extractMonthAndDay(date) {
+  if (!date) return "";
+  return date.substring(5, 10).replaceAll("-", "/");
 }
 
 // 今月から6か月前までを取得

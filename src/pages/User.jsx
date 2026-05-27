@@ -1,9 +1,11 @@
+/* ユーザー情報を表示する画面 */
+
 import { useAtomValue } from "jotai";
 import { NavLink } from "react-router";
 import {
   activeCategoriesAtom,
   categoriesMasterAtom,
-} from "../service/categoryService";
+} from "@/service/categoryService";
 
 // ユーザー個別の情報の表示画面
 export default function User() {

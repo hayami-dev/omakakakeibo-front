@@ -1,7 +1,10 @@
+/* ユーザー毎のカテゴリの変更画面 */
+
 import {
+  categoryService,
   activeCategoriesAtom,
   checkAlreadyEditCategory,
-} from "../../service/categoryService";
+} from "@/service/categoryService";
 import { useAtom } from "jotai";
 
 export default function CategoryEdit() {
@@ -23,22 +26,7 @@ export default function CategoryEdit() {
 
   // 登録ボタン押下時、DB(カテゴリマスタ)に値を保存する
   const onSend = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/categories/update",
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(activeCategories),
-        },
-      );
-
-      if (response.ok) {
-        alert("保存しました！");
-      }
-    } catch {
-      console.error("保存失敗:");
-    }
+    categoryService.saveCategories(activeCategories);
   };
 
   return (
