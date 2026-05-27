@@ -48,11 +48,14 @@ export default function HistoryList() {
     });
   };
   return (
-    <ul className="flex flex-col gap-2 px-space-400">
+    <ul className="flex flex-col px-space-400">
       {dateSortHistory?.map((item) => {
         const category = resolveCategoryById(item.categoryId, masterCategories);
         return (
-          <li key={item.historyId} className="grid grid-cols-12 items-center">
+          <li
+            key={item.historyId}
+            className="grid grid-cols-12 items-center border-dot-underline py-space-200"
+          >
             <time
               dateTime={item.historyDate}
               className="col-span-2 text-sm text-text-cap text-center"

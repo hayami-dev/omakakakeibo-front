@@ -4,3 +4,4 @@
 /* 2. 役割ごとに分けたCSSファイルをガッチャンコする */
 @import "./base.css";
 @import "./variables.css";
+@import "./utilities.css";
