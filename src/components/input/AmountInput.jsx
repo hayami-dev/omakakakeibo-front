@@ -21,7 +21,7 @@ const AmountInput = forwardRef(({ editItem }, ref) => {
   }));
 
   return (
-    <fieldset className="flex  items-center gap-6 ">
+    <fieldset className="flex items-center gap-6">
       <label htmlFor="amount" className="text-lg font-black text-nowrap">
         つかった金額
       </label>
@@ -36,7 +36,7 @@ const AmountInput = forwardRef(({ editItem }, ref) => {
           id="amount"
           value={inputAmount}
           onChange={setInputAmount}
-          className="w-full"
+          className="w-[210px]"
         />
       </div>
       <span className="text-lg font-black">円</span>

@@ -91,7 +91,7 @@ export default function InputHistory() {
   }
 
   return (
-    <div className="p-space-600  fixed bg-bg w-full z-99 h-full top-[5%] left-0  rounded-t-2xl shadow-[0_1px_12px]">
+    <div className="p-space-600 fixed bg-bg w-full z-99 h-full top-[5%] left-0 rounded-t-2xl shadow-[0_1px_12px]">
       <h1 className="text-center pb-space-500 border-dot-underline">
         おかねのきろく
       </h1>
@@ -101,7 +101,7 @@ export default function InputHistory() {
       <form
         action=""
         onSubmit={handleSend}
-        className="py-space-500 flex flex-col gap-6"
+        className="py-space-500 flex flex-col gap-6 items-center"
       >
         {/* 金額の入力 */}
         <AmountInput ref={amountRef} editItem={editItem} />

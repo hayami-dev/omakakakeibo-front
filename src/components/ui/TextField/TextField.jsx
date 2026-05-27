@@ -3,16 +3,18 @@
 export default function TextField({
   type = "text",
   id,
-  placeholder,
+  placeholder = "",
   value,
   onChange,
   onKeyDown,
   className = "",
   size = "md",
+  min = "",
+  max = "",
 }) {
   // 基本スタイル
   const baseStyle =
-    "bg-input-bg border-input-border border font-bold rounded-lg focus:border-main-default";
+    "bg-input-bg border-text-cap border font-bold rounded-lg focus:border-main-default";
 
   // 文字サイズのバリエーション
   const sizeStyles = {
@@ -47,6 +49,14 @@ export default function TextField({
         }}
         onKeyDown={handleKeyDown}
         className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle}`}
+        min={min}
+        max={max}
+        // もしtypeがdateだった場合にクリックでピッカーを表示させる
+        onClick={(e) => {
+          if (type === "date" && e.target.showPicker) {
+            e.target.showPicker();
+          }
+        }}
       />
     </>
   );
