@@ -108,11 +108,3 @@ h2 {
     cursor: pointer;
   }
 }
-
-/* 装飾文字に付与するクラス */
-.font-deco {
-  font-family: var(--font-deco);
-  letter-spacing: 0.05em;
-  line-height: 1.2;
-  transform: rotate(0.01deg);
-}

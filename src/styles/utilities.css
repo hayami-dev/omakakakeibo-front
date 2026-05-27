@@ -1,0 +1,22 @@
+/* 装飾のためのcssクラスを管理 */
+
+@layer utilities {
+  /* 点線 */
+  .border-dot-underline {
+    /* 線の太さ（高さ）を 2px に指定 */
+    background-size: 10px 2px;
+    /* 2px分だけ色を塗り、残りの8px分は透明（transparent）にする */
+    background-image: linear-gradient(to right, #ccc 2px, transparent 2px);
+    /* 下側に配置して、横方向だけにリピートさせる */
+    background-position: bottom;
+    background-repeat: repeat-x;
+  }
+
+  /* 装飾文字に付与するクラス */
+  .font-deco {
+    font-family: var(--font-deco);
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    transform: rotate(0.01deg);
+  }
+}
