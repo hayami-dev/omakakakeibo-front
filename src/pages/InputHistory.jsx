@@ -6,16 +6,17 @@ import { useNavigate, useLocation } from "react-router";
 /*
  * service
  */
-import { historiesAtom } from "@/service/historyService";
+import { historiesAtom, currentMonthAtom } from "@/service/historyService";
 import { userIdAtom } from "@/service/authService";
+import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
+
 /*
  * components
  */
 import DisplayCategories from "@/components/input/DisplayCategories";
 import AmountInput from "@/components/input/AmountInput";
 import DateInput from "@/components/input/DateInput";
-import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
-import { currentMonthAtom } from "@/service/historyService";
+import Button from "@/components/ui/Button";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -110,8 +111,17 @@ export default function InputHistory() {
           <DateInput ref={dateRef} editItem={editItem} />
         </div>
         {/* カテゴリの一覧 */}
-        <DisplayCategories ref={categoryRef} editItem={editItem} />
-        <button type="submit">送信</button>
+        <div className="flex flex-col gap-4 pb-space-500">
+          <p className="font-deco text-xl text-main-default">
+            このおかねは・・・
+          </p>
+          <DisplayCategories ref={categoryRef} editItem={editItem} />
+        </div>
+        {/* <div className="pb-space-500 border-dot-underline">
+          <Button variant="primary" size="lg" type="submit">
+            きろくする
+          </Button>
+        </div> */}
       </form>
 
       {editItem && (
