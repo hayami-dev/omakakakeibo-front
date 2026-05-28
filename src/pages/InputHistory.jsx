@@ -17,7 +17,11 @@ import DisplayCategories from "@/components/input/DisplayCategories";
 import AmountInput from "@/components/input/AmountInput";
 import DateInput from "@/components/input/DateInput";
 import Button from "@/components/ui/Button";
+/*
+ * assets
+ */
 import MoneyBag from "@/assets/icons/MoneyBag";
+import Close from "@/assets/icons/close.svg";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -92,16 +96,20 @@ export default function InputHistory() {
 
   return (
     <div className="p-space-600 fixed bg-bg w-full z-99 h-full top-[5%] left-0 rounded-t-2xl shadow-[0_1px_12px]">
-      <h1 className="text-center pb-space-500 border-dot-underline">
-        おかねのきろく
-      </h1>
-      <button type="button" onClick={handleClose}>
-        ✖ とじる
-      </button>
+      <header className="relative text-center pb-space-500 border-dot-underline">
+        <h1>おかねのきろく</h1>
+        <button
+          type="button"
+          onClick={handleClose}
+          className="absolute top-[-2px] right-0"
+        >
+          <img src={Close} />
+        </button>
+      </header>
       <form
         action=""
         onSubmit={handleSend}
-        className="py-space-500 flex flex-col gap-6"
+        className="pb-space-500 pt-space-600 flex flex-col gap-6"
       >
         <div className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
           {/* 金額の入力 */}

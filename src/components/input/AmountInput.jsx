@@ -26,7 +26,7 @@ const AmountInput = forwardRef(({ editItem }, ref) => {
         つかった金額
       </label>
       <div className="relative">
-        <div className="absolute top-[-32px]">
+        <div className="absolute top-[-30px]">
           <ImageSelect />
         </div>
         <TextField
