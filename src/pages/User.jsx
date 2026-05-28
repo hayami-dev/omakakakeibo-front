@@ -45,15 +45,17 @@ export default function User() {
       <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600 text-center">
         <h2>カテゴリーの一覧</h2>
         <div className="grid grid-cols-12 gap-2 items-center">
-          {activeCategories.map((cat, index) => (
-            <div key={cat.activeCatId || index} className="col-span-6">
-              <CategoryButton
-                catName={cat.categoryName}
-                catStyle={cat.style}
-                readOnly
-              />
-            </div>
-          ))}
+          {activeCategories
+            .filter((cat) => cat.categoryName !== "")
+            .map((cat, index) => (
+              <div key={cat.activeCatId || index} className="col-span-6">
+                <CategoryButton
+                  catName={cat.categoryName}
+                  catStyle={cat.style}
+                  readOnly
+                />
+              </div>
+            ))}
         </div>
         <Button
           variant="secondary"

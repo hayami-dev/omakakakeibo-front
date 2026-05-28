@@ -10,12 +10,14 @@ export default function TextField({
   onBlur = () => {},
   className = "",
   size = "md",
-  min = "",
-  max = "",
+  maxLength = "",
+  minLength = "",
+  count = false,
+  currentLength = "",
 }) {
   // 基本スタイル
   const baseStyle =
-    "bg-input-bg border-border border font-bold rounded-lg focus:border-main-default";
+    "bg-input-bg border-border border font-bold rounded-lg focus:border-main-default w-full";
 
   // 文字サイズのバリエーション
   const sizeStyles = {
@@ -39,7 +41,7 @@ export default function TextField({
   const alignStyle = type === "number" ? "text-right" : "";
 
   return (
-    <>
+    <div id="text-field-wrap" className="flex flex-col w-full relative ">
       <input
         type={type}
         id={id}
@@ -49,8 +51,8 @@ export default function TextField({
         onKeyDown={handleKeyDown}
         onBlur={onBlur}
         className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle}`}
-        min={min}
-        max={max}
+        min={minLength}
+        max={maxLength}
         // もしtypeがdateだった場合にクリックでピッカーを表示させる
         onClick={(e) => {
           if (type === "date" && e.target.showPicker) {
@@ -58,6 +60,12 @@ export default function TextField({
           }
         }}
       />
-    </>
+
+      {count && (
+        <div className="absolute text-text-cap text-xs bottom-[-16px] right-0">
+          {currentLength}/{maxLength}
+        </div>
+      )}
+    </div>
   );
 }
