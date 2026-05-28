@@ -22,6 +22,8 @@ import Button from "@/components/ui/Button";
  */
 import MoneyBag from "@/assets/icons/MoneyBag";
 import Close from "@/assets/icons/close.svg";
+import Trash from "@/assets/icons/trash.svg";
+import Help from "@/assets/icons/help.svg";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -95,54 +97,72 @@ export default function InputHistory() {
   }
 
   return (
-    <div className="p-space-600 fixed bg-bg w-full z-99 h-full top-[5%] left-0 rounded-t-2xl shadow-[0_1px_12px]">
-      <header className="relative text-center pb-space-500 border-dot-underline">
-        <h1>おかねのきろく</h1>
-        <button
-          type="button"
-          onClick={handleClose}
-          className="absolute top-[-2px] right-0"
-        >
-          <img src={Close} />
-        </button>
-      </header>
-      <form
-        action=""
-        onSubmit={handleSend}
-        className="pb-space-500 pt-space-600 flex flex-col gap-6"
-      >
-        <div className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
-          {/* 金額の入力 */}
-          <AmountInput ref={amountRef} editItem={editItem} />
-          {/* 日付の入力 */}
-          <DateInput ref={dateRef} editItem={editItem} />
-        </div>
-        {/* カテゴリの一覧 */}
-        <div className="flex flex-col gap-4 pb-space-500">
-          <p className="font-deco text-xl text-main-default">
-            このおかねは・・・
-          </p>
-          <DisplayCategories ref={categoryRef} editItem={editItem} />
-        </div>
-        {/* TODO:バリデーションによって活性、非活性を切り替える */}
-        <div className="flex flex-col pb-space-500 border-dot-underline">
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            icon={MoneyBag}
-            className="w-full"
+    <div className="py-space-600 fixed bg-bg w-full h-[95vh] z-99 bottom-0 left-0 rounded-t-2xl shadow-[0_1px_12px] ">
+      <div className="w-full h-full overflow-auto px-space-600">
+        <header className="relative text-center pb-space-500 border-dot-underline pt-space-100">
+          <h1>おかねのきろく</h1>
+          <button
+            type="button"
+            onClick={handleClose}
+            className="absolute top-0 right-0"
           >
-            きろくする
+            <img src={Close} />
+          </button>
+        </header>
+        <form
+          action=""
+          onSubmit={handleSend}
+          className="pb-space-600 pt-space-600 flex flex-col gap-6"
+        >
+          <section className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
+            {/* 金額の入力 */}
+            <AmountInput ref={amountRef} editItem={editItem} />
+            {/* 日付の入力 */}
+            <DateInput ref={dateRef} editItem={editItem} />
+          </section>
+          {/* カテゴリの一覧 */}
+          <section className="flex flex-col gap-4">
+            <p className="font-deco text-xl text-main-default">
+              このおかねは・・・
+            </p>
+            <DisplayCategories ref={categoryRef} editItem={editItem} />
+          </section>
+          <section className="pb-space-400">
+            <p className="text-sm">✅サブスクリプション（※未実装）</p>
+          </section>
+          {/* TODO:バリデーションによって活性、非活性を切り替える */}
+          <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              icon={MoneyBag}
+              className="w-full"
+            >
+              きろくする
+            </Button>
+            {editItem && (
+              <Button
+                size="md"
+                variant="delete"
+                icon={Trash}
+                onClick={handleRemove}
+              >
+                きろくを削除する
+              </Button>
+            )}
+          </section>
+        </form>
+        <footer className="flex flex-col items-center">
+          <p>※未実装</p>
+          <Button variant="text" icon={Help}>
+            カテゴリー機能の使い方
           </Button>
-        </div>
-      </form>
-
-      {editItem && (
-        <button type="button" onClick={handleRemove}>
-          削除
-        </button>
-      )}
+          <Button variant="text" icon={Help}>
+            サブスクリプション機能
+          </Button>
+        </footer>
+      </div>
     </div>
   );
 }

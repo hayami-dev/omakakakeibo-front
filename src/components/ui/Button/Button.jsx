@@ -20,6 +20,7 @@ export default function Button({
       "bg-main-default text-button-text border-current border-1 hover:bg-main-soft  disabled:bg-disabled-soft disabled:text-disabled-default disabled:border-none",
     secondary: "border-1 border-current text-main-default hover:bg-main-bg",
     text: "text-sub-default hover:bg-sub-bg",
+    delete: "font-medium text-error-default bg-error-bg",
   };
 
   // 文字サイズのバリエーション
