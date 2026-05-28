@@ -7,7 +7,10 @@ export default function CategoryDisplay({ colorVar, catName }) {
   const catColor = getSafeColor(colorVar);
   return (
     <>
-      <div style={{ color: catColor }} className="col-span-6 flex gap-1">
+      <div
+        style={{ color: catColor }}
+        className="col-span-6 flex gap-1 tracking-normal"
+      >
         <span>●</span>
         <span className="break-all">{catName}</span>
       </div>

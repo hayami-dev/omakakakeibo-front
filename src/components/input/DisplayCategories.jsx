@@ -7,6 +7,7 @@ import {
   categoriesMasterAtom,
   resolveCategoryById,
 } from "@/service/categoryService";
+import CategoryButton from "@/components/ui/CategoryButton";
 
 const DisplayCategories = forwardRef(({ editItem }, ref) => {
   // カテゴリを取得
@@ -60,22 +61,17 @@ const DisplayCategories = forwardRef(({ editItem }, ref) => {
 
   return (
     <>
-      <div>
+      <div className=" flex flex-col justify-center gap-4">
         {displayCategories.map((cat) => {
+          const isSelected = selectCategory?.id === cat.id;
           return (
-            <button
-              type="button"
+            <CategoryButton
               key={cat.id}
+              catName={cat.name}
+              catStyle={cat.style}
+              isSelected={isSelected}
               onClick={() => setSelectCategory(cat)}
-              style={{
-                color:
-                  selectCategory?.id === cat.id ? "white" : cat.style.color,
-                backgroundColor:
-                  selectCategory?.id === cat.id ? cat.style.color : "white",
-              }}
-            >
-              {cat.name}
-            </button>
+            />
           );
         })}
       </div>
