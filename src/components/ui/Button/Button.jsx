@@ -12,20 +12,21 @@ export default function Button({
 }) {
   // ボタンの基本スタイル
   const baseStyle =
-    "font-bold rounded-md transition-colors inline-flex items-center justify-center gap-space-200 w-fit disabled:cursor-not-allowed";
+    "font-bold rounded-md transition-colors inline-flex items-center justify-center gap-space-200 w-full disabled:cursor-not-allowed";
 
   // 色のバリエーション
   const variantStyles = {
     primary:
       "bg-main-default text-button-text border-current border-1 hover:bg-main-soft  disabled:bg-disabled-soft disabled:text-disabled-default disabled:border-none",
-    secondary: "border-1 border-current text-main-default hover:bg-main-bg",
+    secondary:
+      "border-1 border-current text-main-default bg-secondary-button-bg hover:bg-main-bg",
     text: "text-sub-default hover:bg-sub-bg",
     delete: "font-medium text-error-default bg-error-bg",
   };
 
   // 文字サイズのバリエーション
   const sizeStyles = {
-    sm: "text-xs px-space-200 py-space-100",
+    sm: "text-sm p-space-200",
     md: "text-base px-space-400 py-space-200",
     lg: "text-xl px-space-500 py-space-300",
   };

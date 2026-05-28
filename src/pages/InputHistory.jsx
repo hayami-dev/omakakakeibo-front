@@ -132,13 +132,7 @@ export default function InputHistory() {
           </section>
           {/* TODO:バリデーションによって活性、非活性を切り替える */}
           <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              icon={MoneyBag}
-              className="w-full"
-            >
+            <Button type="submit" variant="primary" size="lg" icon={MoneyBag}>
               きろくする
             </Button>
             {editItem && (
