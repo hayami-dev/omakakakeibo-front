@@ -1,6 +1,7 @@
 /* 目標金額(budget)の変更画面 */
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useAtom, useAtomValue } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
@@ -12,6 +13,9 @@ import {
 } from "@/service/budgetService";
 import { getYearMonth } from "@/dateUtils";
 import { userIdAtom } from "@/service/authService";
+import BasePage from "@/components/ui/BasePage";
+import TextField from "@/components/ui/TextField";
+import Button from "@/components/ui/Button";
 
 export default function BudgetEdit() {
   // ユーザーIDを取得
@@ -48,10 +52,6 @@ export default function BudgetEdit() {
     setInputValue(String(monthlyBudget));
   }, [monthlyBudget]);
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
   // 空欄やマイナス値は0を入れる
   const handleBlur = () => {
     let num = Number(inputValue);
@@ -62,6 +62,9 @@ export default function BudgetEdit() {
 
     setInputValue(String(num));
   };
+
+  // ページ切替のためのフック
+  const navigate = useNavigate();
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -74,38 +77,47 @@ export default function BudgetEdit() {
 
     if (success) {
       alert("保存しました");
+      navigate("/user");
     }
   };
 
   return (
     <>
-      <h1>目標金額の変更</h1>
-      <p>デフォルトは{strInitialMonthlyBudget}円です。</p>
-      <br />
-      <p>
-        今の目標金額：<strong>{monthlyBudget.toLocaleString()}円</strong>
-      </p>
-      <br />
-      <p>
-        {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
-        円までの金額を入力してください。
-      </p>
-      <br />
-      <form action="" onSubmit={handleSave}>
+      <BasePage title={"目標金額の設定"}>
         <div>
-          <label htmlFor="monthly-budget">目標金額</label>
-          <input
-            type="number"
-            name="monthly-budget"
-            value={inputValue}
-            onChange={handleInputChange}
-            onBlur={handleBlur}
-            id="monthly-budget"
-          />
-          円
+          <p>
+            毎月の金額の上限を設定してください。
+            つかいすぎの防止や、日々の振り返りに 使えます。
+          </p>
+          <p className="text-sm text-text-cap pt-4">
+            デフォルトは{strInitialMonthlyBudget}円です。
+            <br />
+            <span>
+              {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
+              円までの金額を入力してください。
+            </span>
+          </p>
         </div>
-        <button type="submit">変更</button>
-      </form>
+        <form action="" onSubmit={handleSave} className="flex flex-col gap-8">
+          <fieldset className="flex gap-4 items-baseline text-lg font-black">
+            <label htmlFor="monthly-budget" className="text-nowrap">
+              目標金額
+            </label>
+            <TextField
+              type="number"
+              value={inputValue}
+              onChange={setInputValue}
+              onBlur={handleBlur}
+              id="monthly-budget"
+              className="w-full"
+            />
+            円
+          </fieldset>
+          <Button type="submit" variant="primary">
+            変更
+          </Button>
+        </form>
+      </BasePage>
     </>
   );
 }

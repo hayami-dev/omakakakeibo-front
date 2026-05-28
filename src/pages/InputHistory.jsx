@@ -6,20 +6,24 @@ import { useNavigate, useLocation } from "react-router";
 /*
  * service
  */
-import { historiesAtom } from "@/service/historyService";
+import { historiesAtom, currentMonthAtom } from "@/service/historyService";
 import { userIdAtom } from "@/service/authService";
-/*
- * css
- */
-import "@/pages/InputHistory.css";
+import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
+
 /*
  * components
  */
 import DisplayCategories from "@/components/input/DisplayCategories";
 import AmountInput from "@/components/input/AmountInput";
 import DateInput from "@/components/input/DateInput";
-import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
-import { currentMonthAtom } from "@/service/historyService";
+import Button from "@/components/ui/Button";
+/*
+ * assets
+ */
+import MoneyBag from "@/assets/icons/MoneyBag";
+import Close from "@/assets/icons/close.svg";
+import Trash from "@/assets/icons/trash.svg";
+import Help from "@/assets/icons/help.svg";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -62,8 +66,6 @@ export default function InputHistory() {
       setHistories,
     });
 
-    console.log(formData);
-
     if (success) {
       handleClose();
       const thisMonth = formData.finalDate.substring(0, 7);
@@ -95,23 +97,66 @@ export default function InputHistory() {
   }
 
   return (
-    <div className="modal-dialog">
-      <form action="" onSubmit={handleSend}>
-        {/* 金額の入力 */}
-        <AmountInput ref={amountRef} editItem={editItem} />
-        <DateInput ref={dateRef} editItem={editItem} />
-        {/* カテゴリの一覧 */}
-        <DisplayCategories ref={categoryRef} editItem={editItem} />
-        <button type="submit">送信</button>
-      </form>
-      <button type="button" onClick={handleClose}>
-        ✖ とじる
-      </button>
-      {editItem && (
-        <button type="button" onClick={handleRemove}>
-          削除
-        </button>
-      )}
+    <div className="py-space-600 fixed bg-bg w-full h-[95vh] z-99 bottom-0 left-0 rounded-t-2xl shadow-[0_1px_12px] ">
+      <div className="w-full h-full overflow-auto px-space-600">
+        <header className="relative text-center pb-space-500 border-dot-underline pt-space-100">
+          <h1>おかねのきろく</h1>
+          <button
+            type="button"
+            onClick={handleClose}
+            className="absolute top-0 right-0"
+          >
+            <img src={Close} />
+          </button>
+        </header>
+        <form
+          action=""
+          onSubmit={handleSend}
+          className="pb-space-600 pt-space-600 flex flex-col gap-6"
+        >
+          <section className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
+            {/* 金額の入力 */}
+            <AmountInput ref={amountRef} editItem={editItem} />
+            {/* 日付の入力 */}
+            <DateInput ref={dateRef} editItem={editItem} />
+          </section>
+          {/* カテゴリの一覧 */}
+          <section className="flex flex-col gap-4">
+            <p className="font-deco text-xl text-main-default">
+              このおかねは・・・
+            </p>
+            <DisplayCategories ref={categoryRef} editItem={editItem} />
+          </section>
+          <section className="pb-space-400">
+            <p className="text-sm">✅サブスクリプション（※未実装）</p>
+          </section>
+          {/* TODO:バリデーションによって活性、非活性を切り替える */}
+          <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
+            <Button type="submit" variant="primary" size="lg" icon={MoneyBag}>
+              きろくする
+            </Button>
+            {editItem && (
+              <Button
+                size="md"
+                variant="delete"
+                icon={Trash}
+                onClick={handleRemove}
+              >
+                きろくを削除する
+              </Button>
+            )}
+          </section>
+        </form>
+        <footer className="flex flex-col items-center">
+          <p>※未実装</p>
+          <Button variant="text" icon={Help}>
+            カテゴリー機能の使い方
+          </Button>
+          <Button variant="text" icon={Help}>
+            サブスクリプション機能
+          </Button>
+        </footer>
+      </div>
     </div>
   );
 }

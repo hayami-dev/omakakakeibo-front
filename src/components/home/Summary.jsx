@@ -67,13 +67,13 @@ export default function Summary() {
       </button>
       <div className="bg-bg-section2 justify-items-center col-span-8 px-space-400 py-space-200 rounded-3xl rounded-br-xs">
         <div className="w-[fit-content]">
-          <p className="text-sm  font-bold tracking-wide">
+          <p className="text-sm font-bold">
             <span className="text-xl pr-[0.1rem]">
               {extractMonth(currentMonth)}
             </span>
             月のきろく
           </p>
-          <p className="flex items-baseline tracking-wider font-extrabold text-xl">
+          <p className="flex items-baseline font-extrabold text-xl">
             <strong className="text-3xl pr-[0.25rem]">
               {total?.toLocaleString()}
             </strong>

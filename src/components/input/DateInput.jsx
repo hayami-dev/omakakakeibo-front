@@ -5,6 +5,7 @@ import { forwardRef, useImperativeHandle, useState } from "react";
  * utils
  */
 import { getFormattedDate } from "@/dateUtils";
+import TextField from "@/components/ui/TextField";
 
 const DateInput = forwardRef(({ editItem }, ref) => {
   // 日付関係の取得
@@ -24,16 +25,17 @@ const DateInput = forwardRef(({ editItem }, ref) => {
   }));
 
   return (
-    <>
-      <input
+    <fieldset className="flex items-center gap-6 w-fit">
+      <label>つかった日付</label>
+      <TextField
         type="date"
         value={inputDate}
-        placeholder="おかねをつかった年月日"
         min={limitDate}
         max={today}
-        onChange={(e) => setInputDate(e.target.value)}
+        onChange={setInputDate}
+        className="w-[180px]"
       />
-    </>
+    </fieldset>
   );
 });
 export default DateInput;
