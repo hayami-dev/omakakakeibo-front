@@ -17,6 +17,7 @@ import DisplayCategories from "@/components/input/DisplayCategories";
 import AmountInput from "@/components/input/AmountInput";
 import DateInput from "@/components/input/DateInput";
 import Button from "@/components/ui/Button";
+import MoneyBag from "@/assets/icons/MoneyBag";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -58,8 +59,6 @@ export default function InputHistory() {
       editItem,
       setHistories,
     });
-
-    console.log(formData);
 
     if (success) {
       handleClose();
@@ -117,11 +116,18 @@ export default function InputHistory() {
           </p>
           <DisplayCategories ref={categoryRef} editItem={editItem} />
         </div>
-        {/* <div className="pb-space-500 border-dot-underline">
-          <Button variant="primary" size="lg" type="submit">
+        {/* TODO:バリデーションによって活性、非活性を切り替える */}
+        <div className="flex flex-col pb-space-500 border-dot-underline">
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            icon={MoneyBag}
+            className="w-full"
+          >
             きろくする
           </Button>
-        </div> */}
+        </div>
       </form>
 
       {editItem && (

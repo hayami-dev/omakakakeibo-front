@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router";
 import Button from "@/components/ui/Button";
-import MoneyBag from "../assets/icons/money_bag.svg";
+import MoneyBag from "@/assets/icons/MoneyBag";
 
 export default function Footer() {
   // ページ切替のためのフック
