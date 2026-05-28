@@ -8,15 +8,14 @@ export default function CategoryButton({
   catStyle,
   onClick,
   isSelected,
-  size = "md",
+  readOnly = false,
+  className = "",
 }) {
-  const baseStyle =
-    "flex gap-4 items-center justify-center text-lg font-black px-4 py-2 rounded-full border transition-all w-full";
+  // 読み取り専用時は選択中のUIにする
+  isSelected = readOnly ? true : isSelected;
 
-  const sizeStyle = {
-    md: "",
-    sm: "scale-75",
-  };
+  const baseStyle =
+    "flex gap-4 items-center justify-center text-base text-lg font-black rounded-full border transition-all w-full px-4 py-2";
 
   const textColor = getSafeColor(catStyle?.color);
   const bgColor = getSafeColor(catStyle?.backgroundColor);
@@ -26,8 +25,9 @@ export default function CategoryButton({
     color: textColor,
     backgroundColor: isSelected ? bgColor : "white",
     borderColor: textColor,
-    opacity: isSelected ? "1" : "0.6",
+    opacity: readOnly ? "1" : isSelected ? "1" : "0.6",
     boxShadow: isSelected ? `0 4px 4px ${disabledColor}4D` : "none",
+    cursor: readOnly ? "default" : "pointer",
   };
 
   // 処理
@@ -35,12 +35,11 @@ export default function CategoryButton({
     <>
       <button
         type="button"
-        className={`${baseStyle} ${sizeStyle[size]}`}
-        onClick={onClick}
+        className={`${baseStyle} ${className}`}
+        onClick={readOnly ? undefined : onClick}
         style={activeStyle}
       >
-        {isSelected ? <Check /> : <NotChecked />}
-
+        {readOnly ? null : isSelected ? <Check /> : <NotChecked />}
         <span>{catName}</span>
       </button>
     </>

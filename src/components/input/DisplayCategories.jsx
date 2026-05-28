@@ -64,6 +64,8 @@ const DisplayCategories = forwardRef(({ editItem }, ref) => {
       <div className=" flex flex-col justify-center gap-4">
         {displayCategories.map((cat) => {
           const isSelected = selectCategory?.id === cat.id;
+          // console.log("cat.style", cat.style);
+
           return (
             <CategoryButton
               key={cat.id}
