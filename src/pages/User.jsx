@@ -37,7 +37,6 @@ export default function User() {
           variant="secondary"
           size="sm"
           icon={EditIcon}
-          className="w-full"
           onClick={() => navigate("/user/budgetEdit")}
         >
           目標金額を変更する
@@ -60,7 +59,6 @@ export default function User() {
           variant="secondary"
           size="sm"
           icon={EditIcon}
-          className="w-full"
           onClick={() => navigate("/user/categoryEdit")}
         >
           カテゴリーを変更する
@@ -73,7 +71,7 @@ export default function User() {
           variant="secondary"
           size="sm"
           icon={EditIcon}
-          className="w-fit mt-2"
+          className="!w-fit mt-2"
           onClick={() => navigate("/")}
         >
           ユーザーIDの変更
@@ -86,7 +84,7 @@ export default function User() {
           variant="secondary"
           size="sm"
           icon={EditIcon}
-          className="w-fit mt-3"
+          className="!w-fit mt-3"
           onClick={() => navigate("/")}
         >
           パスワードの変更

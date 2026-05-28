@@ -5,8 +5,9 @@ export default function TextField({
   id,
   placeholder = "",
   value,
-  onChange,
-  onKeyDown,
+  onChange = () => {},
+  onKeyDown = () => {},
+  onBlur = () => {},
   className = "",
   size = "md",
   min = "",
@@ -44,10 +45,9 @@ export default function TextField({
         id={id}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => {
-          if (onChange) onChange(e.target.value);
-        }}
+        onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
+        onBlur={onBlur}
         className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle}`}
         min={min}
         max={max}
