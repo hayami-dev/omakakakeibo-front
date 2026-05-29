@@ -1,23 +1,63 @@
 /* ユーザー情報を表示する画面 */
 
-import { useAtomValue } from "jotai";
-import { NavLink, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useNavigate } from "react-router";
+// Service
 import { activeCategoriesAtom } from "@/service/categoryService";
-import { monthlyBudgetAtom } from "@/service/budgetService";
+import { currentMonthAtom } from "@/service/historyService";
+import {
+  budgetService,
+  monthlyBudgetAtom,
+  INITIAL_MONTHLY_BUDGET,
+  checkIsEditBudget,
+} from "@/service/budgetService";
+import { userIdAtom } from "@/service/authService";
+// components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
 import CategoryButton from "@/components/ui/CategoryButton";
+import AttentionText from "@/components/ui/HelpText";
 
 // ユーザー個別の情報の表示画面
 export default function User() {
+  // ユーザーIDを取得
+  const USER_ID = useAtomValue(userIdAtom);
+
+  // 選択中の月
+  const currentMonth = useAtomValue(currentMonthAtom);
+  // 目標金額の取得
+  const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
+
   // カテゴリ一覧を取得
   const activeCategories = useAtomValue(activeCategoriesAtom);
 
   // 目標金額を取得
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
 
+  // 目標金額の変更が可能かどうかの判定
+  const [isEditBudget, setIsEditBudget] = useState(true);
+
   // ページ切替のためのフック
   const navigate = useNavigate();
+
+  // DBから目標金額を取得
+  useEffect(() => {
+    const loadBudget = async () => {
+      if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
+        return;
+      }
+      const amount = await budgetService.loadBudgetWithFallback(
+        USER_ID,
+        currentMonth,
+      );
+      setMonthlyBudget(amount);
+
+      const isRegistered = checkIsEditBudget(USER_ID, currentMonth);
+      setIsEditBudget(isRegistered);
+    };
+    loadBudget();
+  }, [currentMonth, USER_ID]);
 
   // 処理
   return (
@@ -33,14 +73,18 @@ export default function User() {
             円
           </span>
         </h2>
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={EditIcon}
-          onClick={() => navigate("/user/budgetEdit")}
-        >
-          目標金額を変更する
-        </Button>
+        <div className="w-full flex flex-col items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={EditIcon}
+            onClick={() => navigate("/user/budgetEdit")}
+            disabled={!isEditBudget}
+          >
+            目標金額を変更する
+          </Button>
+          {!isEditBudget && <AttentionText>今月は変更済みです。</AttentionText>}
+        </div>
       </section>
       <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600 text-center">
         <h2>カテゴリーの一覧</h2>

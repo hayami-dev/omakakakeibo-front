@@ -31,6 +31,9 @@ export default function BudgetEdit() {
   // inputの入力値
   const [inputValue, setInputValue] = useState(monthlyBudget);
 
+  // エラーメッセージを管理
+  const [errorText, setErrorText] = useState("");
+
   // デフォルト値、最大値、最小値を取得
   const strInitialMonthlyBudget = INITIAL_MONTHLY_BUDGET.toLocaleString();
   const strMonthlyBudgetMin = BUDGET_MIN_AMOUNT.toLocaleString();
@@ -39,14 +42,17 @@ export default function BudgetEdit() {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      const budgetAmount = await budgetService.fetchMonthlyBudget(
+      if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
+        return;
+      }
+      const amount = await budgetService.loadBudgetWithFallback(
         USER_ID,
         currentMonth,
       );
-      setMonthlyBudget(budgetAmount);
+      setMonthlyBudget(amount);
     };
     loadBudget();
-  }, [currentMonth, setMonthlyBudget]);
+  }, [currentMonth]);
 
   // 目標金額の変更（ロード完了など）と同時にinputValueに挿入
   useEffect(() => {
@@ -57,11 +63,15 @@ export default function BudgetEdit() {
   const handleBlur = () => {
     let num = Number(inputValue);
 
-    if (isNaN(num) || num < 0) {
-      num = 0;
+    if (inputValue === "" || isNaN(num)) {
+      setErrorText("金額を入力してください。");
+    } else if (num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
+      setErrorText(
+        `${strMonthlyBudgetMin}～${strMonthlyBudgetMax}円の間で入力してください。`,
+      );
+    } else {
+      setErrorText("");
     }
-
-    setInputValue(String(num));
   };
 
   // ページ切替のためのフック
@@ -69,16 +79,27 @@ export default function BudgetEdit() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const success = await updateBudget({
-      inputValue,
-      USER_ID,
-      currentMonth,
-      setMonthlyBudget,
-    });
 
-    if (success) {
-      alert("保存しました");
-      navigate("/user");
+    try {
+      const success = await updateBudget({
+        inputValue,
+        USER_ID,
+        currentMonth,
+        setMonthlyBudget,
+      });
+
+      if (success) {
+        alert("保存しました");
+        navigate("/user");
+      }
+    } catch (error) {
+      if (error.message === "ALREADY_EXISTS") {
+        alert(
+          "⚠️ 今月の目標金額はすでに登録されています。\n目標金額の変更は1ヶ月に1回のみです。",
+        );
+      } else {
+        alert("通信に失敗しました。時間を置いて再度お試しください。");
+      }
     }
   };
 
@@ -99,26 +120,30 @@ export default function BudgetEdit() {
               {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
               円までの金額を
               <br />
-              入力してください。{" "}
+              入力してください。
             </AttentionText>
           </div>
         </div>
         <form action="" onSubmit={handleSave} className="flex flex-col gap-8">
-          <fieldset className="flex gap-4 items-baseline text-lg font-black">
-            <label htmlFor="monthly-budget" className="text-nowrap">
-              目標金額
-            </label>
-            <TextField
-              type="number"
-              value={inputValue}
-              onChange={setInputValue}
-              onBlur={handleBlur}
-              id="monthly-budget"
-              className="w-full"
-            />
-            円
+          <fieldset className="flex flex-col gap-2 text-center">
+            <div className="flex gap-4 items-baseline text-lg font-black">
+              <label htmlFor="monthly-budget" className="text-nowrap">
+                目標金額
+              </label>
+              <TextField
+                type="number"
+                value={inputValue}
+                onChange={setInputValue}
+                onBlur={handleBlur}
+                id="monthly-budget"
+                className="w-full"
+                isError={!!errorText}
+              />
+              円
+            </div>
+            {errorText && <p className="text-error-default">{errorText}</p>}
           </fieldset>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" disabled={!!errorText}>
             変更
           </Button>
         </form>

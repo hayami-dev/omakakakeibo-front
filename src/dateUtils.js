@@ -62,3 +62,13 @@ export function getRecentMonthsRange(count = 6) {
   }
   return months.reverse();
 }
+
+// 先月を取得
+export function getPrevMonth(currentMonth) {
+  const [year, month] = currentMonth.split("-").map(Number);
+  const date = new Date(year, month - 1 - 1, 1);
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  return `${yyyy}-${mm}`;
+}

@@ -17,9 +17,9 @@ export default function Button({
   // 色のバリエーション
   const variantStyles = {
     primary:
-      "bg-main-default text-button-text border-current border-1 hover:bg-main-soft  disabled:bg-disabled-soft disabled:text-disabled-default disabled:border-none",
+      "bg-main-default text-button-text border-current border-1 hover:bg-main-soft disabled:bg-disabled-soft disabled:text-disabled-default disabled:border-none disabled:pointer-events-none",
     secondary:
-      "border-1 border-current text-main-default bg-secondary-button-bg hover:bg-main-bg",
+      "border-1 border-current text-main-default bg-secondary-button-bg hover:bg-main-bg disabled:text-disabled-default disabled:pointer-events-none",
     text: "text-sub-default hover:bg-sub-bg",
     delete: "font-medium text-error-default bg-error-bg",
   };
