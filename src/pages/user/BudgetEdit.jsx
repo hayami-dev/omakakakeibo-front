@@ -99,7 +99,7 @@ export default function BudgetEdit() {
               {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
               円までの金額を
               <br />
-              入力してください。{" "}
+              入力してください。
             </AttentionText>
           </div>
         </div>
