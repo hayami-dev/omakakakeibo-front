@@ -1,6 +1,6 @@
 /* ユーザー情報を表示する画面 */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useNavigate } from "react-router";
 // Service
@@ -10,12 +10,14 @@ import {
   budgetService,
   monthlyBudgetAtom,
   INITIAL_MONTHLY_BUDGET,
+  checkIsEditBudget,
 } from "@/service/budgetService";
 import { userIdAtom } from "@/service/authService";
 // components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
 import CategoryButton from "@/components/ui/CategoryButton";
+import AttentionText from "@/components/ui/HelpText";
 
 // ユーザー個別の情報の表示画面
 export default function User() {
@@ -33,6 +35,9 @@ export default function User() {
   // 目標金額を取得
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
 
+  // 目標金額の変更が可能かどうかの判定
+  const [isEditBudget, setIsEditBudget] = useState(false);
+
   // ページ切替のためのフック
   const navigate = useNavigate();
 
@@ -47,15 +52,18 @@ export default function User() {
         currentMonth,
       );
       setMonthlyBudget(amount);
+
+      const isRegistered = checkIsEditBudget(USER_ID, currentMonth);
+      setIsEditBudget(isRegistered);
     };
     loadBudget();
-  }, [currentMonth]);
+  }, [currentMonth, USER_ID]);
 
   // 処理
   return (
     <main className="flex flex-col gap-7 w-full p-space-600">
       <h1 className="text-center">ユーザー情報</h1>
-      <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600">
+      <section className="w-full flex flex-col items-center gap-6 border-dot-underline pb-space-600">
         <h2 className="flex justify-between items-baseline bg-bg-section2 px-space-600 py-space-400 rounded-3xl">
           <span>目標金額</span>
           <span>
@@ -65,14 +73,18 @@ export default function User() {
             円
           </span>
         </h2>
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={EditIcon}
-          onClick={() => navigate("/user/budgetEdit")}
-        >
-          目標金額を変更する
-        </Button>
+        <div className="w-full flex flex-col items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={EditIcon}
+            onClick={() => navigate("/user/budgetEdit")}
+            disabled={!isEditBudget}
+          >
+            目標金額を変更する
+          </Button>
+          {!isEditBudget && <AttentionText>今月は変更済みです。</AttentionText>}
+        </div>
       </section>
       <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600 text-center">
         <h2>カテゴリーの一覧</h2>

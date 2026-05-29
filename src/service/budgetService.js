@@ -77,9 +77,9 @@ export const budgetService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(value),
       });
-      // 500エラー（サーバーエラー）が返ってきた時の判定
-      if (response.status === 500) {
-        throw new Error("すでに今月は登録されています");
+      // Javaで返した409（サーバーエラー）が返ってきた時の判定
+      if (response.status === 409) {
+        throw new Error("ALREADY_EXISTS"); // 画面側で判定するための目印
       }
 
       if (!response.ok) throw new Error("ネットワークエラー");
@@ -90,7 +90,7 @@ export const budgetService = {
       return data;
     } catch (error) {
       console.error("目標金額データ追加に失敗...", error);
-      return null;
+      throw error;
     }
   },
   /*  */
@@ -183,7 +183,22 @@ export const updateBudget = async ({
     return true;
   } catch (error) {
     console.error("目標金額の保存に失敗しました", error);
-    alert("保存に失敗しました。");
-    return false;
+    throw error;
   }
 };
+
+/**
+ * 目標金額の変更が可能かどうかを判定
+ */
+export async function checkIsEditBudget(USER_ID, currentMonth) {
+  const realAmount = await budgetService.fetchMonthlyBudget(
+    USER_ID,
+    currentMonth,
+  );
+
+  if (realAmount !== null) {
+    return false;
+  } else {
+    return true;
+  }
+}

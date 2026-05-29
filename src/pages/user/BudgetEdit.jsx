@@ -72,16 +72,27 @@ export default function BudgetEdit() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const success = await updateBudget({
-      inputValue,
-      USER_ID,
-      currentMonth,
-      setMonthlyBudget,
-    });
 
-    if (success) {
-      alert("保存しました");
-      navigate("/user");
+    try {
+      const success = await updateBudget({
+        inputValue,
+        USER_ID,
+        currentMonth,
+        setMonthlyBudget,
+      });
+
+      if (success) {
+        alert("保存しました");
+        navigate("/user");
+      }
+    } catch (error) {
+      if (error.message === "ALREADY_EXISTS") {
+        alert(
+          "⚠️ 今月の目標金額はすでに登録されています。\n目標金額の変更は1ヶ月に1回のみです。",
+        );
+      } else {
+        alert("通信に失敗しました。時間を置いて再度お試しください。");
+      }
     }
   };
 
