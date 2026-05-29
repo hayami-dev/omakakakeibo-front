@@ -36,7 +36,7 @@ export default function User() {
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
 
   // 目標金額の変更が可能かどうかの判定
-  const [isEditBudget, setIsEditBudget] = useState(false);
+  const [isEditBudget, setIsEditBudget] = useState(true);
 
   // ページ切替のためのフック
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ export default function User() {
   return (
     <main className="flex flex-col gap-7 w-full p-space-600">
       <h1 className="text-center">ユーザー情報</h1>
-      <section className="w-full flex flex-col items-center gap-6 border-dot-underline pb-space-600">
+      <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600">
         <h2 className="flex justify-between items-baseline bg-bg-section2 px-space-600 py-space-400 rounded-3xl">
           <span>目標金額</span>
           <span>

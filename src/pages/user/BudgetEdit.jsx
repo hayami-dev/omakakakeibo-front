@@ -31,6 +31,9 @@ export default function BudgetEdit() {
   // inputの入力値
   const [inputValue, setInputValue] = useState(monthlyBudget);
 
+  // エラーメッセージを管理
+  const [errorText, setErrorText] = useState("");
+
   // デフォルト値、最大値、最小値を取得
   const strInitialMonthlyBudget = INITIAL_MONTHLY_BUDGET.toLocaleString();
   const strMonthlyBudgetMin = BUDGET_MIN_AMOUNT.toLocaleString();
@@ -60,11 +63,15 @@ export default function BudgetEdit() {
   const handleBlur = () => {
     let num = Number(inputValue);
 
-    if (isNaN(num) || num < 0) {
-      num = 0;
+    if (inputValue === "" || isNaN(num)) {
+      setErrorText("金額を入力してください。");
+    } else if (num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
+      setErrorText(
+        `${strMonthlyBudgetMin}～${strMonthlyBudgetMax}円の間で入力してください。`,
+      );
+    } else {
+      setErrorText("");
     }
-
-    setInputValue(String(num));
   };
 
   // ページ切替のためのフック
@@ -118,21 +125,25 @@ export default function BudgetEdit() {
           </div>
         </div>
         <form action="" onSubmit={handleSave} className="flex flex-col gap-8">
-          <fieldset className="flex gap-4 items-baseline text-lg font-black">
-            <label htmlFor="monthly-budget" className="text-nowrap">
-              目標金額
-            </label>
-            <TextField
-              type="number"
-              value={inputValue}
-              onChange={setInputValue}
-              onBlur={handleBlur}
-              id="monthly-budget"
-              className="w-full"
-            />
-            円
+          <fieldset className="flex flex-col gap-2 text-center">
+            <div className="flex gap-4 items-baseline text-lg font-black">
+              <label htmlFor="monthly-budget" className="text-nowrap">
+                目標金額
+              </label>
+              <TextField
+                type="number"
+                value={inputValue}
+                onChange={setInputValue}
+                onBlur={handleBlur}
+                id="monthly-budget"
+                className="w-full"
+                isError={!!errorText}
+              />
+              円
+            </div>
+            {errorText && <p className="text-error-default">{errorText}</p>}
           </fieldset>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" disabled={!!errorText}>
             変更
           </Button>
         </form>

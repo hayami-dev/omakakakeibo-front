@@ -14,6 +14,7 @@ export default function TextField({
   minLength = "",
   count = false,
   currentLength = "",
+  isError = false,
 }) {
   // 基本スタイル
   const baseStyle =
@@ -50,7 +51,9 @@ export default function TextField({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={onBlur}
-        className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle}`}
+        className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle} ${
+          isError ? "!bg-error-bg" : ""
+        }`}
         min={minLength}
         max={maxLength}
         // もしtypeがdateだった場合にクリックでピッカーを表示させる
