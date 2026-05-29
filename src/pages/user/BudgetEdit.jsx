@@ -39,14 +39,17 @@ export default function BudgetEdit() {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      const budgetAmount = await budgetService.fetchMonthlyBudget(
+      if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
+        return;
+      }
+      const amount = await budgetService.loadBudgetWithFallback(
         USER_ID,
         currentMonth,
       );
-      setMonthlyBudget(budgetAmount);
+      setMonthlyBudget(amount);
     };
     loadBudget();
-  }, [currentMonth, setMonthlyBudget]);
+  }, [currentMonth]);
 
   // 目標金額の変更（ロード完了など）と同時にinputValueに挿入
   useEffect(() => {

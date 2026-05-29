@@ -2,7 +2,10 @@
 
 import { useEffect } from "react";
 import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import { NavLink, Outlet } from "react-router";
+import { Outlet } from "react-router";
+/*
+ * utils */
+import { getYearMonth } from "@/dateUtils";
 /**
  * components
  */
@@ -17,7 +20,6 @@ import Footer from "@/components/Footer";
 import { currentMonthAtom } from "@/service/historyService";
 import { budgetService, monthlyBudgetAtom } from "@/service/budgetService";
 import { userIdAtom } from "@/service/authService";
-import { getYearMonth } from "@/dateUtils";
 
 export default function Home() {
   // ユーザーIDを取得
@@ -33,20 +35,19 @@ export default function Home() {
   useEffect(() => {
     const thisMonth = getYearMonth();
     setCurrentMonth(thisMonth);
-  }, [setCurrentMonth]); // 👈 目的が「月のリセット」なので、ここで一旦完結させる
+  }, [setCurrentMonth]);
 
   // DBから目標金額を取得
   useEffect(() => {
     const loadBudget = async () => {
-      const budget = await budgetService.fetchMonthlyBudget(
+      const amount = await budgetService.loadBudgetWithFallback(
         USER_ID,
         currentMonth,
       );
-      setMonthlyBudget(budget);
+      setMonthlyBudget(amount);
     };
-
     loadBudget();
-  }, [currentMonth, setMonthlyBudget]);
+  }, [currentMonth]);
 
   return (
     <>

@@ -1,15 +1,32 @@
 /* ユーザー情報を表示する画面 */
 
-import { useAtomValue } from "jotai";
-import { NavLink, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useNavigate } from "react-router";
+// Service
 import { activeCategoriesAtom } from "@/service/categoryService";
-import { monthlyBudgetAtom } from "@/service/budgetService";
+import { currentMonthAtom } from "@/service/historyService";
+import {
+  budgetService,
+  monthlyBudgetAtom,
+  INITIAL_MONTHLY_BUDGET,
+} from "@/service/budgetService";
+import { userIdAtom } from "@/service/authService";
+// components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
 import CategoryButton from "@/components/ui/CategoryButton";
 
 // ユーザー個別の情報の表示画面
 export default function User() {
+  // ユーザーIDを取得
+  const USER_ID = useAtomValue(userIdAtom);
+
+  // 選択中の月
+  const currentMonth = useAtomValue(currentMonthAtom);
+  // 目標金額の取得
+  const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
+
   // カテゴリ一覧を取得
   const activeCategories = useAtomValue(activeCategoriesAtom);
 
@@ -18,6 +35,21 @@ export default function User() {
 
   // ページ切替のためのフック
   const navigate = useNavigate();
+
+  // DBから目標金額を取得
+  useEffect(() => {
+    const loadBudget = async () => {
+      if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
+        return;
+      }
+      const amount = await budgetService.loadBudgetWithFallback(
+        USER_ID,
+        currentMonth,
+      );
+      setMonthlyBudget(amount);
+    };
+    loadBudget();
+  }, [currentMonth]);
 
   // 処理
   return (

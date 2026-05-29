@@ -4,6 +4,7 @@
  */
 
 import { atom } from "jotai";
+import { getPrevMonth } from "@/dateUtils";
 
 /**
  * @type {number} 初期状態の月間目標金額（デフォルト: 50,000円）
@@ -37,14 +38,27 @@ export const budgetService = {
       const response = await fetch(
         `http://localhost:8080/api/budget/${userId}/${targetMonth}`,
       );
+
+      // 見つからない(404)、中身が空(204)の場合
+      if (response.status === 404 || response.status === 204) {
+        return null;
+      }
+
+      // ネットワークのエラーが発生した場合
       if (!response.ok) throw new Error("ネットワークエラー");
 
-      const data = await response.json();
+      // 文字列としてデータを抜いてから中身を判定
+      const text = await response.text();
+      if (!text || text.trim() === "" || text === "null") {
+        return null;
+      }
 
-      return data ? data.targetAmount : INITIAL_MONTHLY_BUDGET;
+      const data = JSON.parse(text);
+
+      return data && data.targetAmount !== undefined ? data.targetAmount : null;
     } catch (error) {
       console.error("目標金額データ取得に失敗...", error);
-      return [];
+      return null;
     }
   },
   /**
@@ -63,6 +77,11 @@ export const budgetService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(value),
       });
+      // 500エラー（サーバーエラー）が返ってきた時の判定
+      if (response.status === 500) {
+        throw new Error("すでに今月は登録されています");
+      }
+
       if (!response.ok) throw new Error("ネットワークエラー");
 
       const data = await response.text();
@@ -73,6 +92,29 @@ export const budgetService = {
       console.error("目標金額データ追加に失敗...", error);
       return null;
     }
+  },
+  /*  */
+  async loadBudgetWithFallback(USER_ID, currentMonth) {
+    let targetMonth = currentMonth; // 最初は今月からスタート
+
+    // 今月を含めて最大6回、過去にさかのぼるループを回す
+    for (let i = 0; i < 6; i++) {
+      const amount = await budgetService.fetchMonthlyBudget(
+        USER_ID,
+        targetMonth,
+      );
+
+      if (amount !== null) {
+        // データが見つかったらそれを返す
+        return amount;
+      }
+
+      // 一カ月巻き戻す
+      targetMonth = getPrevMonth(targetMonth);
+    }
+
+    // 6ヶ月間すべて未登録の場合初期値を返す
+    return INITIAL_MONTHLY_BUDGET;
   },
 };
 
