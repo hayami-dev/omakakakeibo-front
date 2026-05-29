@@ -12,6 +12,7 @@ import BasePage from "@/components/ui/BasePage";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import AlertCircleIcon from "@/assets/icons/AlertCircleIcon";
+import AttentionText from "@/components/ui/HelpText";
 
 export default function CategoryEdit() {
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
@@ -46,25 +47,12 @@ export default function CategoryEdit() {
     <>
       <BasePage title="カテゴリーの変更">
         <p>６色のカテゴリー分けができます。</p>
-        <div className="flex flex-col gap-2  tracking-normal items-center">
-          <p className="flex gap-2 text-text-cap text-xs w-fit">
-            <span className="flex-shrink-0 mt-[-2px]">
-              <AlertCircleIcon />
-            </span>
-            空欄にすると非表示になります。
-          </p>
-          <p className="flex gap-2 text-text-cap text-xs w-fit">
-            <span className="flex-shrink-0 mt-[-2px]">
-              <AlertCircleIcon />
-            </span>
+        <div className="flex flex-col gap-2 tracking-normal items-center">
+          <AttentionText>空欄にすると非表示になります。</AttentionText>
+          <AttentionText>
             すでに登録されたきろくには反映されません。
-          </p>
-          <p className="flex gap-2 text-text-cap text-xs w-fit">
-            <span className="flex-shrink-0 mt-[-2px]">
-              <AlertCircleIcon />
-            </span>
-            カテゴリの変更は1日1回までです。
-          </p>
+          </AttentionText>
+          <AttentionText>カテゴリの変更は1日1回までです。</AttentionText>
         </div>
         <form action="" onSubmit={onSend} className="flex flex-col gap-4">
           {activeCategories.map((cat, index) => {
