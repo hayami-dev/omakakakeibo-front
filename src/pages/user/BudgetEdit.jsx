@@ -16,6 +16,7 @@ import { userIdAtom } from "@/service/authService";
 import BasePage from "@/components/ui/BasePage";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
+import AttentionText from "@/components/ui/HelpText";
 
 export default function BudgetEdit() {
   // ユーザーIDを取得
@@ -87,16 +88,20 @@ export default function BudgetEdit() {
         <div>
           <p>
             毎月の金額の上限を設定してください。
-            つかいすぎの防止や、日々の振り返りに 使えます。
-          </p>
-          <p className="text-sm text-text-cap pt-4">
-            デフォルトは{strInitialMonthlyBudget}円です。
             <br />
-            <span>
-              {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
-              円までの金額を入力してください。
-            </span>
+            つかいすぎの防止や、日々の振り返りに使えます。
           </p>
+          <div className="pt-4 flex flex-col gap-2 items-center">
+            <AttentionText>
+              デフォルトは{strInitialMonthlyBudget}円です。
+            </AttentionText>
+            <AttentionText>
+              {strMonthlyBudgetMin}～{strMonthlyBudgetMax}
+              円までの金額を
+              <br />
+              入力してください。{" "}
+            </AttentionText>
+          </div>
         </div>
         <form action="" onSubmit={handleSave} className="flex flex-col gap-8">
           <fieldset className="flex gap-4 items-baseline text-lg font-black">
