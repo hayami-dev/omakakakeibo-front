@@ -41,6 +41,11 @@ export default function TextField({
 
   const alignStyle = type === "number" ? "text-right" : "";
 
+  // typeによって最大/最小文字数or最大/最小値を分ける
+  const isTextType = type === "text" || type === "password" || type === "email";
+  const maxNum = Number(maxLength);
+  const minNum = Number(minLength);
+
   return (
     <div id="text-field-wrap" className="flex flex-col w-full relative ">
       <input
@@ -54,8 +59,12 @@ export default function TextField({
         className={`${baseStyle} ${sizeStyles[size]} ${className} ${alignStyle} ${
           isError ? "!bg-error-bg" : ""
         }`}
-        min={minLength}
-        max={maxLength}
+        // 文字列タイプの時は「maxLength / minLength」をセットする
+        maxLength={isTextType && maxLength ? maxNum : undefined}
+        minLength={isTextType && minLength ? minNum : undefined}
+        // 数値や日付タイプの時だけ「max / min」をセットする
+        max={!isTextType && maxLength ? maxNum : undefined}
+        min={!isTextType && minLength ? minNum : undefined}
         // もしtypeがdateだった場合にクリックでピッカーを表示させる
         onClick={(e) => {
           if (type === "date" && e.target.showPicker) {

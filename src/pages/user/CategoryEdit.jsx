@@ -1,11 +1,12 @@
 /* ユーザー毎のカテゴリの変更画面 */
 
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useAtom } from "jotai";
 import {
-  categoryService,
   activeCategoriesAtom,
   checkAlreadyEditCategory,
+  updateCategories,
 } from "@/service/categoryService";
 import { getSafeColor } from "@/categoryColor";
 import BasePage from "@/components/ui/BasePage";
@@ -15,31 +16,70 @@ import AlertCircleIcon from "@/assets/icons/AlertCircleIcon";
 import AttentionText from "@/components/ui/HelpText";
 
 export default function CategoryEdit() {
+  // アクティブなカテゴリを取得
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
+
+  // 一時変更用のカテゴリリスト
+  const [localCategories, setLocalCategories] = useState(activeCategories);
 
   //カテゴリの変更が可能かどうか
   const today = new Date();
   const isEdit = checkAlreadyEditCategory(today, activeCategories);
 
+  console.log("isEdit", isEdit);
+
+  // 目標金額の変更（ロード完了など）と同時にinputValueに挿入
+  useEffect(() => {
+    setLocalCategories(activeCategories);
+  }, [activeCategories]);
+
   // リアルタイムで変更を監視
   // 渡されたcat.activeCatId,e.target.valueをそれぞれ引数へ
   const handleInputChange = (id, newName) => {
-    setActiveCategories((prev) =>
+    setLocalCategories((prev) =>
       prev.map((cat) =>
         cat.activeCatId === id ? { ...cat, categoryName: newName } : cat,
       ),
     );
   };
 
+  // activeCategoriesに空欄がいくつ含まれているかをカウント
+  function handleCheckCategoryName() {
+    const emptyCount = localCategories.filter(
+      (cat) => !cat.categoryName || cat.categoryName.trim() === "",
+    ).length;
+
+    return emptyCount;
+  }
+
+  // 入力されたカテゴリが2つ以上あるかのBoolean値
+  const isTwoCategories =
+    activeCategories.length - handleCheckCategoryName() >= 2;
+
   const navigate = useNavigate();
   // 登録ボタン押下時、DB(カテゴリマスタ)に値を保存する
   const onSend = async () => {
     try {
-      categoryService.saveCategories(activeCategories);
-      navigate("/user");
-    } catch (error) {
-      console.error("カテゴリの保存に失敗しました…", error);
-      alert("保存に失敗しました。もう一度試してください。");
+      const success = await updateCategories({
+        localCategories,
+        setActiveCategories,
+      });
+
+      if (success) {
+        alert("保存しました！");
+        navigate("/user");
+      }
+    } catch (errorData) {
+      if (
+        errorData.code === "ERR_MONTHLY_LIMIT" ||
+        errorData.code === "ERR_MIN_CATEGORIES" ||
+        errorData.code === "ERR_CATEGORY_LENGTH"
+      ) {
+        alert(errorData.message);
+      } else {
+        console.error("カテゴリの登録に失敗...", errorData);
+        alert("予期せぬエラーが発生しました。");
+      }
     }
   };
 
@@ -49,13 +89,14 @@ export default function CategoryEdit() {
         <p>６色のカテゴリー分けができます。</p>
         <div className="flex flex-col gap-2 tracking-normal items-center">
           <AttentionText>空欄にすると非表示になります。</AttentionText>
+          <AttentionText>カテゴリーの変更は1ヶ月に1回までです。</AttentionText>
+          <AttentionText>カテゴリーは2つ以上登録してください。</AttentionText>
           <AttentionText>
             すでに登録されたきろくには反映されません。
           </AttentionText>
-          <AttentionText>カテゴリの変更は1日1回までです。</AttentionText>
         </div>
-        <form action="" onSubmit={onSend} className="flex flex-col gap-4">
-          {activeCategories.map((cat, index) => {
+        <form action="" className="flex flex-col gap-4">
+          {localCategories.map((cat, index) => {
             const bgColor = getSafeColor(cat.style.backgroundColor);
             const textColor = getSafeColor(cat.style.color);
             return (
@@ -80,6 +121,7 @@ export default function CategoryEdit() {
                     onChange={(value) =>
                       handleInputChange(cat.activeCatId, value)
                     }
+                    onBlur={handleCheckCategoryName}
                     placeholder="未登録"
                     maxLength="10"
                     minLength="0"
@@ -91,11 +133,21 @@ export default function CategoryEdit() {
             );
           })}
         </form>
-        <Button variant="primary" disabled={!isEdit}>
+        {!isTwoCategories && (
+          <p className="text-error-default">
+            カテゴリーを2つ以上入力してください。
+          </p>
+        )}
+        {!isEdit && (
+          <p className="text-error-default">今月は変更できません。</p>
+        )}
+        <Button
+          onClick={onSend}
+          variant="primary"
+          disabled={!isEdit || !isTwoCategories}
+        >
           変更
         </Button>
-        {/* デバッグ用：開発中だけ表示する */}
-        <button onClick={onSend}>(Debug)変更</button>{" "}
       </BasePage>
     </>
   );
