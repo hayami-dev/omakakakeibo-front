@@ -79,11 +79,22 @@ export const categoryService = {
           body: JSON.stringify(newCategories),
         },
       );
-      if (!response.ok) throw new Error("ネットワークエラー：onSend");
+      if (response.ok) return;
 
-      alert("保存しました！");
+      // Javaから返ってきたエラーJSONを解析する
+      const errorData = await response.json().catch(() => null);
+
+      if (errorData && errorData.code) {
+        throw errorData;
+      } else {
+        throw {
+          code: "ERR_UNKNOWN",
+          message: "ネットワークエラーが発生しました",
+        };
+      }
     } catch (error) {
       console.error("カテゴリの登録に失敗...", error);
+      throw error;
     }
   },
 };

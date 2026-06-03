@@ -35,11 +35,19 @@ export default function CategoryEdit() {
   // 登録ボタン押下時、DB(カテゴリマスタ)に値を保存する
   const onSend = async () => {
     try {
-      categoryService.saveCategories(activeCategories);
+      await categoryService.saveCategories(activeCategories);
+      alert("保存しました！");
       navigate("/user");
-    } catch (error) {
-      console.error("カテゴリの保存に失敗しました…", error);
-      alert("保存に失敗しました。もう一度試してください。");
+    } catch (errorData) {
+      if (
+        errorData.code === "ERR_MONTHLY_LIMIT" ||
+        errorData.code === "ERR_MIN_CATEGORIES"
+      ) {
+        alert(errorData.message);
+      } else {
+        console.error("カテゴリの登録に失敗...", errorData);
+        alert("予期せぬエラーが発生しました。");
+      }
     }
   };
 
