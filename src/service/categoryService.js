@@ -211,9 +211,35 @@ export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
   if (!latestDateObj) return true;
 
   // 月に変換
-  const todayMonth = `${todayObj.getFullYear()}-${todayObj.getMonth()}`;
-  const latestMonth = `${latestDateObj.getFullYear()}-${latestDateObj.getMonth()}`;
+  const todayMonth = `${todayObj.getFullYear()}-${todayObj.getMonth() + 1} `;
+  const latestMonth = `${latestDateObj.getFullYear()}-${latestDateObj.getMonth() + 1} `;
 
   // 日付が一致しなかったらtrue(編集可)を返す
   return todayMonth !== latestMonth;
+};
+
+/**
+ * ユーザーが編集したカテゴリリストをDBに保存し、JotaiのAtomも一括で最新にする
+ * @param {Object} params
+ * @param {Array<Object>} params.localCategories - 画面で編集された一時的なカテゴリ配列
+ * @param {Function} params.setActiveCategories - JotaiのAtomを更新するためのセッター関数
+ * @returns {Promise<boolean>} 成功したら true
+ */
+export const updateCategories = async ({
+  localCategories,
+  setActiveCategories,
+}) => {
+  const hasOverLength = localCategories.some(
+    (cat) => cat.categoryName && cat.categoryName.length > 10,
+  );
+
+  if (hasOverLength) {
+    alert("⚠️ カテゴリー名は10文字以内で入力してください。");
+    return false;
+  }
+
+  await categoryService.saveCategories(localCategories);
+  setActiveCategories(localCategories);
+
+  return true;
 };

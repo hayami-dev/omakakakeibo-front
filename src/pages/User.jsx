@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useNavigate } from "react-router";
 // Service
-import { activeCategoriesAtom } from "@/service/categoryService";
+import {
+  activeCategoriesAtom,
+  checkAlreadyEditCategory,
+} from "@/service/categoryService";
 import { currentMonthAtom } from "@/service/historyService";
 import {
   budgetService,
@@ -38,13 +41,16 @@ export default function User() {
   // 目標金額の変更が可能かどうかの判定
   const [isEditBudget, setIsEditBudget] = useState(false);
 
+  //カテゴリの変更が可能かどうか
+  const today = new Date();
+  const isEditCategory = checkAlreadyEditCategory(today, activeCategories);
+
   // ページ切替のためのフック
   const navigate = useNavigate();
 
   // 目標金額の変更が可能かどうかを判定
   useEffect(() => {
     const checkBudgetLock = async () => {
-      // 💡 途中で return させず、毎回必ず最新のDB状態をチェックしにいく！
       const canEdit = await checkIsEditBudget(USER_ID, currentMonth);
       setIsEditBudget(canEdit);
     };
@@ -109,14 +115,20 @@ export default function User() {
               </div>
             ))}
         </div>
-        <Button
-          variant="secondary"
-          size="sm"
-          icon={EditIcon}
-          onClick={() => navigate("/user/categoryEdit")}
-        >
-          カテゴリーを変更する
-        </Button>
+        <div className="w-full flex flex-col items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={EditIcon}
+            onClick={() => navigate("/user/categoryEdit")}
+            disabled={!isEditCategory}
+          >
+            カテゴリーを変更する
+          </Button>
+          {!isEditCategory && (
+            <AttentionText>今月は変更済みです。</AttentionText>
+          )}
+        </div>
       </section>
       <section className="flex flex-col gap-2">
         <h3>ユーザーID</h3>
