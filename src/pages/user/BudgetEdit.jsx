@@ -92,12 +92,11 @@ export default function BudgetEdit() {
         alert("保存しました");
         navigate("/user");
       }
-    } catch (error) {
-      if (error.message === "ALREADY_EXISTS") {
-        alert(
-          "⚠️ 今月の目標金額はすでに登録されています。\n目標金額の変更は1ヶ月に1回のみです。",
-        );
+    } catch (errorData) {
+      if (errorData.code === "ERR_BUDGET_DUPLICATE") {
+        alert(`${errorData.message}`);
       } else {
+        console.error("予算の保存に失敗...", errorData);
         alert("通信に失敗しました。時間を置いて再度お試しください。");
       }
     }

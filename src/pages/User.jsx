@@ -36,10 +36,21 @@ export default function User() {
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
 
   // 目標金額の変更が可能かどうかの判定
-  const [isEditBudget, setIsEditBudget] = useState(true);
+  const [isEditBudget, setIsEditBudget] = useState(false);
 
   // ページ切替のためのフック
   const navigate = useNavigate();
+
+  // 目標金額の変更が可能かどうかを判定
+  useEffect(() => {
+    const checkBudgetLock = async () => {
+      // 💡 途中で return させず、毎回必ず最新のDB状態をチェックしにいく！
+      const canEdit = await checkIsEditBudget(USER_ID, currentMonth);
+      setIsEditBudget(canEdit);
+    };
+
+    checkBudgetLock();
+  }, [currentMonth, USER_ID]);
 
   // DBから目標金額を取得
   useEffect(() => {
@@ -52,12 +63,9 @@ export default function User() {
         currentMonth,
       );
       setMonthlyBudget(amount);
-
-      const isRegistered = checkIsEditBudget(USER_ID, currentMonth);
-      setIsEditBudget(isRegistered);
     };
     loadBudget();
-  }, [currentMonth, USER_ID]);
+  }, [currentMonth, USER_ID, monthlyBudget]);
 
   // 処理
   return (
