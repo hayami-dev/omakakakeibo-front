@@ -5,35 +5,9 @@
 
 import { historyService } from "@/service/historyService";
 
-/**
- * 内部用：入力値の保存前バリデーション
- * @private
- * @param {string|number} inputAmount - 入力された金額
- * @param {string} inputDate - 選択された日付 (yyyy-MM-dd)
- * @param {Object|null} selectCategory - 選択されたカテゴリ情報オブジェクト
- * @returns {Promise<boolean>} バリデーションを通過した場合は true、不備がある場合は false
- */
-const inputHistoryValid = async (inputAmount, inputDate, selectCategory) => {
-  // 入力チェック
-  const amountNum = Number(inputAmount);
-
-  // 金額が未入力の場合
-  if (!inputAmount || isNaN(amountNum) || amountNum <= 0) {
-    alert("1円以上で入力してください");
-    return false;
-  }
-  // 日付が未入力の場合
-  if (!inputDate) {
-    alert("日付を選択してください");
-    return false;
-  }
-  // タグ未選択の場合
-  if (!selectCategory) {
-    alert("タグを選択してください");
-    return false;
-  }
-  return true;
-};
+// 金額の最大/最小値
+export const MAX_AMOUNT = 99999999;
+export const MIN_AMOUNT = 1;
 
 /**
  * 内部用：各入力コンポーネントの参照（Ref）を介して、フォームの入力値を一括リセットする
@@ -74,17 +48,12 @@ export const saveInputHistory = async ({
 }) => {
   const { finalAmount, finalDate, finalCategory } = formData;
 
-  const isValid = inputHistoryValid(finalAmount, finalDate, finalCategory);
-  if (!isValid) return false;
-
   // 登録用オブジェクト作成
   const historyItem = {
-    categoryId: finalCategory.id,
+    categoryId: finalCategory?.id,
     amount: Number(finalAmount),
     historyDate: finalDate,
   };
-
-  console.log(historyItem);
 
   try {
     if (editItem?.historyId) {
@@ -110,8 +79,7 @@ export const saveInputHistory = async ({
     return true;
   } catch (error) {
     console.error("保存中にエラーが発生しました", error);
-    alert("保存に失敗しました。");
-    return false;
+    throw error;
   }
 };
 
