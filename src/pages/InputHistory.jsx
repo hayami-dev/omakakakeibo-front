@@ -50,6 +50,7 @@ export default function InputHistory() {
   // 画面内に入力エラーがあるか
   const [isAmountError, setIsAmountError] = useState(true);
   const [isDateError, setIsDateError] = useState(false);
+  const [isCategoryError, setIsCategoryError] = useState(false);
 
   // 入力を登録
   const handleSend = async (e) => {
@@ -155,7 +156,11 @@ export default function InputHistory() {
             <p className="font-deco text-xl text-main-default">
               このおかねは・・・
             </p>
-            <DisplayCategories ref={categoryRef} editItem={editItem} />
+            <DisplayCategories
+              ref={categoryRef}
+              editItem={editItem}
+              onErrorCheck={setIsCategoryError}
+            />
           </section>
           <section className="pb-space-400">
             <p className="text-sm">✅サブスクリプション（※未実装）</p>
@@ -167,7 +172,7 @@ export default function InputHistory() {
               variant="primary"
               size="lg"
               icon={MoneyBag}
-              disabled={isAmountError || isDateError}
+              disabled={isAmountError || isDateError || isCategoryError}
             >
               きろくする
             </Button>
