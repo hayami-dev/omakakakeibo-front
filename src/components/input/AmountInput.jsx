@@ -29,7 +29,6 @@ const AmountInput = forwardRef(({ editItem, onErrorCheck }, ref) => {
       }
 
       setErrorText(error);
-      console.log("error", error);
 
       // 親にエラーの有無を通知（true / false）
       if (onErrorCheck) {

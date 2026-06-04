@@ -48,7 +48,8 @@ export default function InputHistory() {
   const categoryRef = useRef();
 
   // 画面内に入力エラーがあるか
-  const [isAmountError, setIsAmountError] = useState(false);
+  const [isAmountError, setIsAmountError] = useState(true);
+  const [isDateError, setIsDateError] = useState(false);
 
   // 入力を登録
   const handleSend = async (e) => {
@@ -143,7 +144,11 @@ export default function InputHistory() {
               onErrorCheck={setIsAmountError}
             />
             {/* 日付の入力 */}
-            <DateInput ref={dateRef} editItem={editItem} />
+            <DateInput
+              ref={dateRef}
+              editItem={editItem}
+              onErrorCheck={setIsDateError}
+            />
           </section>
           {/* カテゴリの一覧 */}
           <section className="flex flex-col gap-4">
@@ -162,7 +167,7 @@ export default function InputHistory() {
               variant="primary"
               size="lg"
               icon={MoneyBag}
-              disabled={isAmountError}
+              disabled={isAmountError || isDateError}
             >
               きろくする
             </Button>
