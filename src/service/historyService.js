@@ -55,16 +55,29 @@ export const historyService = {
         historyDate: historyItem.historyDate,
       };
 
-      await fetch(`http://localhost:8080/api/histories/add`, {
+      const response = await fetch(`http://localhost:8080/api/histories/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(bodyData),
       });
+      if (response.ok) return;
+
+      // Javaから返ってきたエラーJSONを解析する
+      const errorData = await response.json().catch(() => null);
+
+      if (errorData && errorData.code) {
+        throw errorData;
+      } else {
+        throw {
+          code: "ERR_UNKNOWN",
+          message: "ネットワークエラーが発生しました",
+        };
+      }
     } catch (error) {
       console.error("ヒストリーデータ送信に失敗...", error);
-      return [];
+      throw error;
     }
   },
   /**

@@ -9,7 +9,7 @@ import {
 } from "@/service/categoryService";
 import CategoryButton from "@/components/ui/CategoryButton";
 
-const DisplayCategories = forwardRef(({ editItem }, ref) => {
+const DisplayCategories = forwardRef(({ editItem, onErrorCheck }, ref) => {
   // カテゴリを取得
   const activeCategories = useAtomValue(activeCategoriesAtom);
   const categoriesMaster = useAtomValue(categoriesMasterAtom);
@@ -48,10 +48,25 @@ const DisplayCategories = forwardRef(({ editItem }, ref) => {
 
   // 選択中のカテゴリの初期値を取得
   const [selectCategory, setSelectCategory] = useState(() => {
-    if (editItem?.categoryId) {
-      return displayCategories.find((c) => c.id === editItem.categoryId) || "";
+    const initial = editItem?.categoryId
+      ? displayCategories.find((c) => c.id === editItem.categoryId) || ""
+      : "";
+
+    // 初期表示のタイミングで、親に今のステータスを即時通知
+    // 編集で最初から入っていればエラーなし(false)、入っていなければエラー(true)
+    if (onErrorCheck) {
+      onErrorCheck(!initial);
     }
+    return initial;
   });
+
+  // クリックされたときに、State更新と同時に親へ通知するメソッド
+  const handleSelect = (cat) => {
+    setSelectCategory(cat);
+    if (onErrorCheck) {
+      onErrorCheck(false);
+    }
+  };
 
   // 親が取得する値を定義
   useImperativeHandle(ref, () => ({
@@ -64,19 +79,22 @@ const DisplayCategories = forwardRef(({ editItem }, ref) => {
       <div className=" flex flex-col justify-center gap-4">
         {displayCategories.map((cat) => {
           const isSelected = selectCategory?.id === cat.id;
-          // console.log("cat.style", cat.style);
-
           return (
             <CategoryButton
               key={cat.id}
               catName={cat.name}
               catStyle={cat.style}
               isSelected={isSelected}
-              onClick={() => setSelectCategory(cat)}
+              onClick={() => handleSelect(cat)}
             />
           );
         })}
       </div>
+      {!selectCategory && (
+        <p className="text-center text-error-default pt-2 animate-pulse">
+          カテゴリーを選択してください。
+        </p>
+      )}
     </>
   );
 });

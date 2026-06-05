@@ -43,8 +43,8 @@ export default function TextField({
 
   // typeによって最大/最小文字数or最大/最小値を分ける
   const isTextType = type === "text" || type === "password" || type === "email";
-  const maxNum = Number(maxLength);
-  const minNum = Number(minLength);
+  const maxNum = isTextType ? Number(maxLength) : maxLength;
+  const minNum = isTextType ? Number(minLength) : minLength;
 
   return (
     <div id="text-field-wrap" className="flex flex-col w-full relative ">
