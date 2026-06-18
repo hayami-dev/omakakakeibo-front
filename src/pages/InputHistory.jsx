@@ -1,6 +1,6 @@
 /* 支出の入力をするダイアログ */
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 import { useNavigate, useLocation } from "react-router";
 /*
@@ -47,29 +47,52 @@ export default function InputHistory() {
   const dateRef = useRef();
   const categoryRef = useRef();
 
+  // 画面内に入力エラーがあるか
+  const [isAmountError, setIsAmountError] = useState(true);
+  const [isDateError, setIsDateError] = useState(false);
+  const [isCategoryError, setIsCategoryError] = useState(false);
+
   // 入力を登録
   const handleSend = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
 
-    const formData = {
-      finalAmount: amountRef.current?.getValue(),
-      finalDate: dateRef.current?.getValue(),
-      finalCategory: categoryRef.current?.getValue(),
-    };
-    const refs = { amountRef, dateRef, categoryRef };
+      const formData = {
+        finalAmount: amountRef.current?.getValue(),
+        finalDate: dateRef.current?.getValue(),
+        finalCategory: categoryRef.current?.getValue(),
+      };
+      const refs = { amountRef, dateRef, categoryRef };
 
-    const success = await saveInputHistory({
-      formData,
-      refs,
-      USER_ID,
-      editItem,
-      setHistories,
-    });
+      const success = await saveInputHistory({
+        formData,
+        refs,
+        USER_ID,
+        editItem,
+        setHistories,
+      });
 
-    if (success) {
-      handleClose();
-      const thisMonth = formData.finalDate.substring(0, 7);
-      setCurrentMonth(thisMonth);
+      if (success) {
+        handleClose();
+        const thisMonth = formData.finalDate.substring(0, 7);
+        setCurrentMonth(thisMonth);
+      }
+    } catch (errorData) {
+      // もしエラーが複数（配列）の形で届いたら、中身を取り出す
+      if (Array.isArray(errorData)) {
+        // 全てのエラーメッセージを改行（\n）でつなげて1つの文章にする
+        const combinedMessage = errorData.map((err) => err.message).join("\n");
+        alert(combinedMessage);
+
+        // エラーが1個だったらそのまま出す
+      } else if (errorData && errorData.code) {
+        alert(errorData.message);
+
+        // 他のシステムエラー
+      } else {
+        console.error("登録に失敗...", errorData);
+        alert("予期せぬエラーが発生しました。");
+      }
     }
   };
 
@@ -116,23 +139,41 @@ export default function InputHistory() {
         >
           <section className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
             {/* 金額の入力 */}
-            <AmountInput ref={amountRef} editItem={editItem} />
+            <AmountInput
+              ref={amountRef}
+              editItem={editItem}
+              onErrorCheck={setIsAmountError}
+            />
             {/* 日付の入力 */}
-            <DateInput ref={dateRef} editItem={editItem} />
+            <DateInput
+              ref={dateRef}
+              editItem={editItem}
+              onErrorCheck={setIsDateError}
+            />
           </section>
           {/* カテゴリの一覧 */}
           <section className="flex flex-col gap-4">
             <p className="font-deco text-xl text-main-default">
               このおかねは・・・
             </p>
-            <DisplayCategories ref={categoryRef} editItem={editItem} />
+            <DisplayCategories
+              ref={categoryRef}
+              editItem={editItem}
+              onErrorCheck={setIsCategoryError}
+            />
           </section>
           <section className="pb-space-400">
             <p className="text-sm">✅サブスクリプション（※未実装）</p>
           </section>
           {/* TODO:バリデーションによって活性、非活性を切り替える */}
           <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
-            <Button type="submit" variant="primary" size="lg" icon={MoneyBag}>
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              icon={MoneyBag}
+              disabled={isAmountError || isDateError || isCategoryError}
+            >
               きろくする
             </Button>
             {editItem && (

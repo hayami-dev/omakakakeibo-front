@@ -4,6 +4,7 @@
  */
 
 import { atom } from "jotai";
+import { getPrevMonth } from "@/dateUtils";
 
 /**
  * @type {number} 初期状態の月間目標金額（デフォルト: 50,000円）
@@ -37,14 +38,27 @@ export const budgetService = {
       const response = await fetch(
         `http://localhost:8080/api/budget/${userId}/${targetMonth}`,
       );
+
+      // 見つからない(404)、中身が空(204)の場合
+      if (response.status === 404 || response.status === 204) {
+        return null;
+      }
+
+      // ネットワークのエラーが発生した場合
       if (!response.ok) throw new Error("ネットワークエラー");
 
-      const data = await response.json();
+      // 文字列としてデータを抜いてから中身を判定
+      const text = await response.text();
+      if (!text || text.trim() === "" || text === "null") {
+        return null;
+      }
 
-      return data ? data.targetAmount : INITIAL_MONTHLY_BUDGET;
+      const data = JSON.parse(text);
+
+      return data && data.targetAmount !== undefined ? data.targetAmount : null;
     } catch (error) {
       console.error("目標金額データ取得に失敗...", error);
-      return [];
+      return null;
     }
   },
   /**
@@ -63,16 +77,56 @@ export const budgetService = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(value),
       });
-      if (!response.ok) throw new Error("ネットワークエラー");
 
-      const data = await response.text();
-      console.log("addMonthlyBudget成功:", data);
+      if (response.ok) return;
 
-      return data;
+      // Javaから返ってきたエラーJSONを解析する
+      const errorData = await response.json().catch(() => null);
+
+      if (errorData && errorData.code) {
+        throw errorData;
+      } else {
+        throw {
+          code: "ERR_UNKNOWN",
+          message: "ネットワークエラーが発生しました",
+        };
+      }
     } catch (error) {
       console.error("目標金額データ追加に失敗...", error);
-      return null;
+      throw error;
     }
+  },
+  /**
+   * 対象月の目標金額を取得する（データ未登録時は過去最大6ヶ月前まで自動でさかのぼる）
+   * * @description
+   * 家計簿の利便性を高めるため、今月が未設定であっても、過去5ヶ月以内（計6ヶ月分）に
+   * 設定された目標金額があれば、その最新の設定値を「今月の目標」として自動で引き継ぐ。
+   * もし直近6ヶ月間すべて未登録だった場合は、システムのデフォルト初期値（50,000円）を返す。
+   * * @param {number} USER_ID - ログイン中のユーザーID
+   * @param {string} currentMonth - 基点となる対象月 (フォーマット: yyyy-MM)
+   * @returns {Promise<number>} 取得できた過去の目標金額、またはデフォルト初期値
+   */
+  async loadBudgetWithFallback(USER_ID, currentMonth) {
+    let targetMonth = currentMonth; // 最初は今月からスタート
+
+    // 今月を含めて最大6回、過去にさかのぼるループを回す
+    for (let i = 0; i < 6; i++) {
+      const amount = await budgetService.fetchMonthlyBudget(
+        USER_ID,
+        targetMonth,
+      );
+
+      if (amount !== null) {
+        // データが見つかったらそれを返す
+        return amount;
+      }
+
+      // 一カ月巻き戻す
+      targetMonth = getPrevMonth(targetMonth);
+    }
+
+    // 6ヶ月間すべて未登録の場合初期値を返す
+    return INITIAL_MONTHLY_BUDGET;
   },
 };
 
@@ -141,7 +195,22 @@ export const updateBudget = async ({
     return true;
   } catch (error) {
     console.error("目標金額の保存に失敗しました", error);
-    alert("保存に失敗しました。");
-    return false;
+    throw error;
   }
 };
+
+/**
+ * 目標金額の変更が可能かどうかを判定
+ */
+export async function checkIsEditBudget(USER_ID, currentMonth) {
+  const realAmount = await budgetService.fetchMonthlyBudget(
+    USER_ID,
+    currentMonth,
+  );
+
+  if (realAmount !== null) {
+    return false;
+  } else {
+    return true;
+  }
+}
