@@ -16,6 +16,8 @@ import {
 } from "@/service/categoryService";
 import { historiesAtom, historyService } from "@/service/historyService";
 import { userIdAtom } from "@/service/authService";
+// component
+import Toast from "@/components/ui/Toast";
 
 function App() {
   const USER_ID = useAtomValue(userIdAtom);
@@ -54,6 +56,7 @@ function App() {
   return (
     <>
       <Header />
+      <Toast />
       <Routes>
         {/* ホーム */}
         <Route path="/" element={<Home />}>
