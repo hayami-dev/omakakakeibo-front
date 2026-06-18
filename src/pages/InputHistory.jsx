@@ -48,9 +48,11 @@ export default function InputHistory() {
   const categoryRef = useRef();
 
   // 画面内に入力エラーがあるか
-  const [isAmountError, setIsAmountError] = useState(true);
-  const [isDateError, setIsDateError] = useState(false);
-  const [isCategoryError, setIsCategoryError] = useState(false);
+  const [isAmountError, setIsAmountError] = useState(editItem ? false : true);
+  const [isDateError, setIsDateError] = useState(editItem ? false : true);
+  const [isCategoryError, setIsCategoryError] = useState(
+    editItem ? false : true,
+  );
 
   // 入力を登録
   const handleSend = async (e) => {
