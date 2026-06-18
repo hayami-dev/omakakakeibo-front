@@ -18,6 +18,7 @@ import { extractMonthAndDay } from "@/dateUtils";
 // components・assets
 import CategoryDisplay from "@/components/ui/CategoryDisplay";
 import EditIcon from "@/assets/icons/EditIcon";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function HistoryList() {
   // 支出の履歴を取得
@@ -48,7 +49,14 @@ export default function HistoryList() {
     });
   };
   return (
-    <ul className="flex flex-col px-space-400">
+    <ul className="flex flex-col px-space-400 min-h-[180px]">
+      {dateSortHistory.length === 0 && (
+        <EmptyState
+          icon="💸"
+          title="今月の支出はまだありません"
+          description="👇「おかねをきろくする」から最初の支出を記録しましょう！"
+        />
+      )}
       {dateSortHistory?.map((item) => {
         const category = resolveCategoryById(item.categoryId, masterCategories);
         return (

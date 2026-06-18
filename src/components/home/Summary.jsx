@@ -13,6 +13,7 @@ import {
 } from "@/service/historyService";
 import { extractMonth } from "@/dateUtils";
 import HomeAmountDeco from "@/assets/home-amount-deco.svg";
+import HomeAmountDecoNoData from "@/assets/no-data-txt.svg";
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
 import { getRecentMonthsRange } from "@/dateUtils";
 
@@ -73,13 +74,17 @@ export default function Summary() {
             </span>
             月のきろく
           </p>
-          <p className="flex items-baseline font-extrabold text-xl">
-            <strong className="text-3xl pr-[0.25rem]">
-              {total?.toLocaleString()}
-            </strong>
-            <span className="pr-[0.25rem]">円</span>
-            <img src={HomeAmountDeco} alt="" className="w-[40px]" />
-          </p>
+          {total ? (
+            <p className="flex items-baseline font-extrabold text-xl">
+              <strong className="text-3xl pr-[0.25rem]">
+                {total?.toLocaleString()}
+              </strong>
+              <span className="pr-[0.25rem]">円</span>
+              <img src={HomeAmountDeco} alt="" className="w-[40px]" />
+            </p>
+          ) : (
+            <img src={HomeAmountDecoNoData} alt="" className="w-[160px] py-2" />
+          )}
         </div>
         <p className="text-base w-[fit-content]">
           目標金額：
