@@ -228,6 +228,7 @@ export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
 export const updateCategories = async ({
   localCategories,
   setActiveCategories,
+  setCategoriesMaster,
 }) => {
   const hasOverLength = localCategories.some(
     (cat) => cat.categoryName && cat.categoryName.length > 10,
@@ -239,7 +240,23 @@ export const updateCategories = async ({
   }
 
   await categoryService.saveCategories(localCategories);
-  setActiveCategories(localCategories);
+
+  const userId = localCategories[0]?.userId;
+
+  if (userId) {
+    // App.jsx と同じように、最新の正しいデータをJavaから取り直す
+    const [freshActive, freshMaster] = await Promise.all([
+      categoryService.fetchActiveCategories(userId),
+      categoryService.fetchCategoriesMaster(userId),
+    ]);
+
+    // 🌟 3. APIから返ってきた「完璧なデータ」をそれぞれのアトムに安全にセットする
+    setActiveCategories(freshActive);
+    setCategoriesMaster(freshMaster);
+  } else {
+    // 万が一userIdが取れなかった場合の安全弁（文字だけ一応反映）
+    setActiveCategories(localCategories);
+  }
 
   return true;
 };

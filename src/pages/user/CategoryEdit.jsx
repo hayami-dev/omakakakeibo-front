@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useAtom, useSetAtom } from "jotai";
 import {
   activeCategoriesAtom,
+  categoriesMasterAtom,
   checkAlreadyEditCategory,
   updateCategories,
 } from "@/service/categoryService";
@@ -19,6 +20,9 @@ import { toastAtom } from "@/service/toastAtom";
 export default function CategoryEdit() {
   // アクティブなカテゴリを取得
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
+
+  // カテゴリマスタのセッターを取得
+  const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
 
   // 一時変更用のカテゴリリスト
   const [localCategories, setLocalCategories] = useState(activeCategories);
@@ -65,6 +69,7 @@ export default function CategoryEdit() {
       const success = await updateCategories({
         localCategories,
         setActiveCategories,
+        setCategoriesMaster,
       });
 
       if (success) {
