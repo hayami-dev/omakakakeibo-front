@@ -84,7 +84,7 @@ export default function InputHistory() {
         setCurrentMonth(thisMonth);
         setToast({
           show: true,
-          message: "保存しました！",
+          message: "きろくしました！",
           type: "",
         });
       }
@@ -119,6 +119,11 @@ export default function InputHistory() {
       handleClose();
       const thisMonth = editItem.historyDate.substring(0, 7);
       setCurrentMonth(thisMonth);
+      setToast({
+        show: true,
+        message: "削除しました",
+        type: "error",
+      });
     }
   };
 

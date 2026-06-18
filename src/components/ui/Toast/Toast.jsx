@@ -28,7 +28,7 @@ export const Toast = () => {
 
     // クリーンアップ関数（コンポーネント消滅時にタイマーを消す安全策）
     return () => {
-      if (timeRef.current) {
+      if (toast.show && timeRef.current) {
         clearTimeout(timeRef.current);
       }
     };
@@ -48,16 +48,8 @@ export const Toast = () => {
     error: "⚠️",
   };
 
-  // メッセージのマッピング
-  const messageStyle = {
-    success: "保存しました！",
-    error: "エラーが発生しました",
-  };
-
   const currentStyle = colorStyle[toast.type] || colorStyle.success;
   const currentIcon = iconStyle[toast.type] || iconStyle.success;
-  const currentMessage =
-    toast.message || messageStyle[toast.type] || messageStyle.success;
 
   return (
     <div
@@ -69,7 +61,7 @@ export const Toast = () => {
       }`}
     >
       <span>{currentIcon}</span>
-      <p className="text-md break-all ">{currentMessage}</p>
+      <p className="text-md break-all ">{toast.message}</p>
     </div>
   );
 };

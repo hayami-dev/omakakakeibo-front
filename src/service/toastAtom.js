@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 
 export const toastAtom = atom({
-  show: true,
+  show: false,
   message: "",
   type: "success",
 });
