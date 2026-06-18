@@ -68,7 +68,7 @@ export default function CategorySummary() {
         data: hasData ? categoryTotals?.map((item) => item.sum) : [1],
         backgroundColor: hasData
           ? categoryTotals?.map((item) => getSafeColor(item.color))
-          : ["gray"],
+          : ["#ccc"],
         borderWidth: false,
         cutout: "30%",
       },
@@ -84,6 +84,11 @@ export default function CategorySummary() {
       </div>
       <div className="col-span-6">
         <ul className="h-full flex flex-col gap-1 justify-center">
+          {filterHistories.length === 0 && (
+            <li className="text-xs text-muted/70 py-1 pl-2 list-none text-disabled-default">
+              <span className="text-[#ccc]">● </span>データなし
+            </li>
+          )}
           {categoryTotals?.map((item) => {
             return (
               <li key={item.id} className="text-sm grid grid-cols-12">
