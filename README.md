@@ -63,18 +63,23 @@
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
+---
+
 ## 環境
 
-| レイヤー      | 技術・ツール                 | 役割                       |
-| :------------ | :--------------------------- | :------------------------- |
-| **Front-end** | JavaScript / React 18 / Vite | UI構築・ビルド             |
-|               | Jotai                        | 状態管理（アトミック）     |
-|               | Tailwind CSS                 | スタイリング               |
-| **Back-end**  | Java / Spring Boot           | APIサーバー                |
-|               | MyBatis                      | O/Rマッパー・SQL管理       |
-|               | Apache Maven                 | 依存関係管理・ビルドツール |
+| レイヤー      | 技術・ツール                 | 役割                                 |
+| :------------ | :--------------------------- | :----------------------------------- |
+| **Front-end** | JavaScript / React 18 / Vite | UI構築・ビルド                       |
+|               | Jotai                        | 状態管理（アトミック）               |
+|               | Tailwind CSS                 | スタイリング                         |
+| **Back-end**  | Java / Spring Boot           | APIサーバー                          |
+|               | MyBatis                      | O/Rマッパー・SQL管理                 |
+|               | Apache Maven                 | 依存関係管理・ビルドツール           |
+| **Database**  | MySQL                        | データの永続化（家計簿データの保存） |
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
+
+---
 
 ## ディレクトリ構成
 
@@ -114,8 +119,16 @@ omakakakeibo-back/
 ├── mvnw / mvnw.cmd
 └── src/
     ├── main/
-    │   ├── java/
-    │   └── resources/
+    │   ├── java/           # Javaソースコード
+    │   └── resources/      # 設定ファイル・SQL
+    │       ├── application.properties
+    │       └── sql/         # データベース関連のSQLファイル群
+    │           ├── 1_db_create.sql
+    │           ├── 2_db_user.sql
+    │           ├── 3_db_category_master.sql
+    │           ├── 4_db_active_category.sql
+    │           ├── 5_db_budget.sql
+    │           └── 6_db_history.sql
     └── test/
         └── java/
 ```
@@ -143,9 +156,33 @@ npm run dev
 
 ### バックエンド（omakakakeibo-back）の起動
 
-1. Eclipse (Pleiades All in One) 等の環境で omakakakeibo-back を読込、またはMavenコマンドを使用してSpring Bootアプリケーションを実行します。
+1. **データベース（MySQL）の準備**
+   お使いのMySQL環境にアプリケーション用のデータベースを作成します。
+   その後、各sqlファイルを実行して、テーブルの作成と初期データの投入を行ってください。
+   詳細は[データベース（MySQL）のセットアップ手順](#データベースmysqlのセットアップ手順) を参照してください。
 
-2. 設定などは src/main/resources/application.properties を参照してください。
+2. Eclipse (Pleiades All in One) 等の環境で omakakakeibo-back を読込、またはMavenコマンドを使用してSpring Bootアプリケーションを実行します。
+
+3. 設定などは src/main/resources/application.properties を参照してください。
+
+### データベース（MySQL）のセットアップ手順
+
+本プロジェクトには、検証・テスト用のSQLファイルが多数用意されています。
+テーブル間の依存関係（外部キー制約）があるため、必ず**以下の順番（1 〜 6）で実行**してください。
+
+| 実行順 | ファイル名                 | 処理内容・実行の目的                                                                                  |
+| :----: | :------------------------- | :---------------------------------------------------------------------------------------------------- |
+| **1**  | `1_db_create.sql`          | **データベースと土台の作成**<br>全ての中心となる `users` テーブル等を生成します。                     |
+| **2**  | `2_db_user.sql`            | **テストユーザーの作成**<br>これ以降のデータを紐付けるためのベースとなるユーザーを登録します。        |
+| **3**  | `3_db_category_master.sql` | **カテゴリマスタの登録**<br>家計簿の項目（食費・日用品など）のマスターデータを登録します。            |
+| **4**  | `4_db_active_category.sql` | **アクティブカテゴリの登録**<br>ユーザーが現在選択している「6つの設定枠（スロット）」を確定させます。 |
+| **5**  | `5_db_budget.sql`          | **月別予算データの登録**<br>月ごとの目標金額（例: 2026年3月〜5月分）を登録します。                    |
+| **6**  | `6_db_history.sql`         | **支出明細（履歴）の登録**<br>家計簿のメインデータである、日々の支出履歴データを流し込みます。        |
+
+⚠️ **注意点**
+
+- 各ファイルには「【異常系】エラーテスト用」の、**わざとエラーを起こすSQL文**も含まれています。
+- 異常系のエリアを実行した際、MySQL Workbenchなどで赤バツ（❌）やエラーコードが出れば、データベースの制約が正常に機能している証拠（テスト成功）です。
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
