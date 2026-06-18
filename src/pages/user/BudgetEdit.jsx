@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
   BUDGET_MIN_AMOUNT,
@@ -17,6 +17,7 @@ import BasePage from "@/components/ui/BasePage";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import AttentionText from "@/components/ui/HelpText";
+import { toastAtom } from "@/service/toastAtom";
 
 export default function BudgetEdit() {
   // ユーザーIDを取得
@@ -33,6 +34,9 @@ export default function BudgetEdit() {
 
   // エラーメッセージを管理
   const [errorText, setErrorText] = useState("");
+
+  // トースト通知書き換えるためのatom
+  const setToast = useSetAtom(toastAtom);
 
   // デフォルト値、最大値、最小値を取得
   const strInitialMonthlyBudget = INITIAL_MONTHLY_BUDGET.toLocaleString();
@@ -89,8 +93,12 @@ export default function BudgetEdit() {
       });
 
       if (success) {
-        alert("保存しました");
         navigate("/user");
+        setToast({
+          show: true,
+          message: "保存しました！",
+          type: "",
+        });
       }
     } catch (errorData) {
       if (errorData.code === "ERR_BUDGET_DUPLICATE") {
