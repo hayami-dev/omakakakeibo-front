@@ -17,13 +17,21 @@ export default function Header() {
     "/user/categoryEdit",
   ];
 
+  const handlePageChange = () => {
+    if (location.pathname === "/user") {
+      navigate("/");
+    } else {
+      navigate(-1);
+    }
+  };
+
   const isShowBackButton = showBackButtonPages.includes(location.pathname);
 
   return (
     <header className="w-full self-stretch bg-bg leading-none grid grid-cols-12 place-items-center">
       <div className="col-span-2 rotate-180">
         {isShowBackButton && (
-          <button onClick={() => navigate(-1)} className="text-text-cap">
+          <button onClick={handlePageChange} className="text-text-cap">
             <ChevronRightIcon />
           </button>
         )}
