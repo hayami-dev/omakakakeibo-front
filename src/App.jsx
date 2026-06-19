@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 // ルート
 import { Route, Routes } from "react-router";
@@ -16,6 +16,9 @@ import {
 } from "@/service/categoryService";
 import { historiesAtom, historyService } from "@/service/historyService";
 import { userIdAtom } from "@/service/authService";
+// component
+import Toast from "@/components/ui/Toast";
+import LoadingAnime from "./components/ui/LoadingAnime/LoadingAnime";
 
 function App() {
   const USER_ID = useAtomValue(userIdAtom);
@@ -24,14 +27,26 @@ function App() {
   const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
   const setHistories = useSetAtom(historiesAtom);
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [showLoadingDOM, setShowLoadingDOM] = useState(true);
+
   useEffect(() => {
     const loadInitialData = async () => {
       try {
+        // ローディングアニメを表示
+        setIsLoading(true);
+        setShowLoadingDOM(true);
+
         // JavaAPIを叩いて加工済みデータを取得
+        // 指定したミリ秒（ms）だけ処理を待たせる関数
+        const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        // JavaAPIの通信と一緒に「2秒待つ処理」を並行して実行させる
         const [activeData, masterData, historyData] = await Promise.all([
           categoryService.fetchActiveCategories(USER_ID),
           categoryService.fetchCategoriesMaster(USER_ID),
           historyService.fetchHistories(USER_ID),
+          delay(2000), // 2000ms（2秒）のウェイト
         ]);
 
         // 取得したデータをAtomに保存
@@ -46,6 +61,13 @@ function App() {
         });
       } catch (error) {
         console.log("初期データのロードに失敗しました", error);
+      } finally {
+        setIsLoading(false);
+
+        // アニメーションが終わる時間（500ms）だけ待ってから、DOMから完全に消す
+        setTimeout(() => {
+          setShowLoadingDOM(false);
+        }, 500);
       }
     };
     loadInitialData();
@@ -53,7 +75,17 @@ function App() {
 
   return (
     <>
+      {showLoadingDOM && (
+        <div
+          className={`fixed inset-0 top-0 w-full f-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[99]
+            ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"}
+          `}
+        >
+          <LoadingAnime />
+        </div>
+      )}
       <Header />
+      <Toast />
       <Routes>
         {/* ホーム */}
         <Route path="/" element={<Home />}>

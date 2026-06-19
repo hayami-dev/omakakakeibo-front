@@ -24,6 +24,7 @@ import MoneyBag from "@/assets/icons/MoneyBag";
 import Close from "@/assets/icons/close.svg";
 import Trash from "@/assets/icons/trash.svg";
 import Help from "@/assets/icons/help.svg";
+import { toastAtom } from "@/service/toastAtom";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -34,6 +35,9 @@ export default function InputHistory() {
 
   // 選択中の月
   const setCurrentMonth = useSetAtom(currentMonthAtom);
+
+  // トースト通知書き換えるためのatom
+  const setToast = useSetAtom(toastAtom);
 
   // ページ切替のためのフック
   const navigate = useNavigate();
@@ -48,9 +52,11 @@ export default function InputHistory() {
   const categoryRef = useRef();
 
   // 画面内に入力エラーがあるか
-  const [isAmountError, setIsAmountError] = useState(true);
+  const [isAmountError, setIsAmountError] = useState(editItem ? false : true);
   const [isDateError, setIsDateError] = useState(false);
-  const [isCategoryError, setIsCategoryError] = useState(false);
+  const [isCategoryError, setIsCategoryError] = useState(
+    editItem ? false : true,
+  );
 
   // 入力を登録
   const handleSend = async (e) => {
@@ -76,6 +82,11 @@ export default function InputHistory() {
         handleClose();
         const thisMonth = formData.finalDate.substring(0, 7);
         setCurrentMonth(thisMonth);
+        setToast({
+          show: true,
+          message: "きろくしました！",
+          type: "",
+        });
       }
     } catch (errorData) {
       // もしエラーが複数（配列）の形で届いたら、中身を取り出す
@@ -108,6 +119,11 @@ export default function InputHistory() {
       handleClose();
       const thisMonth = editItem.historyDate.substring(0, 7);
       setCurrentMonth(thisMonth);
+      setToast({
+        show: true,
+        message: "削除しました",
+        type: "error",
+      });
     }
   };
 
@@ -120,7 +136,7 @@ export default function InputHistory() {
   }
 
   return (
-    <div className="py-space-600 fixed bg-bg w-full h-[95vh] z-99 bottom-0 left-0 rounded-t-2xl shadow-[0_1px_12px] ">
+    <div className="py-space-600 fixed bg-bg w-full max-w-[400px] h-[95vh] z-99 bottom-0 left-1/2 -translate-x-1/2 rounded-t-2xl shadow-[0_1px_12px] ">
       <div className="w-full h-full overflow-auto px-space-600">
         <header className="relative text-center pb-space-500 border-dot-underline pt-space-100">
           <h1>おかねのきろく</h1>

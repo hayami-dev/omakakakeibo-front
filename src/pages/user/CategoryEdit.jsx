@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
   activeCategoriesAtom,
+  categoriesMasterAtom,
   checkAlreadyEditCategory,
   updateCategories,
 } from "@/service/categoryService";
@@ -14,10 +15,14 @@ import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import AlertCircleIcon from "@/assets/icons/AlertCircleIcon";
 import AttentionText from "@/components/ui/HelpText";
+import { toastAtom } from "@/service/toastAtom";
 
 export default function CategoryEdit() {
   // アクティブなカテゴリを取得
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
+
+  // カテゴリマスタのセッターを取得
+  const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
 
   // 一時変更用のカテゴリリスト
   const [localCategories, setLocalCategories] = useState(activeCategories);
@@ -26,7 +31,8 @@ export default function CategoryEdit() {
   const today = new Date();
   const isEdit = checkAlreadyEditCategory(today, activeCategories);
 
-  console.log("isEdit", isEdit);
+  // トースト通知書き換えるためのatom
+  const setToast = useSetAtom(toastAtom);
 
   // 目標金額の変更（ロード完了など）と同時にinputValueに挿入
   useEffect(() => {
@@ -63,11 +69,16 @@ export default function CategoryEdit() {
       const success = await updateCategories({
         localCategories,
         setActiveCategories,
+        setCategoriesMaster,
       });
 
       if (success) {
-        alert("保存しました！");
         navigate("/user");
+        setToast({
+          show: true,
+          message: "保存しました！",
+          type: "",
+        });
       }
     } catch (errorData) {
       if (
