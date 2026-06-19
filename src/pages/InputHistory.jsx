@@ -151,6 +151,7 @@ export default function InputHistory() {
       >
         {/* ダイアログ部分 */}
         <div
+          onClick={(e) => e.stopPropagation()}
           className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] h-[95vh] z-[100] flex flex-col
           ${isClosing ? "my-slide-down" : "my-slide-up"}`}
         >
