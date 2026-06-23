@@ -56,7 +56,7 @@ export default function User() {
     };
 
     checkBudgetLock();
-  }, [currentMonth, USER_ID]);
+  }, [currentMonth, USER_ID, monthlyBudget]);
 
   // DBから目標金額を取得
   useEffect(() => {
