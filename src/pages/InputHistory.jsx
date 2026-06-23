@@ -25,6 +25,7 @@ import Close from "@/assets/icons/close.svg";
 import Trash from "@/assets/icons/trash.svg";
 import Help from "@/assets/icons/help.svg";
 import { toastAtom } from "@/service/toastAtom";
+import handleApiError from "@/handleApiError";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -35,6 +36,9 @@ export default function InputHistory() {
 
   // 選択中の月
   const setCurrentMonth = useSetAtom(currentMonthAtom);
+
+  // 画面表示中かを管理
+  const [isClosing, setIsClosing] = useState(false);
 
   // トースト通知書き換えるためのatom
   const setToast = useSetAtom(toastAtom);
@@ -88,22 +92,8 @@ export default function InputHistory() {
           type: "",
         });
       }
-    } catch (errorData) {
-      // もしエラーが複数（配列）の形で届いたら、中身を取り出す
-      if (Array.isArray(errorData)) {
-        // 全てのエラーメッセージを改行（\n）でつなげて1つの文章にする
-        const combinedMessage = errorData.map((err) => err.message).join("\n");
-        alert(combinedMessage);
-
-        // エラーが1個だったらそのまま出す
-      } else if (errorData && errorData.code) {
-        alert(errorData.message);
-
-        // 他のシステムエラー
-      } else {
-        console.error("登録に失敗...", errorData);
-        alert("予期せぬエラーが発生しました。");
-      }
+    } catch (error) {
+      handleApiError(error);
     }
   };
 
@@ -122,98 +112,136 @@ export default function InputHistory() {
       setToast({
         show: true,
         message: "削除しました",
-        type: "error",
+        type: "",
       });
     }
   };
 
   // ダイアログを閉じる
   function handleClose() {
-    navigate("/");
+    setIsClosing(true);
 
-    // スクロール位置をリセット
-    window.scrollTo(0, 0);
+    setTimeout(() => {
+      navigate("/");
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+    }, 400);
   }
 
   return (
-    <div className="py-space-600 fixed bg-bg w-full max-w-[400px] h-[95vh] z-99 bottom-0 left-1/2 -translate-x-1/2 rounded-t-2xl shadow-[0_1px_12px] ">
-      <div className="w-full h-full overflow-auto px-space-600">
-        <header className="relative text-center pb-space-500 border-dot-underline pt-space-100">
-          <h1>おかねのきろく</h1>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="absolute top-0 right-0"
-          >
-            <img src={Close} />
-          </button>
-        </header>
-        <form
-          action=""
-          onSubmit={handleSend}
-          className="pb-space-600 pt-space-600 flex flex-col gap-6"
+    <>
+      {/* オーバーレイ */}
+      <div
+        className={`fixed inset-0 z-[90] bg-black/30 transition-opacity duration-300
+          ${isClosing ? "opacity-0" : "opacity-100"}`}
+      >
+        {/* ダイアログ部分 */}
+        <div
+          className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] h-[95vh] z-[100] flex flex-col
+          ${isClosing ? "my-slide-down" : "my-slide-up"}`}
         >
-          <section className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
-            {/* 金額の入力 */}
-            <AmountInput
-              ref={amountRef}
-              editItem={editItem}
-              onErrorCheck={setIsAmountError}
-            />
-            {/* 日付の入力 */}
-            <DateInput
-              ref={dateRef}
-              editItem={editItem}
-              onErrorCheck={setIsDateError}
-            />
-          </section>
-          {/* カテゴリの一覧 */}
-          <section className="flex flex-col gap-4">
-            <p className="font-deco text-xl text-main-default">
-              このおかねは・・・
-            </p>
-            <DisplayCategories
-              ref={categoryRef}
-              editItem={editItem}
-              onErrorCheck={setIsCategoryError}
-            />
-          </section>
-          <section className="pb-space-400">
-            <p className="text-sm">✅サブスクリプション（※未実装）</p>
-          </section>
-          {/* TODO:バリデーションによって活性、非活性を切り替える */}
-          <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              icon={MoneyBag}
-              disabled={isAmountError || isDateError || isCategoryError}
-            >
-              きろくする
-            </Button>
-            {editItem && (
-              <Button
-                size="md"
-                variant="delete"
-                icon={Trash}
-                onClick={handleRemove}
+          <div className="py-8 bg-bg rounded-t-2xl shadow-[0_-4px_12px_rgba(0,0,0,0.1)] flex-1 overflow-auto">
+            {/* スクロール部分 */}
+            <div className="w-full h-full overflow-auto px-8">
+              <header className="relative text-center pb-6 border-dot-underline pt-1">
+                <h1>おかねのきろく</h1>
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="absolute top-0 right-0"
+                >
+                  <img src={Close} />
+                </button>
+              </header>
+              <form
+                action=""
+                onSubmit={handleSend}
+                className="pb-8 pt-8 flex flex-col gap-6"
               >
-                きろくを削除する
-              </Button>
-            )}
-          </section>
-        </form>
-        <footer className="flex flex-col items-center">
-          <p>※未実装</p>
-          <Button variant="text" icon={Help}>
-            カテゴリー機能の使い方
-          </Button>
-          <Button variant="text" icon={Help}>
-            サブスクリプション機能
-          </Button>
-        </footer>
+                <section className="flex flex-col gap-6 items-center border-dot-underline pb-6">
+                  {/* 金額の入力 */}
+                  <AmountInput
+                    ref={amountRef}
+                    editItem={editItem}
+                    onErrorCheck={setIsAmountError}
+                  />
+                  {/* 日付の入力 */}
+                  <DateInput
+                    ref={dateRef}
+                    editItem={editItem}
+                    onErrorCheck={setIsDateError}
+                  />
+                </section>
+                {/* カテゴリの一覧 */}
+                <section className="flex flex-col gap-4">
+                  <p className="font-deco text-xl text-main-default">
+                    このおかねは・・・
+                  </p>
+                  <DisplayCategories
+                    ref={categoryRef}
+                    editItem={editItem}
+                    onErrorCheck={setIsCategoryError}
+                  />
+                </section>
+                <section className="pb-4">
+                  <p className="text-sm">✅サブスクリプション（※未実装）</p>
+                </section>
+                <section className="flex flex-col pb-8 gap-6 items-center border-dot-underline">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    icon={MoneyBag}
+                    disabled={isAmountError || isDateError || isCategoryError}
+                  >
+                    きろくする
+                  </Button>
+                  {editItem && (
+                    <Button
+                      size="md"
+                      variant="delete"
+                      icon={Trash}
+                      onClick={handleRemove}
+                    >
+                      きろくを削除する
+                    </Button>
+                  )}
+                </section>
+              </form>
+              <footer className="flex flex-col items-center">
+                <p>※未実装</p>
+                <Button variant="text" icon={Help}>
+                  カテゴリー機能の使い方
+                </Button>
+                <Button variant="text" icon={Help}>
+                  サブスクリプション機能
+                </Button>
+              </footer>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      <style>{`
+       /* 現れるとき（0.2秒待ってから、0.5秒かけて上に） */
+        .my-slide-up {
+          animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+        }
+
+        /* 消えるとき（即座に、0.4秒かけて下に。消えた状態をキープする forwards） */
+        .my-slide-down {
+          animation: slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0s forwards;
+        }
+
+        @keyframes slide-up {
+          0% { transform: translateY(100%); }
+          100% { transform: translateY(0); }
+        }
+
+        @keyframes slide-down {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(100%); }
+        }
+      `}</style>
+    </>
   );
 }

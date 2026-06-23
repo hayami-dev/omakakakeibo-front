@@ -151,7 +151,7 @@ export default function MonthSummary() {
   };
 
   return (
-    <section className="px-space-400">
+    <section className="px-4">
       <div className="h-[120px] relative">
         <Bar options={graphOptions} data={chartData} />
         <div

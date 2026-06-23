@@ -5,6 +5,8 @@
 
 import { atom } from "jotai";
 import { getPrevMonth } from "@/dateUtils";
+import apiClient from "@/apiClient";
+import handleApiError from "@/handleApiError";
 
 /**
  * @type {number} 初期状態の月間目標金額（デフォルト: 50,000円）
@@ -35,30 +37,22 @@ export const budgetService = {
    */
   async fetchMonthlyBudget(userId, targetMonth) {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/budget/${userId}/${targetMonth}`,
+      const response = await apiClient.get(
+        `/api/budget/${userId}/${targetMonth}`,
       );
 
-      // 見つからない(404)、中身が空(204)の場合
-      if (response.status === 404 || response.status === 204) {
-        return null;
-      }
-
-      // ネットワークのエラーが発生した場合
-      if (!response.ok) throw new Error("ネットワークエラー");
-
-      // 文字列としてデータを抜いてから中身を判定
-      const text = await response.text();
-      if (!text || text.trim() === "" || text === "null") {
-        return null;
-      }
-
-      const data = JSON.parse(text);
-
-      return data && data.targetAmount !== undefined ? data.targetAmount : null;
+      return response.data && response.data.targetAmount !== undefined
+        ? response.data.targetAmount
+        : null;
     } catch (error) {
+      if (error.response?.status === 404) {
+        console.log(
+          `${targetMonth} の目標金額はまだ設定されていません（404）。`,
+        );
+        return null; // 404の時は正常な挙動として null を返す
+      }
       console.error("目標金額データ取得に失敗...", error);
-      return null;
+      handleApiError(error);
     }
   },
   /**
@@ -72,28 +66,10 @@ export const budgetService = {
    */
   async saveMonthlyBudget(value) {
     try {
-      const response = await fetch(`http://localhost:8080/api/budget/add`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(value),
-      });
-
-      if (response.ok) return;
-
-      // Javaから返ってきたエラーJSONを解析する
-      const errorData = await response.json().catch(() => null);
-
-      if (errorData && errorData.code) {
-        throw errorData;
-      } else {
-        throw {
-          code: "ERR_UNKNOWN",
-          message: "ネットワークエラーが発生しました",
-        };
-      }
+      await apiClient.post(`/api/budget/add`, value);
     } catch (error) {
       console.error("目標金額データ追加に失敗...", error);
-      throw error;
+      handleApiError(error);
     }
   },
   /**

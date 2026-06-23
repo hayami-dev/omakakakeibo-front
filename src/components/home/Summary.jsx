@@ -66,7 +66,7 @@ export default function Summary() {
       >
         <ChevronRightIcon className="w-[48px] h-auto rotate-180 text-text-cap" />
       </button>
-      <div className="bg-bg-section2 justify-items-center col-span-8 px-space-400 py-space-200 rounded-3xl rounded-br-xs">
+      <div className="bg-bg-section2 justify-items-center col-span-8 px-4 py-2 rounded-3xl rounded-br-xs">
         <div className="w-[fit-content]">
           <p className="text-sm font-bold">
             <span className="text-xl pr-[0.1rem]">

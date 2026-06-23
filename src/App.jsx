@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 // ルート
-import { Route, Routes } from "react-router";
+import { Route, Routes, useNavigate } from "react-router";
 import Home from "@/pages/Home";
 import InputHistory from "@/pages/InputHistory";
 import User from "@/pages/User";
@@ -29,6 +29,10 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [showLoadingDOM, setShowLoadingDOM] = useState(true);
+
+  // 初回アクセス時、読み込みを待ってからInputHistoryを表示
+  const navigate = useNavigate();
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -73,11 +77,19 @@ function App() {
     loadInitialData();
   }, [setActiveCategories, setCategoriesMaster, setHistories]); // 第2引数を空にすると初回のみ実行になる
 
+  // 初回アクセス時のみ、InputHistoryを自動で表示
+  useEffect(() => {
+    if (!showLoadingDOM && !hasAutoOpened) {
+      setHasAutoOpened(true);
+      navigate("input");
+    }
+  }, [showLoadingDOM, hasAutoOpened, navigate]);
+
   return (
     <>
       {showLoadingDOM && (
         <div
-          className={`fixed inset-0 top-0 w-full f-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[99]
+          className={`fixed inset-0 top-0 w-full f-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[999]
             ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"}
           `}
         >
@@ -90,7 +102,10 @@ function App() {
         {/* ホーム */}
         <Route path="/" element={<Home />}>
           {/* ダイアログ */}
-          <Route path="input" element={<InputHistory />} />
+          <Route
+            path="input"
+            element={!showLoadingDOM ? <InputHistory /> : null}
+          />
         </Route>
         {/* ユーザーページ */}
         <Route path="user" element={<User />} />

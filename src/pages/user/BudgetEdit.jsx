@@ -18,6 +18,7 @@ import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
 import AttentionText from "@/components/ui/HelpText";
 import { toastAtom } from "@/service/toastAtom";
+import handleApiError from "@/handleApiError";
 
 export default function BudgetEdit() {
   // ユーザーIDを取得
@@ -100,13 +101,8 @@ export default function BudgetEdit() {
           type: "",
         });
       }
-    } catch (errorData) {
-      if (errorData.code === "ERR_BUDGET_DUPLICATE") {
-        alert(`${errorData.message}`);
-      } else {
-        console.error("予算の保存に失敗...", errorData);
-        alert("通信に失敗しました。時間を置いて再度お試しください。");
-      }
+    } catch (error) {
+      handleApiError(error);
     }
   };
 

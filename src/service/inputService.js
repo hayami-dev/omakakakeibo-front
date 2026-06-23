@@ -4,10 +4,17 @@
  */
 
 import { historyService } from "@/service/historyService";
+import { atom } from "jotai";
 
 // 金額の最大/最小値
 export const MAX_AMOUNT = 99999999;
 export const MIN_AMOUNT = 1;
+
+/**
+ * 初回アクセス時、自動でInputHistoryを表示させる
+ * すでに自動表示をしたかどうかを判定するatom
+ */
+export const hasAutoOpenedInputAtom = atom(false);
 
 /**
  * 内部用：各入力コンポーネントの参照（Ref）を介して、フォームの入力値を一括リセットする
