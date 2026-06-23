@@ -5,6 +5,8 @@
 
 import { atom } from "jotai";
 import { getCategoryColorSet } from "@/categoryColor.js";
+import apiClient from "@/apiClient";
+import handleApiError from "@/handleApiError";
 
 /**
  * カテゴリに関するAPI通信メソッド群
@@ -18,15 +20,9 @@ export const categoryService = {
    */
   async fetchActiveCategories(userId) {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/categories/active/${userId}`,
-      );
-      if (!response.ok)
-        throw new Error("ネットワークエラー：fetchActiveCategories");
+      const response = await apiClient.get(`/api/categories/active/${userId}`);
 
-      const data = await response.json();
-
-      return data
+      return response.data
         .map((cat) => ({
           ...cat,
           style: getCategoryColorSet(cat.colorIndex),
@@ -34,7 +30,7 @@ export const categoryService = {
         .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
     } catch (error) {
       console.error("アクティブデータ取得に失敗...", error);
-      return [];
+      handleApiError(error);
     }
   },
   /**
@@ -45,15 +41,9 @@ export const categoryService = {
    */
   async fetchCategoriesMaster(userId) {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/categories/master/${userId}`,
-      );
-      if (!response.ok)
-        throw new Error("ネットワークエラー：fetchCategoriesMaster");
+      const response = await apiClient.get(`/api/categories/master/${userId}`);
 
-      const data = await response.json();
-
-      return data
+      return response.data
         .map((cat) => ({
           ...cat,
           style: getCategoryColorSet(cat.colorIndex),
@@ -61,7 +51,7 @@ export const categoryService = {
         .sort((a, b) => a.activeCatId - b.activeCatId); // ID順に並べる
     } catch (error) {
       console.error("マスターデータ取得に失敗...", error);
-      return [];
+      handleApiError(error);
     }
   },
   /**
@@ -71,30 +61,10 @@ export const categoryService = {
    */
   async saveCategories(newCategories) {
     try {
-      const response = await fetch(
-        "http://localhost:8080/api/categories/update",
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newCategories),
-        },
-      );
-      if (response.ok) return;
-
-      // Javaから返ってきたエラーJSONを解析する
-      const errorData = await response.json().catch(() => null);
-
-      if (errorData && errorData.code) {
-        throw errorData;
-      } else {
-        throw {
-          code: "ERR_UNKNOWN",
-          message: "ネットワークエラーが発生しました",
-        };
-      }
+      await apiClient.put("/api/categories/update", newCategories);
     } catch (error) {
       console.error("カテゴリの登録に失敗...", error);
-      throw error;
+      handleApiError(error);
     }
   },
 };

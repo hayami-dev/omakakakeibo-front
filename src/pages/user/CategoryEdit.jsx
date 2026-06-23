@@ -16,6 +16,7 @@ import Button from "@/components/ui/Button";
 import AlertCircleIcon from "@/assets/icons/AlertCircleIcon";
 import AttentionText from "@/components/ui/HelpText";
 import { toastAtom } from "@/service/toastAtom";
+import handleApiError from "@/handleApiError";
 
 export default function CategoryEdit() {
   // アクティブなカテゴリを取得
@@ -81,16 +82,7 @@ export default function CategoryEdit() {
         });
       }
     } catch (errorData) {
-      if (
-        errorData.code === "ERR_MONTHLY_LIMIT" ||
-        errorData.code === "ERR_MIN_CATEGORIES" ||
-        errorData.code === "ERR_CATEGORY_LENGTH"
-      ) {
-        alert(errorData.message);
-      } else {
-        console.error("カテゴリの登録に失敗...", errorData);
-        alert("予期せぬエラーが発生しました。");
-      }
+      handleApiError(errorData);
     }
   };
 
@@ -124,7 +116,6 @@ export default function CategoryEdit() {
                   {cat.style.label}
                 </label>
                 <div className="col-span-8">
-                  {/* TODO：10文字を超えたら入力できなくするか赤くする */}
                   <TextField
                     type="text"
                     id={`activeCategories-${index}`}

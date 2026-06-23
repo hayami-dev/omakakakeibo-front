@@ -25,6 +25,7 @@ import Close from "@/assets/icons/close.svg";
 import Trash from "@/assets/icons/trash.svg";
 import Help from "@/assets/icons/help.svg";
 import { toastAtom } from "@/service/toastAtom";
+import handleApiError from "@/handleApiError";
 
 export default function InputHistory() {
   // ユーザーIDを取得
@@ -91,22 +92,8 @@ export default function InputHistory() {
           type: "",
         });
       }
-    } catch (errorData) {
-      // もしエラーが複数（配列）の形で届いたら、中身を取り出す
-      if (Array.isArray(errorData)) {
-        // 全てのエラーメッセージを改行（\n）でつなげて1つの文章にする
-        const combinedMessage = errorData.map((err) => err.message).join("\n");
-        alert(combinedMessage);
-
-        // エラーが1個だったらそのまま出す
-      } else if (errorData && errorData.code) {
-        alert(errorData.message);
-
-        // 他のシステムエラー
-      } else {
-        console.error("登録に失敗...", errorData);
-        alert("予期せぬエラーが発生しました。");
-      }
+    } catch (error) {
+      handleApiError(error);
     }
   };
 
