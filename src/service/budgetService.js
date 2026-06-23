@@ -40,7 +40,10 @@ export const budgetService = {
       const response = await apiClient.get(
         `/api/budget/${userId}/${targetMonth}`,
       );
-      return response.data;
+
+      return response.data && response.data.targetAmount !== undefined
+        ? response.data.targetAmount
+        : null;
     } catch (error) {
       if (error.response?.status === 404) {
         console.log(
