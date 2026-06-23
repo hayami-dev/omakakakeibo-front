@@ -36,7 +36,7 @@ export default function Header() {
           </button>
         )}
       </div>
-      <h1 className="w-fit leading-none col-start-5 col-span-4  m-space-200">
+      <h1 className="w-fit leading-none col-start-5 col-span-4 m-2">
         <NavLink to="/">
           <img
             src={logo}

@@ -22,8 +22,8 @@ export default function TextField({
 
   // 文字サイズのバリエーション
   const sizeStyles = {
-    md: "text-base p-space-200",
-    lg: "text-2xl p-space-300",
+    md: "text-base p-2",
+    lg: "text-2xl p-3",
   };
 
   // 数値の入力の場合、一部の半角文字を入力できないようにする

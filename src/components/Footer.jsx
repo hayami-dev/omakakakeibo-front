@@ -10,7 +10,7 @@ export default function Footer() {
 
   // 処理
   return (
-    <footer className="sticky bottom-0 flex justify-center self-stretch bg-bg p-space-400 shadow-[0_1px_12px] shadow-(--color-shadow) ">
+    <footer className="sticky bottom-0 flex justify-center self-stretch bg-bg p-4 shadow-[0_1px_12px] shadow-(--color-shadow) ">
       <nav>
         <Button
           variant="primary"

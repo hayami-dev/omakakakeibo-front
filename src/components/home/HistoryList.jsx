@@ -49,7 +49,7 @@ export default function HistoryList() {
     });
   };
   return (
-    <ul className="flex flex-col px-space-400 min-h-[180px]">
+    <ul className="flex flex-col px-4 min-h-[180px]">
       {dateSortHistory.length === 0 && (
         <EmptyState
           icon="💸"
@@ -62,7 +62,7 @@ export default function HistoryList() {
         return (
           <li
             key={item.historyId}
-            className="grid grid-cols-12 items-center border-dot-underline py-space-200"
+            className="grid grid-cols-12 items-center border-dot-underline py-2"
           >
             <time
               dateTime={item.historyDate}
@@ -72,7 +72,7 @@ export default function HistoryList() {
                 ? extractMonthAndDay(item.historyDate)
                 : "日付なし"}
             </time>
-            <div className="col-span-5 text-xl text-right pr-space-400">
+            <div className="col-span-5 text-xl text-right pr-4">
               <span>{item?.amount?.toLocaleString() ?? "0"}</span>
               <span className="text-base pl-[0.25rem]">円</span>
             </div>

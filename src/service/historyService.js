@@ -7,6 +7,8 @@ import { atom, getDefaultStore } from "jotai";
 import { userIdAtom } from "@/service/authService";
 import { resolveCategoryById } from "@/service/categoryService";
 import { getYearMonth } from "@/dateUtils";
+import apiClient from "@/apiClient";
+import handleApiError from "@/handleApiError";
 
 const store = getDefaultStore();
 const USER_ID = store.get(userIdAtom);
@@ -23,18 +25,15 @@ export const historyService = {
    */
   async fetchHistories(userId) {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/histories/${userId}`,
-      );
-      if (!response) throw new Error("ネットワークエラー：historyService");
+      const response = await apiClient.get(`/api/histories/${userId}`);
 
-      const data = await response.json();
-      return data.map((item) => ({
+      return response.data.map((item) => ({
         ...item,
       }));
     } catch (error) {
       console.error("ヒストリーデータ取得に失敗...", error);
-      return [];
+      const errorData = error.response?.data;
+      handleApiError(errorData);
     }
   },
   /**
@@ -54,30 +53,10 @@ export const historyService = {
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
       };
-
-      const response = await fetch(`http://localhost:8080/api/histories/add`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
-      if (response.ok) return;
-
-      // Javaから返ってきたエラーJSONを解析する
-      const errorData = await response.json().catch(() => null);
-
-      if (errorData && errorData.code) {
-        throw errorData;
-      } else {
-        throw {
-          code: "ERR_UNKNOWN",
-          message: "ネットワークエラーが発生しました",
-        };
-      }
+      await apiClient.post(`/api/histories/add`, bodyData);
     } catch (error) {
       console.error("ヒストリーデータ送信に失敗...", error);
-      throw error;
+      handleApiError(error);
     }
   },
   /**
@@ -94,24 +73,19 @@ export const historyService = {
   async editHistory(userId, historyId, historyItem) {
     try {
       const bodyData = {
+        userId: USER_ID,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
       };
 
-      await fetch(
-        `http://localhost:8080/api/histories/edit/${userId}/${historyId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(bodyData),
-        },
+      await apiClient.put(
+        `/api/histories/edit/${userId}/${historyId}`,
+        bodyData,
       );
     } catch (error) {
       console.error("ヒストリーデータ変更に失敗...", error);
-      return [];
+      handleApiError(error);
     }
   },
   /**
@@ -123,15 +97,10 @@ export const historyService = {
    */
   async deleteHistory(userId, historyId) {
     try {
-      await fetch(
-        `http://localhost:8080/api/histories/delete/${userId}/${historyId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      await apiClient.delete(`/api/histories/delete/${userId}/${historyId}`);
     } catch (error) {
       console.error("ヒストリーデータ削除に失敗...", error);
-      return [];
+      handleApiError(error);
     }
   },
 };

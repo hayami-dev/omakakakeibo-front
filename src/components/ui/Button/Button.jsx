@@ -12,7 +12,7 @@ export default function Button({
 }) {
   // ボタンの基本スタイル
   const baseStyle =
-    "font-bold rounded-md transition-colors inline-flex items-center justify-center gap-space-200 w-full disabled:cursor-not-allowed";
+    "font-bold rounded-md transition-colors inline-flex items-center justify-center gap-2 w-full disabled:cursor-not-allowed";
 
   // 色のバリエーション
   const variantStyles = {
@@ -26,9 +26,9 @@ export default function Button({
 
   // 文字サイズのバリエーション
   const sizeStyles = {
-    sm: "text-sm p-space-200",
-    md: "text-base px-space-400 py-space-200",
-    lg: "text-xl px-space-500 py-space-300",
+    sm: "text-sm p-2",
+    md: "text-base px-4 py-2",
+    lg: "text-xl px-6 py-3",
   };
 
   return (
