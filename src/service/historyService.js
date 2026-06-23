@@ -73,6 +73,7 @@ export const historyService = {
   async editHistory(userId, historyId, historyItem) {
     try {
       const bodyData = {
+        userId: USER_ID,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
