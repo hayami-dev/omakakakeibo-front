@@ -112,7 +112,7 @@ export default function InputHistory() {
       setToast({
         show: true,
         message: "削除しました",
-        type: "error",
+        type: "",
       });
     }
   };
