@@ -132,13 +132,11 @@ export default function InputHistory() {
     <>
       {/* オーバーレイ */}
       <div
-        onClick={handleClose}
         className={`fixed inset-0 z-[90] bg-black/30 transition-opacity duration-300
           ${isClosing ? "opacity-0" : "opacity-100"}`}
       >
         {/* ダイアログ部分 */}
         <div
-          onClick={(e) => e.stopPropagation()}
           className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] h-[95vh] z-[100] flex flex-col
           ${isClosing ? "my-slide-down" : "my-slide-up"}`}
         >
