@@ -188,7 +188,6 @@ export default function InputHistory() {
                 <section className="pb-4">
                   <p className="text-sm">✅サブスクリプション（※未実装）</p>
                 </section>
-                {/* TODO:バリデーションによって活性、非活性を切り替える */}
                 <section className="flex flex-col pb-8 gap-6 items-center border-dot-underline">
                   <Button
                     type="submit"
