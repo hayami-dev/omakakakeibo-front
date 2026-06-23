@@ -75,10 +75,10 @@ export default function User() {
 
   // 処理
   return (
-    <main className="flex flex-col gap-7 w-full p-space-600">
+    <main className="flex flex-col gap-7 w-full p-8">
       <h1 className="text-center">ユーザー情報</h1>
-      <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600">
-        <h2 className="flex justify-between items-baseline bg-bg-section2 px-space-600 py-space-400 rounded-3xl">
+      <section className="w-full flex flex-col gap-6 border-dot-underline pb-8">
+        <h2 className="flex justify-between items-baseline bg-bg-section2 px-8 py-4 rounded-3xl">
           <span>目標金額</span>
           <span>
             <strong className="text-2xl pr-[0.25rem]">
@@ -100,7 +100,7 @@ export default function User() {
           {!isEditBudget && <AttentionText>今月は変更済みです。</AttentionText>}
         </div>
       </section>
-      <section className="w-full flex flex-col gap-6 border-dot-underline pb-space-600 text-center">
+      <section className="w-full flex flex-col gap-6 border-dot-underline pb-8 text-center">
         <h2>カテゴリーの一覧</h2>
         <div className="grid grid-cols-12 gap-2 items-center">
           {activeCategories

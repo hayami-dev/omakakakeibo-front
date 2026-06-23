@@ -42,19 +42,6 @@
   font-style: normal;
 }
 
-/* Tailwind v4専用のフォント上書き設定 */
-@theme {
-  /* p-space-400などの書き方ができるようになる */
-  --spacing-space-0: 0px;
-  --spacing-space-100: 4px;
-  --spacing-space-200: 8px;
-  --spacing-space-300: 12px;
-  --spacing-space-400: 16px;
-  --spacing-space-500: 24px;
-  --spacing-space-600: 32px;
-  --spacing-space-800: 64px;
-}
-
 body {
   margin: 0;
   font: 16px/140% var(--font-sans);

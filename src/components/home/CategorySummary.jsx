@@ -77,7 +77,7 @@ export default function CategorySummary() {
 
   return (
     <div className="grid grid-cols-12 items-center">
-      <div className="col-span-6 aspect-square mx-space-400">
+      <div className="col-span-6 aspect-square mx-4">
         <div className="w-full aspect-square relative">
           <Doughnut data={chartData} options={graphOptions}></Doughnut>
         </div>

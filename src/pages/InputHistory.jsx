@@ -142,10 +142,10 @@ export default function InputHistory() {
           className={`fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[400px] h-[95vh] z-[100] flex flex-col
           ${isClosing ? "my-slide-down" : "my-slide-up"}`}
         >
-          <div className="py-space-600 bg-bg rounded-t-2xl shadow-[0_-4px_12px_rgba(0,0,0,0.1)] flex-1 overflow-auto">
+          <div className="py-8 bg-bg rounded-t-2xl shadow-[0_-4px_12px_rgba(0,0,0,0.1)] flex-1 overflow-auto">
             {/* スクロール部分 */}
-            <div className="w-full h-full overflow-auto px-space-600">
-              <header className="relative text-center pb-space-500 border-dot-underline pt-space-100">
+            <div className="w-full h-full overflow-auto px-8">
+              <header className="relative text-center pb-6 border-dot-underline pt-1">
                 <h1>おかねのきろく</h1>
                 <button
                   type="button"
@@ -158,9 +158,9 @@ export default function InputHistory() {
               <form
                 action=""
                 onSubmit={handleSend}
-                className="pb-space-600 pt-space-600 flex flex-col gap-6"
+                className="pb-8 pt-8 flex flex-col gap-6"
               >
-                <section className="flex flex-col gap-6 items-center border-dot-underline pb-space-500">
+                <section className="flex flex-col gap-6 items-center border-dot-underline pb-6">
                   {/* 金額の入力 */}
                   <AmountInput
                     ref={amountRef}
@@ -185,11 +185,11 @@ export default function InputHistory() {
                     onErrorCheck={setIsCategoryError}
                   />
                 </section>
-                <section className="pb-space-400">
+                <section className="pb-4">
                   <p className="text-sm">✅サブスクリプション（※未実装）</p>
                 </section>
                 {/* TODO:バリデーションによって活性、非活性を切り替える */}
-                <section className="flex flex-col pb-space-600 gap-6 items-center border-dot-underline">
+                <section className="flex flex-col pb-8 gap-6 items-center border-dot-underline">
                   <Button
                     type="submit"
                     variant="primary"

@@ -17,7 +17,7 @@ export default function SelectMonth() {
   const activeMonthList = getRecentMonthsRange();
 
   return (
-    <ul className="grid grid-cols-12 text-center pt-space-100">
+    <ul className="grid grid-cols-12 text-center pt-1">
       {activeMonthList?.map((yearMonth, index) => {
         const [year, month] = yearMonth.split("-");
         const isJanOrDec = month === "12" || month === "01" || index === 0;

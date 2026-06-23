@@ -51,12 +51,12 @@ export default function Home() {
 
   return (
     <>
-      <main className="flex flex-col gap-5 pt-space-500 pb-space-800">
+      <main className="flex flex-col gap-5 pt-6 pb-16">
         {/* 各月の合計金額、目標金額の表示 */}
         <Summary />
         <MonthSummary />
         {/* 各月の支出の詳細を表示 */}
-        <div className="bg-bg p-space-400">
+        <div className="bg-bg p-4">
           <h2>きろくの明細</h2>
         </div>
         <CategorySummary />
