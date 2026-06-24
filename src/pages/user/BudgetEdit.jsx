@@ -20,7 +20,7 @@ import AttentionText from "@/components/ui/HelpText";
 import { toastAtom } from "@/service/toastAtom";
 import handleApiError from "@/handleApiError";
 
-export default function BudgetEdit() {
+export default function BudgetEdit({ nextStep }) {
   // ユーザーIDを取得
   const USER_ID = useAtomValue(userIdAtom);
 
@@ -106,6 +106,10 @@ export default function BudgetEdit() {
     }
   };
 
+  const onHandleFirstSave = () => {
+    nextStep();
+  };
+
   return (
     <>
       <BasePage title={"目標金額の設定"}>
@@ -146,9 +150,20 @@ export default function BudgetEdit() {
             </div>
             {errorText && <p className="text-error-default">{errorText}</p>}
           </fieldset>
-          <Button type="submit" variant="primary" disabled={!!errorText}>
-            変更
-          </Button>
+          {!nextStep ? (
+            <Button type="submit" variant="primary" disabled={!!errorText}>
+              変更
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              onClick={onHandleFirstSave}
+              variant="primary"
+              disabled={!!errorText}
+            >
+              目標金額を設定する
+            </Button>
+          )}
         </form>
       </BasePage>
     </>
