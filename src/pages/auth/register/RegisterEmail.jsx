@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import TextField from "@/components/ui/TextField";
 // アセット
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
-import { isValidEmail, registerService } from "@/service/registerService";
+import { validEmail, registerService } from "@/service/registerService";
 import { useNavigate } from "react-router";
 
 export default function RegisterEmail({ nextStep, formData, setFormData }) {
@@ -19,7 +19,7 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
   const isButtonDisabled = emailValue.trim() === "" || errorText !== "";
 
   const validateEmail = (value) => {
-    const msg = isValidEmail(value);
+    const msg = validEmail(value);
     setErrorText(msg);
     return msg;
   };
@@ -80,7 +80,6 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
           </Button>
         </form>
         <div>
-          <div />
           <Button
             variant="secondary"
             icon={
@@ -88,7 +87,7 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
                 <ChevronRightIcon />
               </span>
             }
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/auth/login")}
           >
             ログイン画面へ戻る
           </Button>
