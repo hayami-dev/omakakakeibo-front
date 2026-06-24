@@ -24,10 +24,19 @@ export default function RegisterContainer() {
   // ページ切替
   const nextStep = () => setStep((prev) => prev + 1);
 
+  // TODO:削除
+  console.log("formData", formData);
+
   return (
     <>
       <Header />
-      {step === 1 && <RegisterEmail nextStep={nextStep} />}
+      {step === 1 && (
+        <RegisterEmail
+          nextStep={nextStep}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      )}
       {step === 2 && <RegisterVerify nextStep={nextStep} />}
       {step === 3 && <RegisterPassword nextStep={nextStep} />}
       {step === 4 && <BudgetEdit nextStep={nextStep} />}
