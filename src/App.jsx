@@ -21,6 +21,7 @@ import { isLoggedInAtom, userIdAtom } from "@/service/authService";
 import Toast from "@/components/ui/Toast";
 import LoadingAnime from "./components/ui/LoadingAnime/LoadingAnime";
 import RegisterContainer from "./pages/auth/register/RegisterContainer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   // ログイン状態を管理
@@ -115,27 +116,29 @@ function App() {
         </Route>
 
         {/* ログイン後 */}
-        <Route
-          element={
-            <>
-              <Header />
-              <Outlet /> {/* ここにHomeやUserが入る！ */}
-            </>
-          }
-        >
-          {/* ホーム */}
-          <Route path="/" element={<Home />}>
-            {/* ダイアログ */}
-            <Route
-              path="input"
-              element={!showLoadingDOM ? <InputHistory /> : null}
-            />
-          </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route
+            element={
+              <>
+                <Header />
+                <Outlet /> {/* ここにHomeやUserが入る！ */}
+              </>
+            }
+          >
+            {/* ホーム */}
+            <Route path="/" element={<Home />}>
+              {/* ダイアログ */}
+              <Route
+                path="input"
+                element={!showLoadingDOM ? <InputHistory /> : null}
+              />
+            </Route>
 
-          {/* ユーザーページ */}
-          <Route path="user" element={<User />} />
-          <Route path="user/categoryEdit" element={<CategoryEdit />} />
-          <Route path="user/budgetEdit" element={<BudgetEdit />} />
+            {/* ユーザーページ */}
+            <Route path="user" element={<User />} />
+            <Route path="user/categoryEdit" element={<CategoryEdit />} />
+            <Route path="user/budgetEdit" element={<BudgetEdit />} />
+          </Route>
         </Route>
       </Routes>
     </>
