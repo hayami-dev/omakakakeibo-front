@@ -4,8 +4,13 @@ import { useLocation, useNavigate, NavLink } from "react-router";
 import logo from "@/assets/logo.svg";
 import setting from "@/assets/icons/setting.svg";
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
+import { isLoggedInAtom } from "@/service/authService";
+import { useAtomValue } from "jotai";
 
 export default function Header() {
+  // ログイン状態を管理
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
+
   // 現在のURL情報を取得
   const location = useLocation();
   // 画面遷移用のフック
@@ -36,19 +41,18 @@ export default function Header() {
           </button>
         )}
       </div>
-      <h1 className="w-fit leading-none col-start-5 col-span-4 m-2">
-        <NavLink to="/">
-          <img
-            src={logo}
-            alt="おおまか家計簿ロゴ"
-            className="h-auto w-[70px]"
-          />
-        </NavLink>
+      <h1
+        className={`w-fit leading-none col-start-5 col-span-4 m-2 ${isLoggedIn ? "cursor-pointer" : "cursor-default"}`}
+        onClick={isLoggedIn ? () => navigate("/") : null}
+      >
+        <img src={logo} alt="おおまか家計簿ロゴ" className="h-auto w-[70px]" />
       </h1>
       <div className="w-fit col-start-11 col-span-2">
-        <NavLink to="/user">
-          <img src={setting} alt="マイページへ" />
-        </NavLink>
+        {isLoggedIn && (
+          <NavLink to="/user">
+            <img src={setting} alt="マイページへ" />
+          </NavLink>
+        )}
       </div>
     </header>
   );

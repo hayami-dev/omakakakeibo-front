@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useSetAtom, useAtomValue } from "jotai";
 // ルート
-import { Route, Routes, useNavigate } from "react-router";
+import { Route, Routes, useNavigate, Outlet } from "react-router";
 import Home from "@/pages/Home";
 import InputHistory from "@/pages/InputHistory";
 import User from "@/pages/User";
 import CategoryEdit from "@/pages/user/CategoryEdit";
 import Header from "@/components/Header";
 import BudgetEdit from "@/pages/user/BudgetEdit";
+import Login from "@/pages/auth/login/Login";
 // DBからカテゴリを取得
 import {
   activeCategoriesAtom,
@@ -15,12 +16,16 @@ import {
   categoryService,
 } from "@/service/categoryService";
 import { historiesAtom, historyService } from "@/service/historyService";
-import { userIdAtom } from "@/service/authService";
+import { isLoggedInAtom, userIdAtom } from "@/service/authService";
 // component
 import Toast from "@/components/ui/Toast";
 import LoadingAnime from "./components/ui/LoadingAnime/LoadingAnime";
+import RegisterContainer from "./pages/auth/register/RegisterContainer";
 
 function App() {
+  // ログイン状態を管理
+  const isLogeedIn = useAtomValue(isLoggedInAtom);
+
   const USER_ID = useAtomValue(userIdAtom);
 
   const setActiveCategories = useSetAtom(activeCategoriesAtom);
@@ -31,8 +36,8 @@ function App() {
   const [showLoadingDOM, setShowLoadingDOM] = useState(true);
 
   // 初回アクセス時、読み込みを待ってからInputHistoryを表示
-  const navigate = useNavigate();
-  const [hasAutoOpened, setHasAutoOpened] = useState(false);
+  // const navigate = useNavigate();
+  // const [hasAutoOpened, setHasAutoOpened] = useState(false);
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -78,39 +83,60 @@ function App() {
   }, [setActiveCategories, setCategoriesMaster, setHistories]); // 第2引数を空にすると初回のみ実行になる
 
   // 初回アクセス時のみ、InputHistoryを自動で表示
-  useEffect(() => {
-    if (!showLoadingDOM && !hasAutoOpened) {
-      setHasAutoOpened(true);
-      navigate("input");
-    }
-  }, [showLoadingDOM, hasAutoOpened, navigate]);
+  // useEffect(() => {
+  //   if (!showLoadingDOM && !hasAutoOpened) {
+  //     setHasAutoOpened(true);
+  //     navigate("input");
+  //   }
+  // }, [showLoadingDOM, hasAutoOpened, navigate]);
 
   return (
     <>
+      {/* ローディングアニメーション */}
       {showLoadingDOM && (
         <div
-          className={`fixed inset-0 top-0 w-full f-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[999]
+          className={`fixed inset-0 top-0 w-full h-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[999]
             ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"}
           `}
         >
           <LoadingAnime />
         </div>
       )}
-      <Header />
+
+      {/* トースト通知 */}
       <Toast />
+
+      {/* すべての画面ルート */}
       <Routes>
-        {/* ホーム */}
-        <Route path="/" element={<Home />}>
-          {/* ダイアログ */}
-          <Route
-            path="input"
-            element={!showLoadingDOM ? <InputHistory /> : null}
-          />
+        {/* ログイン前 */}
+        <Route path="/auth">
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<RegisterContainer />} />
         </Route>
-        {/* ユーザーページ */}
-        <Route path="user" element={<User />} />
-        <Route path="user/categoryEdit" element={<CategoryEdit />} />
-        <Route path="user/budgetEdit" element={<BudgetEdit />} />
+
+        {/* ログイン後 */}
+        <Route
+          element={
+            <>
+              <Header />
+              <Outlet /> {/* ここにHomeやUserが入る！ */}
+            </>
+          }
+        >
+          {/* ホーム */}
+          <Route path="/" element={<Home />}>
+            {/* ダイアログ */}
+            <Route
+              path="input"
+              element={!showLoadingDOM ? <InputHistory /> : null}
+            />
+          </Route>
+
+          {/* ユーザーページ */}
+          <Route path="user" element={<User />} />
+          <Route path="user/categoryEdit" element={<CategoryEdit />} />
+          <Route path="user/budgetEdit" element={<BudgetEdit />} />
+        </Route>
       </Routes>
     </>
   );
