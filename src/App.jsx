@@ -113,6 +113,8 @@ function App() {
         <Route path="/auth">
           <Route path="login" element={<Login />} />
           <Route path="register" element={<RegisterContainer />} />
+          {/* トークン認証用 */}
+          <Route path="register/verify" element={<RegisterContainer />} />
         </Route>
 
         {/* ログイン後 */}
