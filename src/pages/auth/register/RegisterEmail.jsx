@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import TextField from "@/components/ui/TextField";
 // アセット
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
-import { isValidEmail } from "@/service/registerService";
+import { isValidEmail, registerService } from "@/service/registerService";
 import { useNavigate } from "react-router";
 
 export default function RegisterEmail({ nextStep, formData, setFormData }) {
@@ -28,13 +28,15 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
     validateEmail(emailValue);
   };
 
-  const onHandleSend = (e) => {
+  const onHandleSend = async (e) => {
     e.preventDefault();
 
     const msg = validateEmail(emailValue);
     if (msg !== "") {
       return; // エラーがあれば進ませない
     }
+
+    await registerService.registerRequest(emailValue);
     // このメソッドが完了時点でsetされる
     setFormData({ ...formData, email: emailValue });
 

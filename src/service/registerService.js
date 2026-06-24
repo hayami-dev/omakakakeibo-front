@@ -3,6 +3,23 @@
  * @description ユーザーの新規登録についてのデータを加工、検証する
  */
 
+import apiClient from "@/apiClient";
+import handleApiError from "@/handleApiError";
+
+export const registerService = {
+  /*
+   * メアド認証用トークンを発行
+   */
+  async registerRequest(email) {
+    try {
+      await apiClient.post(`/api/auth/register-request`, { email });
+    } catch (error) {
+      console.error("新規ユーザーのメアド送信に失敗...", error);
+      handleApiError(error);
+    }
+  },
+};
+
 export function isValidEmail(currentValue) {
   const strValue = String(currentValue || "");
   const value = strValue.trim();
