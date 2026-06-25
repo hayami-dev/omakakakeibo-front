@@ -7,8 +7,9 @@ import apiClient from "@/apiClient";
 import handleApiError from "@/handleApiError";
 
 export const registerService = {
-  /*
+  /**
    * メアド認証用トークンを発行
+   * @param {*} email
    */
   async registerRequest(email) {
     try {
@@ -18,6 +19,11 @@ export const registerService = {
       handleApiError(error);
     }
   },
+  /**
+   * トークンを検証
+   * @param {*} token
+   * @returns
+   */
   async registerValidToken(token) {
     try {
       const response = await apiClient.post(`/api/auth/verify-token`, {
@@ -30,14 +36,19 @@ export const registerService = {
       throw error;
     }
   },
-  async registerDataSave(email, password) {
+  /**
+   * 新規登録ユーザーの登録
+   * @param {*} email
+   * @param {*} password
+   */
+  async registerDataSave(formData) {
     try {
-      const formData = {
-        email: email,
-        password: password,
+      const sendData = {
+        email: formData.email,
+        password: formData.password,
       };
 
-      await apiClient.post("/api/auth//register", formData);
+      await apiClient.post("/api/auth//register", sendData);
     } catch (error) {
       console.error("新規ユーザーの登録に失敗...", error);
       handleApiError(error);

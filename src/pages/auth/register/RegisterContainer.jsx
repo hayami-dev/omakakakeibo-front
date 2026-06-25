@@ -73,8 +73,14 @@ export default function RegisterContainer() {
           setFormData={setFormData}
         />
       )}
-      {step === 4 && <BudgetEdit nextStep={nextStep} />}
-      {step === 5 && <RegisterComplete />}
+      {step === 4 && (
+        <BudgetEdit
+          nextStep={nextStep}
+          formData={formData}
+          setFormData={setFormData}
+        />
+      )}
+      {step === 5 && <RegisterComplete formData={formData} />}
     </>
   );
 }
