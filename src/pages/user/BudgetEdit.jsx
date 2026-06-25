@@ -53,6 +53,9 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
+      if (nextStep || !USER_ID) {
+        return;
+      }
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
@@ -129,7 +132,11 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
     }
 
     const value = Number(inputValue);
-    setFormData((prev) => ({ ...prev, targetAmount: value }));
+    setFormData((prev) => ({
+      ...prev,
+      targetAmount: value,
+      targetMonth: currentMonth,
+    }));
 
     nextStep();
   };
@@ -137,8 +144,13 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
   const onHandleSkip = async (e) => {
     e.preventDefault();
 
-    setInputValue(INITIAL_MONTHLY_BUDGET);
-    setMonthlyBudget(INITIAL_MONTHLY_BUDGET);
+    const value = INITIAL_MONTHLY_BUDGET;
+
+    setFormData((prev) => ({
+      ...prev,
+      targetAmount: value,
+      targetMonth: currentMonth,
+    }));
 
     nextStep();
   };

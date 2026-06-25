@@ -25,7 +25,7 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
   };
 
   const onHandleValid = () => {
-    validateEmail(emailValue);
+    validateEmail(emailValue); //TODO:すでに登録があるメアドかどうかの判定
   };
 
   const onHandleSend = async (e) => {

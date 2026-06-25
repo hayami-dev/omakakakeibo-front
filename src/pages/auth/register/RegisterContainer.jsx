@@ -26,6 +26,7 @@ export default function RegisterContainer() {
     email: "",
     password: "",
     targetAmount: 50000,
+    targetMonth: "",
   });
 
   useEffect(() => {

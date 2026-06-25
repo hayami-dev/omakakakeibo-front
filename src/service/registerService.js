@@ -41,17 +41,33 @@ export const registerService = {
    * @param {*} email
    * @param {*} password
    */
-  async registerDataSave(formData) {
+  async registerDataSave(email, password) {
+    // メアドのチェック
+    const emailError = validEmail(email);
+    if (emailError !== "") {
+      // validEmail はエラーがない時 "" を返す
+      alert(emailError);
+      return;
+    }
+
+    // パスワードのチェック
+    const passwordError = validPassword(password);
+    if (passwordError !== "") {
+      alert(passwordError);
+      return;
+    }
     try {
       const sendData = {
-        email: formData.email,
-        password: formData.password,
+        email,
+        password,
       };
 
-      await apiClient.post("/api/auth//register", sendData);
+      const response = await apiClient.post("/api/auth/register", sendData);
+      return response.data;
     } catch (error) {
       console.error("新規ユーザーの登録に失敗...", error);
       handleApiError(error);
+      throw error;
     }
   },
 };
@@ -105,4 +121,22 @@ export function validPassword(currentValue) {
   }
 
   return "";
+}
+
+/**
+ * 最終データを各DBに入れる
+ */
+export async function saveUserData(formData) {
+  const email = formData.email;
+  const password = formData.password;
+
+  const userRes = await registerService.registerDataSave(email, password);
+  if (!userRes || !userRes.userId) {
+    return;
+  }
+
+  const newUserId = userRes.userId;
+
+  // userIdを返す
+  return newUserId;
 }

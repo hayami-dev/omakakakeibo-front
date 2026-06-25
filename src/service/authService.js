@@ -13,4 +13,4 @@ export const isLoggedInAtom = atom();
  * TODO：ログイン機能が未実装の期間は、暫定の初期値として `1` を保持する
  * @type {import('jotai').PrimitiveAtom<number>}
  */
-export const userIdAtom = atom(1);
+export const userIdAtom = atom();
