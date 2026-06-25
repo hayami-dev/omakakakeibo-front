@@ -14,6 +14,8 @@ import HistoryList from "@/components/home/HistoryList";
 import CategorySummary from "@/components/home/CategorySummary";
 import MonthSummary from "@/components/home/MonthSummary";
 import Footer from "@/components/Footer";
+import LoadingAnime from "@/components/ui/LoadingAnime";
+
 /**
  * service
  */
