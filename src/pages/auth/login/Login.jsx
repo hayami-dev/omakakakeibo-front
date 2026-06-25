@@ -96,9 +96,9 @@ export default function Login() {
         return;
       }
 
+      // ログイン状態を書き換える
       setUserId(userData.userId);
-      setLoginId(userData.email);
-      // ログイン状態を「true（ログイン済み）」に書き換える
+      setLoginId(userData.loginId);
       setIsLoggedIn(true);
 
       // そのままホーム画面にジャンプ！

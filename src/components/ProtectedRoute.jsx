@@ -7,7 +7,9 @@ import { Navigate, Outlet } from "react-router";
 export default function ProtectedRoute() {
   const isLoggedIn = useAtomValue(isLoggedInAtom);
 
-  if (!isLoggedIn) {
+  const storedLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+
+  if (!isLoggedIn && !storedLoggedIn) {
     return <Navigate to="/auth/login" replace />;
   }
   return <Outlet />;

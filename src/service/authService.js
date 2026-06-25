@@ -3,6 +3,7 @@
  * @description アプリケーション全体で共有するユーザー認証状態（ユーザーID等）を保持する
  */
 
+import { atomWithStorage } from "jotai/utils";
 import apiClient from "@/apiClient";
 import { atom } from "jotai";
 
@@ -26,15 +27,18 @@ export const authService = {
 };
 
 /* ログイン状態を管理するAtom */
-export const isLoggedInAtom = atom(false);
+export const isLoggedInAtom = atomWithStorage("isLoggedIn", false);
 
 /**
  * ログイン中のユーザーIDを管理するグローバルAtom状態
  * TODO：ログイン機能が未実装の期間は、暫定の初期値として `1` を保持する
  * @type {import('jotai').PrimitiveAtom<number>}
  */
-export const userIdAtom = atom();
-export const LoginIdAtom = atom();
+export const userIdAtom = atomWithStorage("userId", null);
+export const LoginIdAtom = atomWithStorage("loginId", "");
+
+// 初期化を完了するAtom
+export const isInitializedAtom = atom(false);
 
 /* ログインのバリデーション */
 /**
@@ -80,4 +84,21 @@ export const login = async (formData) => {
 
   const userData = await authService.fetchUserByLoginId(formData);
   return userData;
+};
+
+/**
+ * ログアウト
+ */
+export const logout = () => {
+  // 1. ローカルストレージを全て削除（あるいは個別に削除）
+  localStorage.removeItem("userId");
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("loginId");
+
+  // もし必要なら完全クリア
+  // localStorage.clear();
+
+  // 2. ブラウザをリロードして、Reactの状態を完全にリセットする
+  // （これが一番確実で、ゴミデータが残らない方法です）
+  window.location.href = "/auth/login";
 };

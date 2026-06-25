@@ -15,7 +15,7 @@ import {
   INITIAL_MONTHLY_BUDGET,
   checkIsEditBudget,
 } from "@/service/budgetService";
-import { userIdAtom } from "@/service/authService";
+import { LoginIdAtom, logout, userIdAtom } from "@/service/authService";
 // components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
@@ -25,7 +25,10 @@ import AttentionText from "@/components/ui/HelpText";
 // ユーザー個別の情報の表示画面
 export default function User() {
   // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
+  const userId = useAtomValue(userIdAtom);
+
+  // ログインIDを取得
+  const loginId = useAtomValue(LoginIdAtom);
 
   // 選択中の月
   const currentMonth = useAtomValue(currentMonthAtom);
@@ -51,12 +54,12 @@ export default function User() {
   // 目標金額の変更が可能かどうかを判定
   useEffect(() => {
     const checkBudgetLock = async () => {
-      const canEdit = await checkIsEditBudget(USER_ID, currentMonth);
+      const canEdit = await checkIsEditBudget(userId, currentMonth);
       setIsEditBudget(canEdit);
     };
 
     checkBudgetLock();
-  }, [currentMonth, USER_ID, monthlyBudget]);
+  }, [currentMonth, userId, monthlyBudget]);
 
   // DBから目標金額を取得
   useEffect(() => {
@@ -65,13 +68,19 @@ export default function User() {
         return;
       }
       const amount = await budgetService.loadBudgetWithFallback(
-        USER_ID,
+        userId,
         currentMonth,
       );
       setMonthlyBudget(amount);
     };
     loadBudget();
-  }, [currentMonth, USER_ID, monthlyBudget]);
+  }, [currentMonth, userId, monthlyBudget]);
+
+  const handleLogout = () => {
+    if (window.confirm("ログアウトしますか？")) {
+      logout();
+    }
+  };
 
   // 処理
   return (
@@ -132,7 +141,7 @@ export default function User() {
       </section>
       <section className="flex flex-col gap-2">
         <h3>ユーザーID</h3>
-        <p>yamada@exsample.jp</p>
+        <p>{loginId}</p>
         <Button
           variant="secondary"
           size="sm"
@@ -140,10 +149,10 @@ export default function User() {
           className="!w-fit mt-2"
           onClick={() => navigate("/")}
         >
-          ユーザーIDの変更
+          ユーザーIDの変更(未実装)
         </Button>
       </section>
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-3 border-dot-underline pb-8">
         <h3>パスワード</h3>
         <p>●●●●●●●●</p>
         <Button
@@ -153,9 +162,14 @@ export default function User() {
           className="!w-fit mt-3"
           onClick={() => navigate("/")}
         >
-          パスワードの変更
+          パスワードの変更(未実装)
         </Button>
       </section>
+      <div className="pb-4">
+        <Button type="button" onClick={handleLogout}>
+          ログアウト
+        </Button>
+      </div>
     </main>
   );
 }

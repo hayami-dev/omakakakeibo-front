@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 // ルート
 import { Route, Routes, Outlet } from "react-router";
 import Home from "@/pages/Home";
@@ -8,18 +7,12 @@ import CategoryEdit from "@/pages/user/CategoryEdit";
 import Header from "@/components/Header";
 import BudgetEdit from "@/pages/user/BudgetEdit";
 import Login from "@/pages/auth/login/Login";
-import { isLoggedInAtom, userIdAtom } from "@/service/authService";
 // component
 import Toast from "@/components/ui/Toast";
 import RegisterContainer from "./pages/auth/register/RegisterContainer";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  // ログイン状態を管理
-  const isLogeedIn = useAtomValue(isLoggedInAtom);
-
-  const USER_ID = useAtomValue(userIdAtom);
-
   return (
     <>
       {/* トースト通知 */}
