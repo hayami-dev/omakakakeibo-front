@@ -24,7 +24,7 @@ import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
 
 export default function BudgetEdit({ nextStep, formData, setFormData }) {
   // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
+  const userId = useAtomValue(userIdAtom);
 
   // atomで今の目標金額の状態を取得
   const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
@@ -53,14 +53,14 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      if (nextStep || !USER_ID) {
+      if (nextStep || !userId) {
         return;
       }
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
       const amount = await budgetService.loadBudgetWithFallback(
-        USER_ID,
+        userId,
         currentMonth,
       );
       setMonthlyBudget(amount);
@@ -101,7 +101,7 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
     try {
       const success = await updateBudget({
         inputValue,
-        USER_ID,
+        userId,
         currentMonth,
         setMonthlyBudget,
       });

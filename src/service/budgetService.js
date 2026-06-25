@@ -78,17 +78,17 @@ export const budgetService = {
    * 家計簿の利便性を高めるため、今月が未設定であっても、過去5ヶ月以内（計6ヶ月分）に
    * 設定された目標金額があれば、その最新の設定値を「今月の目標」として自動で引き継ぐ。
    * もし直近6ヶ月間すべて未登録だった場合は、システムのデフォルト初期値（50,000円）を返す。
-   * * @param {number} USER_ID - ログイン中のユーザーID
+   * * @param {number} userId - ログイン中のユーザーID
    * @param {string} currentMonth - 基点となる対象月 (フォーマット: yyyy-MM)
    * @returns {Promise<number>} 取得できた過去の目標金額、またはデフォルト初期値
    */
-  async loadBudgetWithFallback(USER_ID, currentMonth) {
+  async loadBudgetWithFallback(userId, currentMonth) {
     let targetMonth = currentMonth; // 最初は今月からスタート
 
     // 今月を含めて最大6回、過去にさかのぼるループを回す
     for (let i = 0; i < 6; i++) {
       const amount = await budgetService.fetchMonthlyBudget(
-        USER_ID,
+        userId,
         targetMonth,
       );
 
@@ -137,14 +137,14 @@ export const formatAmountWithSign = (amount) => {
  * ユーザーが入力した目標金額をバリデーションし、DBとAtomに保存
  * @param {Object} params - 引数のオブジェクト
  * @param {string} params.inputValue - 入力欄から受け取った文字列の金額
- * @param {number} params.USER_ID - ログイン中のユーザーID
+ * @param {number} params.userId - ログイン中のユーザーID
  * @param {string} params.currentMonth - 対象の月 (フォーマット: yyyy-MM)
  * @param {Function} params.setMonthlyBudget - JotaiのAtomを更新するためのセッター関数
  * @returns {Promise<boolean>} 保存が成功した場合は true、失敗・バリデーションNGの場合は false
  */
 export const updateBudget = async ({
   inputValue,
-  USER_ID,
+  userId,
   currentMonth,
   setMonthlyBudget,
 }) => {
@@ -159,7 +159,7 @@ export const updateBudget = async ({
 
   // DBへ送るデータ
   const sendData = {
-    userId: USER_ID,
+    userId: userId,
     targetMonth: currentMonth,
     targetAmount: num,
   };
@@ -180,9 +180,9 @@ export const updateBudget = async ({
 /**
  * 目標金額の変更が可能かどうかを判定
  */
-export async function checkIsEditBudget(USER_ID, currentMonth) {
+export async function checkIsEditBudget(userId, currentMonth) {
   const realAmount = await budgetService.fetchMonthlyBudget(
-    USER_ID,
+    userId,
     currentMonth,
   );
 

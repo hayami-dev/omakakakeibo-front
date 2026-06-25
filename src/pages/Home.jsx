@@ -34,7 +34,7 @@ import {
 
 export default function Home() {
   // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
+  const userId = useAtomValue(userIdAtom);
 
   // 選択中の月
   const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
@@ -57,8 +57,8 @@ export default function Home() {
   // DBから各種初期データと目標金額を取得
   useEffect(() => {
     const loadInitialData = async () => {
-      // 🌟【超重要ガード】USER_IDが無い、または"undefined"（文字列）の場合は通信を完全にブロックする
-      if (!USER_ID || USER_ID === "undefined") {
+      // userIdが無い、または"undefined"（文字列）の場合は通信を完全にブロックする
+      if (!userId || userId === "undefined") {
         return;
       }
 
@@ -72,9 +72,9 @@ export default function Home() {
 
         // JavaAPIの通信と一緒に「2秒待つ処理」を並行して実行させる
         const [activeData, masterData, historyData] = await Promise.all([
-          categoryService.fetchActiveCategories(USER_ID),
-          categoryService.fetchCategoriesMaster(USER_ID),
-          historyService.fetchHistories(USER_ID),
+          categoryService.fetchActiveCategories(userId),
+          categoryService.fetchCategoriesMaster(userId),
+          historyService.fetchHistories(userId),
           delay(2000), // 2000ms（2秒）のウェイト
         ]);
 
@@ -89,9 +89,9 @@ export default function Home() {
           historyData,
         });
 
-        // 🌟 目標金額の取得
+        // 目標金額の取得
         const amount = await budgetService.loadBudgetWithFallback(
-          USER_ID,
+          userId,
           currentMonth,
         );
         setMonthlyBudget(amount);
@@ -110,9 +110,8 @@ export default function Home() {
     };
 
     loadInitialData();
-    // 🌟 依存配列に USER_ID と setMonthlyBudget も正しく追加しました
   }, [
-    USER_ID,
+    userId,
     currentMonth,
     setActiveCategories,
     setCategoriesMaster,

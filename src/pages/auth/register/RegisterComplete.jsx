@@ -49,7 +49,7 @@ export default function RegisterComplete({ formData }) {
 
         await updateBudget({
           inputValue: targetAmount,
-          USER_ID: newUserId,
+          userId: newUserId,
           currentMonth: targetMonth,
           setMonthlyBudget,
         });

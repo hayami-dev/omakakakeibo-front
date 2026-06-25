@@ -29,7 +29,7 @@ import handleApiError from "@/handleApiError";
 
 export default function InputHistory() {
   // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
+  const userId = useAtomValue(userIdAtom);
 
   // 支出の履歴を取得
   const setHistories = useSetAtom(historiesAtom);
@@ -77,7 +77,7 @@ export default function InputHistory() {
       const success = await saveInputHistory({
         formData,
         refs,
-        USER_ID,
+        userId,
         editItem,
         setHistories,
       });
@@ -100,7 +100,7 @@ export default function InputHistory() {
   // historiesからレコードを削除
   const handleRemove = async () => {
     const success = await deleteInputHistory({
-      USER_ID,
+      userId,
       editItem,
       setHistories,
     });
