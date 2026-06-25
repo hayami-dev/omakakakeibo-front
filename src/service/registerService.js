@@ -9,11 +9,11 @@ import handleApiError from "@/handleApiError";
 export const registerService = {
   /**
    * メアド認証用トークンを発行
-   * @param {*} email
+   * @param {*} loginId
    */
-  async registerRequest(email) {
+  async registerRequest(loginId) {
     try {
-      await apiClient.post(`/api/auth/register-request`, { email });
+      await apiClient.post(`/api/auth/register-request`, { loginId });
     } catch (error) {
       console.error("新規ユーザーのメアド送信に失敗...", error);
       handleApiError(error);
@@ -38,12 +38,12 @@ export const registerService = {
   },
   /**
    * 新規登録ユーザーの登録
-   * @param {*} email
+   * @param {*} loginId
    * @param {*} password
    */
-  async registerDataSave(email, password) {
+  async registerDataSave(loginId, password) {
     // メアドのチェック
-    const emailError = validEmail(email);
+    const emailError = validEmail(loginId);
     if (emailError !== "") {
       // validEmail はエラーがない時 "" を返す
       alert(emailError);
@@ -58,7 +58,7 @@ export const registerService = {
     }
     try {
       const sendData = {
-        email,
+        loginId,
         password,
       };
 
@@ -127,10 +127,10 @@ export function validPassword(currentValue) {
  * 最終データを各DBに入れる
  */
 export async function saveUserData(formData) {
-  const email = formData.email;
+  const loginId = formData.loginId;
   const password = formData.password;
 
-  const userRes = await registerService.registerDataSave(email, password);
+  const userRes = await registerService.registerDataSave(loginId, password);
   if (!userRes || !userRes.userId) {
     return;
   }

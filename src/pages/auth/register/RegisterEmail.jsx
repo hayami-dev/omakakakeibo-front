@@ -10,7 +10,7 @@ import { validEmail, registerService } from "@/service/registerService";
 import { useNavigate } from "react-router";
 
 export default function RegisterEmail({ nextStep, formData, setFormData }) {
-  const [emailValue, setEmailValue] = useState(formData.email);
+  const [emailValue, setEmailValue] = useState(formData.loginId);
   const [errorText, setErrorText] = useState("");
 
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
 
     await registerService.registerRequest(emailValue);
     // このメソッドが完了時点でsetされる
-    setFormData({ ...formData, email: emailValue });
+    setFormData({ ...formData, loginId: emailValue });
 
     nextStep();
   };

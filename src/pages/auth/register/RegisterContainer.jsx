@@ -13,17 +13,17 @@ import { registerService } from "@/service/registerService";
 import { useLocation, useSearchParams } from "react-router";
 
 export default function RegisterContainer() {
-  // 最初表示するページ
-  const [step, setStep] = useState(1);
   // URLを検知
   const location = useLocation();
   // URLのtoken部分を取得
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  // 最初表示するページ
+  const [step, setStep] = useState(token ? 3 : 1);
 
   // 送信するデータ
   const [formData, setFormData] = useState({
-    email: "",
+    loginId: "",
     password: "",
     targetAmount: 50000,
     targetMonth: "",
@@ -34,8 +34,8 @@ export default function RegisterContainer() {
       const autoVerify = async () => {
         try {
           const res = await registerService.registerValidToken(token);
-          if (res && res.email) {
-            setFormData((prev) => ({ ...prev, email: res.email }));
+          if (res && res.loginId) {
+            setFormData((prev) => ({ ...prev, loginId: res.loginId }));
             setStep(3);
           }
         } catch (error) {

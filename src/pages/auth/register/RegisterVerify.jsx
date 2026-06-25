@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 export default function RegisterVerify({ nextStep, formData }) {
   // 前のページでの入力を取得
-  const emailValue = formData.email;
+  const emailValue = formData.loginId;
 
   const navigate = useNavigate();
 
