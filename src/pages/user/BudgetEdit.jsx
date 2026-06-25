@@ -10,6 +10,7 @@ import {
   monthlyBudgetAtom,
   budgetService,
   updateBudget,
+  validateMonthlyBudget,
 } from "@/service/budgetService";
 import { getYearMonth } from "@/dateUtils";
 import { userIdAtom } from "@/service/authService";
@@ -19,19 +20,24 @@ import Button from "@/components/ui/Button";
 import AttentionText from "@/components/ui/HelpText";
 import { toastAtom } from "@/service/toastAtom";
 import handleApiError from "@/handleApiError";
+import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
 
-export default function BudgetEdit() {
+export default function BudgetEdit({ nextStep, formData, setFormData }) {
   // ユーザーIDを取得
   const USER_ID = useAtomValue(userIdAtom);
+
+  // atomで今の目標金額の状態を取得
+  const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
 
   // 今月を取得
   const currentMonth = getYearMonth();
 
-  // DBからの目標金額
-  const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
-
   // inputの入力値
-  const [inputValue, setInputValue] = useState(monthlyBudget);
+  // nextStepが渡されていた場合、formData.targetAmountを取得
+  // そうじゃなければDBからの目標金額を取得
+  const [inputValue, setInputValue] = useState(
+    nextStep ? formData.targetAmount : monthlyBudget,
+  );
 
   // エラーメッセージを管理
   const [errorText, setErrorText] = useState("");
@@ -47,6 +53,9 @@ export default function BudgetEdit() {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
+      if (nextStep || !USER_ID) {
+        return;
+      }
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
@@ -82,7 +91,11 @@ export default function BudgetEdit() {
   // ページ切替のためのフック
   const navigate = useNavigate();
 
-  const handleSave = async (e) => {
+  /**
+   * ログイン時の目標金額保存
+   * @param {*} e preventDefault用
+   */
+  const onHandleSave = async (e) => {
     e.preventDefault();
 
     try {
@@ -106,6 +119,42 @@ export default function BudgetEdit() {
     }
   };
 
+  /**
+   * 新規登録フローの目標金額保存
+   */
+  const onHandleFirstSave = async (e) => {
+    e.preventDefault();
+
+    const msg = validateMonthlyBudget(inputValue);
+    if (msg !== null) {
+      setErrorText(msg);
+      return; // エラーがあれば進ませない
+    }
+
+    const value = Number(inputValue);
+    setFormData((prev) => ({
+      ...prev,
+      targetAmount: value,
+      targetMonth: currentMonth,
+    }));
+
+    nextStep();
+  };
+
+  const onHandleSkip = async (e) => {
+    e.preventDefault();
+
+    const value = INITIAL_MONTHLY_BUDGET;
+
+    setFormData((prev) => ({
+      ...prev,
+      targetAmount: value,
+      targetMonth: currentMonth,
+    }));
+
+    nextStep();
+  };
+
   return (
     <>
       <BasePage title={"目標金額の設定"}>
@@ -127,7 +176,7 @@ export default function BudgetEdit() {
             </AttentionText>
           </div>
         </div>
-        <form action="" onSubmit={handleSave} className="flex flex-col gap-8">
+        <form action="" onSubmit={onHandleSave} className="flex flex-col gap-8">
           <fieldset className="flex flex-col gap-2 text-center">
             <div className="flex gap-4 items-baseline text-lg font-black">
               <label htmlFor="monthly-budget" className="text-nowrap">
@@ -146,9 +195,35 @@ export default function BudgetEdit() {
             </div>
             {errorText && <p className="text-error-default">{errorText}</p>}
           </fieldset>
-          <Button type="submit" variant="primary" disabled={!!errorText}>
-            変更
-          </Button>
+          {!nextStep ? (
+            <Button type="submit" variant="primary" disabled={!!errorText}>
+              変更
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              onClick={onHandleFirstSave}
+              variant="primary"
+              disabled={!!errorText}
+            >
+              目標金額を設定する
+            </Button>
+          )}
+          {nextStep && (
+            <div className="text-center">
+              <Button
+                type="button"
+                onClick={onHandleSkip}
+                variant="text"
+                className="[&>span]:border-none w-fit!"
+              >
+                <span className="flex gap-2 items-center">
+                  スキップ
+                  <ChevronRightIcon />
+                </span>
+              </Button>
+            </div>
+          )}
         </form>
       </BasePage>
     </>

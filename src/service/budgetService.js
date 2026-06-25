@@ -148,14 +148,14 @@ export const updateBudget = async ({
   currentMonth,
   setMonthlyBudget,
 }) => {
-  const num = Number(inputValue);
-  // 範囲外の入力だった場合はじく
-  if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
-    alert(
-      `${BUDGET_MIN_AMOUNT.toLocaleString()}～${BUDGET_MAX_AMOUNT.toLocaleString()}円までの金額を入力してください`,
-    );
+  const msg = validateMonthlyBudget(inputValue);
+
+  if (msg !== null) {
+    alert(msg);
     return false;
   }
+
+  const num = Number(inputValue);
 
   // DBへ送るデータ
   const sendData = {
@@ -167,7 +167,9 @@ export const updateBudget = async ({
   // 送信
   try {
     await budgetService.saveMonthlyBudget(sendData);
-    setMonthlyBudget(num);
+    if (setMonthlyBudget) {
+      setMonthlyBudget(num);
+    }
     return true;
   } catch (error) {
     console.error("目標金額の保存に失敗しました", error);
@@ -190,3 +192,18 @@ export async function checkIsEditBudget(USER_ID, currentMonth) {
     return true;
   }
 }
+
+/**
+ * 月の目標金額のバリデーション
+ * @param {*} inputValue
+ * @returns {String} バリデーションOKならnull
+ */
+export const validateMonthlyBudget = (inputValue) => {
+  const num = Number(inputValue);
+
+  // 範囲外の入力だった場合はじく
+  if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
+    return `${BUDGET_MIN_AMOUNT.toLocaleString()}～${BUDGET_MAX_AMOUNT.toLocaleString()}円までの金額を入力してください`;
+  }
+  return null;
+};

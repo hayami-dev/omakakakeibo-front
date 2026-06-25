@@ -5,9 +5,12 @@
 
 import { atom } from "jotai";
 
+/* ログイン状態を管理するAtom */
+export const isLoggedInAtom = atom();
+
 /**
  * ログイン中のユーザーIDを管理するグローバルAtom状態
  * TODO：ログイン機能が未実装の期間は、暫定の初期値として `1` を保持する
  * @type {import('jotai').PrimitiveAtom<number>}
  */
-export const userIdAtom = atom(1);
+export const userIdAtom = atom();
