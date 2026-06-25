@@ -57,6 +57,7 @@ export const saveInputHistory = async ({
 
   // 登録用オブジェクト作成
   const historyItem = {
+    userId: USER_ID,
     categoryId: finalCategory?.id,
     amount: Number(finalAmount),
     historyDate: finalDate,

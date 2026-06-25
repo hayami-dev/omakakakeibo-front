@@ -10,9 +10,6 @@ import { getYearMonth } from "@/dateUtils";
 import apiClient from "@/apiClient";
 import handleApiError from "@/handleApiError";
 
-const store = getDefaultStore();
-const USER_ID = store.get(userIdAtom);
-
 /**
  * 支出履歴（History）に関するAPI通信メソッド群
  */
@@ -48,7 +45,7 @@ export const historyService = {
   async saveHistory(historyItem) {
     try {
       const bodyData = {
-        userId: USER_ID,
+        userId: historyItem.userId,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
@@ -73,7 +70,7 @@ export const historyService = {
   async editHistory(userId, historyId, historyItem) {
     try {
       const bodyData = {
-        userId: USER_ID,
+        userId: userId,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
