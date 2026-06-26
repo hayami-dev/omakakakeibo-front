@@ -3,18 +3,25 @@ import BasePage from "@/components/ui/BasePage";
 import Button from "@/components/ui/Button";
 import { monthlyBudgetAtom, updateBudget } from "@/service/budgetService";
 import { saveUserData } from "@/service/registerService";
-import { useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
-import { userIdAtom } from "@/service/authService";
+import { isLoggedInAtom, LoginIdAtom, userIdAtom } from "@/service/authService";
 
 export default function RegisterComplete({ formData }) {
   // 目標金額をセット
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
 
-  //
-  const setUserId = useSetAtom(userIdAtom);
+  // ユーザーIDを取得
+  const [userId, setUserId] = useAtom(userIdAtom);
+
+  // ログインIDを取得
+  const [loginId, setLoginId] = useAtom(LoginIdAtom);
+
+  // ログイン状態を取得
+
+  const [isLoggedIn, setIsLoggedIn] = useAtom(isLoggedInAtom);
 
   // 保存中の間、ローディング画面を表示
   const [isSaving, setIsSaving] = useState(true);
@@ -44,6 +51,7 @@ export default function RegisterComplete({ formData }) {
           return;
         }
 
+        const newLoginId = formData.loginId;
         const targetAmount = formData.targetAmount;
         const targetMonth = formData.targetMonth;
 
@@ -54,6 +62,8 @@ export default function RegisterComplete({ formData }) {
           setMonthlyBudget,
         });
         setUserId(newUserId);
+        setLoginId(newLoginId);
+        setIsLoggedIn(true);
 
         setIsSaving(false);
       } catch (error) {
@@ -64,6 +74,10 @@ export default function RegisterComplete({ formData }) {
     };
     runFinalSave();
   }, [formData]);
+
+  console.log("loginId", loginId);
+  console.log("userId", userId);
+  console.log("isLoggedIn", isLoggedIn);
 
   return (
     <>

@@ -47,6 +47,7 @@ export default function Home() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [showLoadingDOM, setShowLoadingDOM] = useState(true);
+  const [firstAccess, setFirstAccess] = useState(true);
 
   // Home画面に戻ってきた時に今月にリセットする
   useEffect(() => {
@@ -105,6 +106,7 @@ export default function Home() {
         // アニメーションが終わる時間（500ms）だけ待ってから、DOMから完全に消す
         setTimeout(() => {
           setShowLoadingDOM(false);
+          setFirstAccess(false);
         }, 500);
       }
     };
@@ -134,7 +136,7 @@ export default function Home() {
   return (
     <>
       {/* ローディングアニメーション */}
-      {showLoadingDOM && (
+      {showLoadingDOM && firstAccess && (
         <div
           className={`fixed inset-0 top-0 w-full h-full bg-bg flex items-center justify-center transition-opacity duration-500 ease-out z-[999]
                 ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"}
