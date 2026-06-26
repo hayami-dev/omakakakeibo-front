@@ -26,8 +26,8 @@ export default function RegisterPassword({ nextStep, formData, setFormData }) {
     setIsPassShow((prev) => !prev);
   };
 
-  const validateEmail = (value) => {
-    const msg = validPassword(value);
+  const validateEmail = () => {
+    const msg = validPassword(passwordValue);
     setErrorText(msg);
     return msg;
   };
