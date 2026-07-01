@@ -9,18 +9,22 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+
   server: {
+    host: "0.0.0.0",
+    port: 5173,
     proxy: {
       "/api": {
-        target: "http://localhost:8080", // バックエンドのサーバー
+        target: "http://localhost:8080",
         changeOrigin: true,
         secure: false,
       },
-    },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"), // これでエラーが消えます
     },
   },
 });

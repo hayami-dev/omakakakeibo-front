@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "http://localhost:8080", // 🌟 ベースのURLをここに一元管理！
+  baseURL: "",
   withCredentials: true,
   headers: {
     "Content-Type": "application/json",
