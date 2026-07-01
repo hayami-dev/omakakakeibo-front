@@ -5,6 +5,7 @@
 
 import apiClient from "@/apiClient";
 import handleApiError from "@/handleApiError";
+import { updateBudget } from "./budgetService";
 
 export const registerService = {
   /**
@@ -42,20 +43,6 @@ export const registerService = {
    * @param {*} password
    */
   async registerDataSave(loginId, password) {
-    // メアドのチェック
-    const emailError = validEmail(loginId);
-    if (emailError !== "") {
-      // validEmail はエラーがない時 "" を返す
-      alert(emailError);
-      return;
-    }
-
-    // パスワードのチェック
-    const passwordError = validPassword(password);
-    if (passwordError !== "") {
-      alert(passwordError);
-      return;
-    }
     try {
       const sendData = {
         loginId,
@@ -130,13 +117,48 @@ export async function saveUserData(formData) {
   const loginId = formData.loginId;
   const password = formData.password;
 
-  const userRes = await registerService.registerDataSave(loginId, password);
-  if (!userRes || !userRes.userId) {
+  // メアドのチェック
+  const emailError = validEmail(loginId);
+  if (emailError !== "") {
+    // validEmail はエラーがない時 "" を返す
+    alert(emailError);
     return;
   }
 
-  const newUserId = userRes.userId;
+  // パスワードのチェック
+  const passwordError = validPassword(password);
+  if (passwordError !== "") {
+    alert(passwordError);
+    return;
+  }
+
+  const newUserId = await registerService.registerDataSave(loginId, password);
+  if (!newUserId) {
+    return;
+  }
 
   // userIdを返す
   return newUserId;
 }
+
+/**
+ * 最初の目標金額を登録する
+ **/
+export const firstBudgetSave = async (
+  formData,
+  newUserId,
+  setMonthlyBudget,
+) => {
+  try {
+    await updateBudget({
+      inputValue: formData.targetAmount,
+      userId: newUserId,
+      currentMonth: formData.targetMonth,
+      setMonthlyBudget,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return "目標金額の初回登録に失敗しました。";
+  }
+};
