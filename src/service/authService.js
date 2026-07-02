@@ -17,6 +17,8 @@ export const authService = {
 
       const response = await apiClient.post(`/api/auth/login`, sendData);
 
+      console.log("fetchUserByLoginId", response.data);
+
       return response.data;
     } catch (error) {
       console.error("ログインに失敗...", error);
@@ -31,7 +33,7 @@ export const isLoggedInAtom = atomWithStorage("isLoggedIn", false);
 
 /**
  * ログイン中のユーザーIDを管理するグローバルAtom状態
- * TODO：ログイン機能が未実装の期間は、暫定の初期値として `1` を保持する
+ * TODO：cookieをバックエンドで管理するため不要
  * @type {import('jotai').PrimitiveAtom<number>}
  */
 export const userIdAtom = atomWithStorage("userId", null);
@@ -39,6 +41,43 @@ export const LoginIdAtom = atomWithStorage("loginId", "");
 
 // 初期化を完了するAtom
 export const isInitializedAtom = atom(false);
+
+/**
+ * ログインを実行
+ */
+export const login = async (formData) => {
+  const msgId = validLoginId(formData.loginId);
+  if (msgId !== "") {
+    alert(msgId);
+    return null;
+  }
+
+  const msgPass = validPassword(formData.password);
+  if (msgPass !== "") {
+    alert(msgPass);
+    return null;
+  }
+
+  const response = await authService.fetchUserByLoginId(formData);
+  return response;
+};
+
+/**
+ * ログアウト
+ */
+export const logout = () => {
+  // 1. ローカルストレージを全て削除（あるいは個別に削除）
+  localStorage.removeItem("userId");
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("loginId");
+
+  // もし必要なら完全クリア
+  // localStorage.clear();
+
+  // 2. ブラウザをリロードして、Reactの状態を完全にリセットする
+  // （これが一番確実で、ゴミデータが残らない方法です）
+  window.location.href = "/auth/login";
+};
 
 /* ログインのバリデーション */
 /**
@@ -64,41 +103,4 @@ export const validPassword = (password) => {
   }
 
   return "";
-};
-
-/**
- * ログインを実行
- */
-export const login = async (formData) => {
-  const msgId = validLoginId(formData.loginId);
-  if (msgId !== "") {
-    alert(msgId);
-    return null;
-  }
-
-  const msgPass = validPassword(formData.password);
-  if (msgPass !== "") {
-    alert(msgPass);
-    return null;
-  }
-
-  const userData = await authService.fetchUserByLoginId(formData);
-  return userData;
-};
-
-/**
- * ログアウト
- */
-export const logout = () => {
-  // 1. ローカルストレージを全て削除（あるいは個別に削除）
-  localStorage.removeItem("userId");
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("loginId");
-
-  // もし必要なら完全クリア
-  // localStorage.clear();
-
-  // 2. ブラウザをリロードして、Reactの状態を完全にリセットする
-  // （これが一番確実で、ゴミデータが残らない方法です）
-  window.location.href = "/auth/login";
 };

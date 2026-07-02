@@ -8,8 +8,6 @@ import Button from "@/components/ui/Button";
 import { useSetAtom } from "jotai";
 import {
   isLoggedInAtom,
-  LoginIdAtom,
-  userIdAtom,
   validLoginId,
   validPassword,
   login,
@@ -20,9 +18,6 @@ import { toastAtom } from "@/service/toastAtom";
 
 export default function Login() {
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);
-
-  const setUserId = useSetAtom(userIdAtom);
-  const setLoginId = useSetAtom(LoginIdAtom);
 
   const [loginIdValue, setLoginIdValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -86,6 +81,7 @@ export default function Login() {
       };
       const userData = await login(formData);
 
+      // TODO:200OKじゃなかったら、に書き換える
       if (userData == null || !userData) {
         setToast({
           show: true,
@@ -97,12 +93,11 @@ export default function Login() {
       }
 
       // ログイン状態を書き換える
-      setUserId(userData.userId);
-      setLoginId(userData.loginId);
       setIsLoggedIn(true);
 
       // そのままホーム画面にジャンプ！
-      navigate("/");
+      alert("ログイン成功！" + userData);
+      // navigate("/");
     } catch (error) {
       console.error(error);
 
