@@ -75,7 +75,7 @@ export default function Home() {
         const [activeData, masterData, historyData] = await Promise.all([
           categoryService.fetchActiveCategories(userId),
           categoryService.fetchCategoriesMaster(userId),
-          historyService.fetchHistories(userId),
+          // historyService.fetchHistories(),
           delay(2000), // 2000ms（2秒）のウェイト
         ]);
 

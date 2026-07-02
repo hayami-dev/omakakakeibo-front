@@ -16,13 +16,13 @@ import handleApiError from "@/handleApiError";
 export const historyService = {
   /**
    * 指定されたユーザーの全支出履歴を取得
-   * http://localhost:8080/api/histories/1
+   * http://localhost:8080/api/histories/
    * @param {number} userId - ユーザーID
    * @returns {Promise<Array<Object>>} 支出履歴オブジェクトの配列
    */
-  async fetchHistories(userId) {
+  async fetchHistories() {
     try {
-      const response = await apiClient.get(`/api/histories/${userId}`);
+      const response = await apiClient.get(`/api/histories`);
 
       return response.data.map((item) => ({
         ...item,
