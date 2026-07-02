@@ -73,8 +73,8 @@ export default function Home() {
 
         // JavaAPIの通信と一緒に「2秒待つ処理」を並行して実行させる
         const [activeData, masterData, historyData] = await Promise.all([
-          categoryService.fetchActiveCategories(userId),
-          categoryService.fetchCategoriesMaster(userId),
+          // categoryService.fetchActiveCategories(),
+          // categoryService.fetchCategoriesMaster(),
           // historyService.fetchHistories(),
           delay(2000), // 2000ms（2秒）のウェイト
         ]);

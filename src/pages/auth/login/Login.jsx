@@ -16,6 +16,7 @@ import EyeIcon from "@/assets/icons/eye.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import { toastAtom } from "@/service/toastAtom";
 import { historyService } from "@/service/historyService";
+import { categoryService } from "@/service/categoryService";
 
 export default function Login() {
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);
@@ -100,6 +101,11 @@ export default function Login() {
       // ヒストリー情報が返ってきているかをチェック
       const historyResponse = historyService.fetchHistories();
       console.log("historyResponse", historyResponse);
+
+      const activeCatResponse = categoryService.fetchActiveCategories();
+      console.log("activeCatResponse", activeCatResponse);
+      const catMasterResponse = categoryService.fetchCategoriesMaster();
+      console.log("catMasterResponse", catMasterResponse);
 
       // そのままホーム画面にジャンプ！
       alert("ログイン成功！" + userData);

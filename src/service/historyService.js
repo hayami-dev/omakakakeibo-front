@@ -17,7 +17,6 @@ export const historyService = {
   /**
    * 指定されたユーザーの全支出履歴を取得
    * http://localhost:8080/api/histories/
-   * @param {number} userId - ユーザーID
    * @returns {Promise<Array<Object>>} 支出履歴オブジェクトの配列
    */
   async fetchHistories() {

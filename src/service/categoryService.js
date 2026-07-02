@@ -14,13 +14,12 @@ import handleApiError from "@/handleApiError";
 export const categoryService = {
   /**
    * DBから特定のユーザーが現在使用中のアクティブカテゴリ一覧を取得
-   * http://localhost:8080/api/categories/active/1
-   * @param {number} userId - ログイン中のユーザーID
+   * http://localhost:8080/api/categories/active
    * @returns {Promise<Array<Object>>} スタイル情報が付与され、activeCatId 順にソートされたカテゴリ配列
    */
-  async fetchActiveCategories(userId) {
+  async fetchActiveCategories() {
     try {
-      const response = await apiClient.get(`/api/categories/active/${userId}`);
+      const response = await apiClient.get(`/api/categories/active`);
 
       return response.data
         .map((cat) => ({
@@ -35,13 +34,12 @@ export const categoryService = {
   },
   /**
    * DBから特定のユーザーのすべてのカテゴリ（アーカイブ済含む）を取得
-   * http://localhost:8080/api/categories/master/1
-   * @param {number} userId - ログイン中のユーザーID
+   * http://localhost:8080/api/categories/master
    * @returns {Promise<Array<Object>>} スタイル情報が付与され、activeCatId 順にソートされた全カテゴリ配列
    */
-  async fetchCategoriesMaster(userId) {
+  async fetchCategoriesMaster() {
     try {
-      const response = await apiClient.get(`/api/categories/master/${userId}`);
+      const response = await apiClient.get(`/api/categories/master`);
 
       return response.data
         .map((cat) => ({
