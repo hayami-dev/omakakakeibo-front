@@ -17,17 +17,11 @@ import {
 import { useLocation, useSearchParams } from "react-router";
 import { useSetAtom } from "jotai";
 import { monthlyBudgetAtom } from "@/service/budgetService";
-import { isLoggedInAtom, LoginIdAtom, userIdAtom } from "@/service/authService";
+import { isLoggedInAtom, login } from "@/service/authService";
 
 export default function RegisterContainer() {
   // 目標金額をセット
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
-
-  // ユーザーIDを取得
-  const setUserId = useSetAtom(userIdAtom);
-
-  // ログインIDを取得
-  const setLoginId = useSetAtom(LoginIdAtom);
 
   // ログイン状態を取得
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);
@@ -80,16 +74,20 @@ export default function RegisterContainer() {
       try {
         const newUserId = await saveUserData(formData);
 
-        const newLoginId = formData.loginId;
-
         if (!newUserId) {
           alert("新しいユーザーIDが発行されていません。");
         }
 
+        // 登録後、ログインを実行
+        const sendData = {
+          loginId: formData.loginId,
+          password: formData.password,
+        };
+        await login(sendData);
+
+        // 初期目標金額の登録
         await firstBudgetSave(formData, newUserId, setMonthlyBudget);
 
-        setUserId(newUserId);
-        setLoginId(newLoginId);
         setIsLoggedIn(true);
       } catch (error) {
         console.error("最終登録で予期せぬエラー:", error);
