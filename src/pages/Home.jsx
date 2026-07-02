@@ -58,11 +58,6 @@ export default function Home() {
   // DBから各種初期データと目標金額を取得
   useEffect(() => {
     const loadInitialData = async () => {
-      // userIdが無い、または"undefined"（文字列）の場合は通信を完全にブロックする
-      if (!userId || userId === "undefined") {
-        return;
-      }
-
       try {
         // ローディングアニメを表示
         setIsLoading(true);
@@ -73,9 +68,9 @@ export default function Home() {
 
         // JavaAPIの通信と一緒に「2秒待つ処理」を並行して実行させる
         const [activeData, masterData, historyData] = await Promise.all([
-          // categoryService.fetchActiveCategories(),
-          // categoryService.fetchCategoriesMaster(),
-          // historyService.fetchHistories(),
+          categoryService.fetchActiveCategories(),
+          categoryService.fetchCategoriesMaster(),
+          historyService.fetchHistories(),
           delay(2000), // 2000ms（2秒）のウェイト
         ]);
 
@@ -91,10 +86,7 @@ export default function Home() {
         });
 
         // 目標金額の取得
-        const amount = await budgetService.loadBudgetWithFallback(
-          userId,
-          currentMonth,
-        );
+        const amount = await budgetService.loadBudgetWithFallback(currentMonth);
         setMonthlyBudget(amount);
 
         console.log("目標金額ロード完了:", amount);

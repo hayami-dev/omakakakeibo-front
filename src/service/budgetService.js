@@ -31,15 +31,12 @@ export const budgetService = {
    * DBから特定のユーザー・対象月の目標金額を取得
    * データが存在しない場合はデフォルトの初期値を返す
    * http://localhost:8080/api/budget/1/2026-03
-   * @param {number} userId - ログイン中のユーザーID
    * @param {string} targetMonth - 取得対象の月 (フォーマット: yyyy-MM)
    * @returns {Promise<number>} DBから取得した目標金額、またはデフォルト値
    */
-  async fetchMonthlyBudget(userId, targetMonth) {
+  async fetchMonthlyBudget(targetMonth) {
     try {
-      const response = await apiClient.get(
-        `/api/budget/${userId}/${targetMonth}`,
-      );
+      const response = await apiClient.get(`/api/budget/${targetMonth}`);
 
       return response.data && response.data.targetAmount !== undefined
         ? response.data.targetAmount
@@ -82,15 +79,12 @@ export const budgetService = {
    * @param {string} currentMonth - 基点となる対象月 (フォーマット: yyyy-MM)
    * @returns {Promise<number>} 取得できた過去の目標金額、またはデフォルト初期値
    */
-  async loadBudgetWithFallback(userId, currentMonth) {
+  async loadBudgetWithFallback(currentMonth) {
     let targetMonth = currentMonth; // 最初は今月からスタート
 
     // 今月を含めて最大6回、過去にさかのぼるループを回す
     for (let i = 0; i < 6; i++) {
-      const amount = await budgetService.fetchMonthlyBudget(
-        userId,
-        targetMonth,
-      );
+      const amount = await budgetService.fetchMonthlyBudget(targetMonth);
 
       if (amount !== null) {
         // データが見つかったらそれを返す

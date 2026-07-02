@@ -17,6 +17,7 @@ import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import { toastAtom } from "@/service/toastAtom";
 import { historyService } from "@/service/historyService";
 import { categoryService } from "@/service/categoryService";
+import { budgetService } from "@/service/budgetService";
 
 export default function Login() {
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);
@@ -97,19 +98,8 @@ export default function Login() {
       // ログイン状態を書き換える
       setIsLoggedIn(true);
 
-      // TODO:開発用
-      // ヒストリー情報が返ってきているかをチェック
-      const historyResponse = historyService.fetchHistories();
-      console.log("historyResponse", historyResponse);
-
-      const activeCatResponse = categoryService.fetchActiveCategories();
-      console.log("activeCatResponse", activeCatResponse);
-      const catMasterResponse = categoryService.fetchCategoriesMaster();
-      console.log("catMasterResponse", catMasterResponse);
-
-      // そのままホーム画面にジャンプ！
-      alert("ログイン成功！" + userData);
-      // navigate("/");
+      // そのままホーム画面にジャンプ
+      navigate("/");
     } catch (error) {
       console.error(error);
 
