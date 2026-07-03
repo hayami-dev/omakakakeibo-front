@@ -3,8 +3,7 @@
  * @description 履歴のCRUD（取得・追加・編集・削除）操作、および月別・カテゴリ別の集計を行うメソッド群
  */
 
-import { atom, getDefaultStore } from "jotai";
-import { userIdAtom } from "@/service/authService";
+import { atom } from "jotai";
 import { resolveCategoryById } from "@/service/categoryService";
 import { getYearMonth } from "@/dateUtils";
 import apiClient from "@/apiClient";
@@ -44,7 +43,6 @@ export const historyService = {
   async saveHistory(historyItem) {
     try {
       const bodyData = {
-        userId: historyItem.userId,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
@@ -57,8 +55,7 @@ export const historyService = {
   },
   /**
    * 既存の支出履歴の内容を更新（編集）
-   * http://localhost:8080/api/histories/edit/1/{historyId}
-   * @param {number} userId - ユーザーID
+   * http://localhost:8080/api/histories/edit/{historyId}
    * @param {number} historyId - 編集対象の履歴ID
    * @param {Object} historyItem - 更新する履歴データ
    * @param {number|string} historyItem.categoryId - カテゴリID
@@ -66,19 +63,18 @@ export const historyService = {
    * @param {string} historyItem.historyDate - 履歴の日付 (yyyy-MM-dd)
    * @returns {Promise<void>}
    */
-  async editHistory(userId, historyId, historyItem) {
+  async editHistory(historyId, historyItem) {
     try {
+      console.log("historyItem", historyItem);
+
       const bodyData = {
-        userId: userId,
+        historyId: historyId,
         categoryId: historyItem.categoryId,
         amount: historyItem.amount,
         historyDate: historyItem.historyDate,
       };
 
-      await apiClient.put(
-        `/api/histories/edit/${userId}/${historyId}`,
-        bodyData,
-      );
+      await apiClient.put(`/api/histories/edit/${historyId}`, bodyData);
     } catch (error) {
       console.error("ヒストリーデータ変更に失敗...", error);
       handleApiError(error);
@@ -86,14 +82,13 @@ export const historyService = {
   },
   /**
    * 指定された支出履歴をDBから削除
-   * http://localhost:8080/api/histories/delete/1/{historyId}
-   * @param {number} userId - ユーザーID
+   * http://localhost:8080/api/histories/delete/{historyId}
    * @param {number} historyId - 削除対象の履歴ID
    * @returns {Promise<void>}
    */
-  async deleteHistory(userId, historyId) {
+  async deleteHistory(historyId) {
     try {
-      await apiClient.delete(`/api/histories/delete/${userId}/${historyId}`);
+      await apiClient.delete(`/api/histories/delete/${historyId}`);
     } catch (error) {
       console.error("ヒストリーデータ削除に失敗...", error);
       handleApiError(error);

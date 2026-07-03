@@ -40,7 +40,6 @@ const allResetInputHistory = (refs) => {
  * @param {Object} params.formData.finalCategory - 最終選択されたカテゴリ情報
  * @param {number|string} params.formData.finalCategory.id - カテゴリID
  * @param {Object} params.refs - フォームクリアに使用するRefオブジェクト群
- * @param {number} params.userId - ログイン中のユーザーID
  * @param {Object|null} params.editItem - 編集対象の履歴データ。新規登録時は null または undefined
  * @param {number} params.editItem.historyId - 編集対象の履歴ID
  * @param {Function} params.setHistories - Jotaiの全支出履歴Atomを更新するためのセッター関数
@@ -49,7 +48,6 @@ const allResetInputHistory = (refs) => {
 export const saveInputHistory = async ({
   formData,
   refs,
-  userId,
   editItem,
   setHistories,
 }) => {
@@ -57,7 +55,6 @@ export const saveInputHistory = async ({
 
   // 登録用オブジェクト作成
   const historyItem = {
-    userId: userId,
     categoryId: finalCategory?.id,
     amount: Number(finalAmount),
     historyDate: finalDate,
@@ -66,7 +63,7 @@ export const saveInputHistory = async ({
   try {
     if (editItem?.historyId) {
       // PUT送信
-      await historyService.editHistory(userId, editItem.historyId, historyItem);
+      await historyService.editHistory(editItem.historyId, historyItem);
       console.log("DBの変更が成功しました！");
     } else {
       // POST送信
@@ -75,7 +72,7 @@ export const saveInputHistory = async ({
     }
 
     // Atomを再取得
-    const updatedHistories = await historyService.fetchHistories(userId);
+    const updatedHistories = await historyService.fetchHistories();
     setHistories(updatedHistories);
 
     // 全フォームリセット
@@ -90,27 +87,22 @@ export const saveInputHistory = async ({
 /**
  * 対象の支出履歴レコードをDBから削除し、グローバル状態を同期
  * @param {Object} params - 引数をまとめたオブジェクト
- * @param {number} params.userId - ログイン中のユーザーID
  * @param {Object} params.editItem - 削除対象の履歴データ
  * @param {number} params.editItem.historyId - 削除対象の履歴ID
  * @param {Function} params.setHistories - Jotaiの全支出履歴Atomを更新するためのセッター関数
  * @returns {Promise<boolean>} ユーザーが削除を承認し、正常に削除が完了した場合は true、キャンセルまたは失敗時は false
  */
-export const deleteInputHistory = async ({
-  userId,
-  editItem,
-  setHistories,
-}) => {
+export const deleteInputHistory = async ({ editItem, setHistories }) => {
   if (!window.confirm("削除しますか？")) {
     return false;
   }
 
   try {
-    await historyService.deleteHistory(userId, editItem.historyId);
+    await historyService.deleteHistory(editItem.historyId);
     console.log("DBからの削除が成功しました！");
 
     // Atomを再取得
-    const updatedHistories = await historyService.fetchHistories(userId);
+    const updatedHistories = await historyService.fetchHistories();
     setHistories(updatedHistories);
 
     // 成功でtrueを返す

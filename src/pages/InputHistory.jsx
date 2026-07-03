@@ -1,13 +1,12 @@
 /* 支出の入力をするダイアログ */
 
 import { useRef, useState } from "react";
-import { useSetAtom, useAtomValue } from "jotai";
+import { useSetAtom } from "jotai";
 import { useNavigate, useLocation } from "react-router";
 /*
  * service
  */
 import { historiesAtom, currentMonthAtom } from "@/service/historyService";
-import { userIdAtom } from "@/service/authService";
 import { deleteInputHistory, saveInputHistory } from "@/service/inputService";
 
 /*
@@ -28,9 +27,6 @@ import { toastAtom } from "@/service/toastAtom";
 import handleApiError from "@/handleApiError";
 
 export default function InputHistory() {
-  // ユーザーIDを取得
-  const userId = useAtomValue(userIdAtom);
-
   // 支出の履歴を取得
   const setHistories = useSetAtom(historiesAtom);
 
@@ -77,7 +73,6 @@ export default function InputHistory() {
       const success = await saveInputHistory({
         formData,
         refs,
-        userId,
         editItem,
         setHistories,
       });
@@ -100,7 +95,6 @@ export default function InputHistory() {
   // historiesからレコードを削除
   const handleRemove = async () => {
     const success = await deleteInputHistory({
-      userId,
       editItem,
       setHistories,
     });
