@@ -8,30 +8,25 @@ import {
   activeCategoriesAtom,
   checkAlreadyEditCategory,
 } from "@/service/categoryService";
-import { currentMonthAtom } from "@/service/historyService";
 import {
   budgetService,
   monthlyBudgetAtom,
   INITIAL_MONTHLY_BUDGET,
   checkIsEditBudget,
 } from "@/service/budgetService";
-import { LoginIdAtom, logout, userIdAtom } from "@/service/authService";
+import { LoginIdAtom, logout } from "@/service/authService";
 // components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
 import CategoryButton from "@/components/ui/CategoryButton";
 import AttentionText from "@/components/ui/HelpText";
+import { getYearMonth } from "@/dateUtils";
 
 // ユーザー個別の情報の表示画面
 export default function User() {
-  // ユーザーIDを取得
-  const userId = useAtomValue(userIdAtom);
-
   // ログインIDを取得
   const loginId = useAtomValue(LoginIdAtom);
 
-  // 選択中の月
-  const currentMonth = useAtomValue(currentMonthAtom);
   // 目標金額の取得
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
 
@@ -40,6 +35,9 @@ export default function User() {
 
   // 目標金額を取得
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
+
+  // 今月を取得
+  const currentMonth = getYearMonth();
 
   // 目標金額の変更が可能かどうかの判定
   const [isEditBudget, setIsEditBudget] = useState(false);
@@ -54,12 +52,12 @@ export default function User() {
   // 目標金額の変更が可能かどうかを判定
   useEffect(() => {
     const checkBudgetLock = async () => {
-      const canEdit = await checkIsEditBudget(userId, currentMonth);
+      const canEdit = await checkIsEditBudget(currentMonth);
       setIsEditBudget(canEdit);
     };
 
     checkBudgetLock();
-  }, [currentMonth, userId, monthlyBudget]);
+  }, [currentMonth, monthlyBudget]);
 
   // DBから目標金額を取得
   useEffect(() => {
@@ -67,14 +65,11 @@ export default function User() {
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
-      const amount = await budgetService.loadBudgetWithFallback(
-        userId,
-        currentMonth,
-      );
+      const amount = await budgetService.loadBudgetWithFallback(currentMonth);
       setMonthlyBudget(amount);
     };
     loadBudget();
-  }, [currentMonth, userId, monthlyBudget]);
+  }, [currentMonth, monthlyBudget]);
 
   const handleLogout = () => {
     if (window.confirm("ログアウトしますか？")) {
