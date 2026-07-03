@@ -9,8 +9,9 @@ import BudgetEdit from "@/pages/user/BudgetEdit";
 import Login from "@/pages/auth/login/Login";
 // component
 import Toast from "@/components/ui/Toast";
-import RegisterContainer from "./pages/auth/register/RegisterContainer";
-import ProtectedRoute from "./components/ProtectedRoute";
+import RegisterContainer from "@/pages/auth/register/RegisterContainer";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import PublicRoute from "@/components/PublicRoute";
 
 function App() {
   return (
@@ -21,11 +22,13 @@ function App() {
       {/* すべての画面ルート */}
       <Routes>
         {/* ログイン前 */}
-        <Route path="/auth">
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<RegisterContainer />} />
-          {/* トークン認証用 */}
-          <Route path="register/verify" element={<RegisterContainer />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/auth">
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<RegisterContainer />} />
+            {/* トークン認証用 */}
+            <Route path="register/verify" element={<RegisterContainer />} />
+          </Route>
         </Route>
 
         {/* ログイン後 */}

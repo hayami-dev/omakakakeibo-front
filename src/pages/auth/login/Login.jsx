@@ -15,9 +15,6 @@ import {
 import EyeIcon from "@/assets/icons/eye.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import { toastAtom } from "@/service/toastAtom";
-import { historyService } from "@/service/historyService";
-import { categoryService } from "@/service/categoryService";
-import { budgetService } from "@/service/budgetService";
 
 export default function Login() {
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);

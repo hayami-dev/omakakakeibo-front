@@ -6,6 +6,7 @@
 import { atomWithStorage } from "jotai/utils";
 import apiClient from "@/apiClient";
 import { atom } from "jotai";
+import handleApiError from "@/handleApiError";
 
 export const authService = {
   async fetchUserByLoginId(formData) {
@@ -24,6 +25,30 @@ export const authService = {
       console.error("ログインに失敗...", error);
       // あえて handleApiError(error) を呼ばず、エラーオブジェクトをそのまま上に投げる
       throw error;
+    }
+  },
+  async fetchLoginUser() {
+    try {
+      const response = await apiClient.get(`/api/auth/me`);
+      return response.data;
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.log("未ログイン状態です");
+        return null; // 失敗ではなく null を返す
+      }
+      console.error("ログイン情報の取得に失敗...", error);
+      handleApiError(error);
+      throw error;
+    }
+  },
+  async fetchLogoutUser() {
+    try {
+      await apiClient.post(`/api/auth/logout`);
+    } catch (error) {
+      console.error(
+        "ログアウト処理でエラーが発生しましたが強制終了します",
+        error,
+      );
     }
   },
 };
@@ -66,16 +91,13 @@ export const login = async (formData) => {
  * ログアウト
  */
 export const logout = () => {
-  // 1. ローカルストレージを全て削除（あるいは個別に削除）
-  localStorage.removeItem("userId");
-  localStorage.removeItem("isLoggedIn");
-  localStorage.removeItem("loginId");
+  // cookieを無効化
+  authService.fetchLoginUser();
 
-  // もし必要なら完全クリア
-  // localStorage.clear();
+  // ローカルストレージを全て削除
+  localStorage.clear();
 
-  // 2. ブラウザをリロードして、Reactの状態を完全にリセットする
-  // （これが一番確実で、ゴミデータが残らない方法です）
+  //  ブラウザをリロードして、Reactの状態を完全にリセットする
   window.location.href = "/auth/login";
 };
 
