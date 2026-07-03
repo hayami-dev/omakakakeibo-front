@@ -7,6 +7,7 @@ import CategoryEdit from "@/pages/user/CategoryEdit";
 import Header from "@/components/Header";
 import BudgetEdit from "@/pages/user/BudgetEdit";
 import Login from "@/pages/auth/login/Login";
+import MainLayout from "./MainLayout";
 // component
 import Toast from "@/components/ui/Toast";
 import RegisterContainer from "@/pages/auth/register/RegisterContainer";
@@ -33,14 +34,7 @@ function App() {
 
         {/* ログイン後 */}
         <Route element={<ProtectedRoute />}>
-          <Route
-            element={
-              <>
-                <Header />
-                <Outlet /> {/* ここにHomeやUserが入る！ */}
-              </>
-            }
-          >
+          <Route element={<MainLayout />}>
             {/* ホーム */}
             <Route path="/" element={<Home />}>
               {/* ダイアログ */}

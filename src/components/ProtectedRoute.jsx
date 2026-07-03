@@ -33,10 +33,6 @@ export default function ProtectedRoute() {
       });
   }, []);
 
-  if (isLoading) {
-    return <div className="text-center p-4">読み込み中...</div>;
-  }
-
   if (!isLoading && !isLoggedIn) {
     return <Navigate to="/auth/login" />;
   }
