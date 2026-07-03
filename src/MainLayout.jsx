@@ -1,4 +1,4 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import {
   currentMonthAtom,
   historiesAtom,
@@ -11,15 +11,11 @@ import {
   categoryService,
 } from "./service/categoryService";
 import { budgetService, monthlyBudgetAtom } from "./service/budgetService";
-import { userIdAtom } from "./service/authService";
 import Header from "./components/Header";
 import { Outlet } from "react-router";
 import LoadingAnime from "./components/ui/LoadingAnime";
 
 export default function MainLayout() {
-  // ユーザーIDを取得
-  const userId = useAtomValue(userIdAtom);
-
   // 選択中の月
   const currentMonth = useAtomValue(currentMonthAtom);
 
@@ -87,7 +83,6 @@ export default function MainLayout() {
 
     loadInitialData();
   }, [
-    userId,
     currentMonth,
     setActiveCategories,
     setCategoriesMaster,

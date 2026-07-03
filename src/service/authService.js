@@ -58,10 +58,8 @@ export const isLoggedInAtom = atomWithStorage("isLoggedIn", false);
 
 /**
  * ログイン中のユーザーIDを管理するグローバルAtom状態
- * TODO：cookieをバックエンドで管理するため不要
  * @type {import('jotai').PrimitiveAtom<number>}
  */
-export const userIdAtom = atomWithStorage("userId", null);
 export const LoginIdAtom = atomWithStorage("loginId", "");
 
 // 初期化を完了するAtom

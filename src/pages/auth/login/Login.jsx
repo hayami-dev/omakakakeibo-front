@@ -11,13 +11,16 @@ import {
   validLoginId,
   validPassword,
   login,
+  LoginIdAtom,
 } from "@/service/authService";
 import EyeIcon from "@/assets/icons/eye.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import { toastAtom } from "@/service/toastAtom";
 
 export default function Login() {
+  // ログイン状態を管理
   const setIsLoggedIn = useSetAtom(isLoggedInAtom);
+  const setLoginId = useSetAtom(LoginIdAtom);
 
   const [loginIdValue, setLoginIdValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -94,6 +97,7 @@ export default function Login() {
 
       // ログイン状態を書き換える
       setIsLoggedIn(true);
+      setLoginId(loginIdValue);
 
       // そのままホーム画面にジャンプ
       navigate("/");
