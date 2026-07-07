@@ -8,6 +8,17 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  // サーバーが JSON ではなく単なる文字列を返す場合、これを追加
+  transformResponse: [
+    function (data) {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.error(e);
+        return data; // JSON パースに失敗したらそのまま返す
+      }
+    },
+  ],
 });
 
 export default apiClient;

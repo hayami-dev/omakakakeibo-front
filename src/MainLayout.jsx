@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import {
   currentMonthAtom,
   historiesAtom,
@@ -14,6 +14,7 @@ import { budgetService, monthlyBudgetAtom } from "./service/budgetService";
 import Header from "./components/Header";
 import { Outlet } from "react-router";
 import LoadingAnime from "./components/ui/LoadingAnime";
+import { authStatusAtom, isLoggedInAtom } from "./service/authService";
 
 export default function MainLayout() {
   // 選択中の月
@@ -21,7 +22,11 @@ export default function MainLayout() {
 
   const setHistories = useSetAtom(historiesAtom);
 
-  // 各Atomの取得
+  // ログイン状態に関するAtomを取得
+  const setIsLoggedIn = useSetAtom(isLoggedInAtom);
+  const [authStatus, setAuthStatus] = useAtom(authStatusAtom);
+
+  // 各データのAtomの取得
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
   const setActiveCategories = useSetAtom(activeCategoriesAtom);
   const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
@@ -33,6 +38,11 @@ export default function MainLayout() {
 
   // DBから各種初期データと目標金額を取得
   useEffect(() => {
+    if (authStatus === "unauthenticated" || !authStatus) {
+      setIsLoggedIn(false);
+      setIsLoading(false);
+      return;
+    }
     const loadInitialData = async () => {
       try {
         // ローディングアニメを表示
@@ -78,17 +88,14 @@ export default function MainLayout() {
           // ここで初回アクセス判定を false にする（遷移のタイミングに合わせる）
           setFirstAccess(false);
         }, 500);
+        setAuthStatus("complete");
       }
     };
 
-    loadInitialData();
-  }, [
-    currentMonth,
-    setActiveCategories,
-    setCategoriesMaster,
-    setHistories,
-    setMonthlyBudget,
-  ]);
+    if (authStatus === "authenticated") {
+      loadInitialData();
+    }
+  }, [currentMonth, authStatus]);
 
   return (
     <>

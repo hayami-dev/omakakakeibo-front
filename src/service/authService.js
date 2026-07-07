@@ -5,7 +5,6 @@
 
 import { atomWithStorage } from "jotai/utils";
 import apiClient from "@/apiClient";
-import { atom } from "jotai";
 import handleApiError from "@/handleApiError";
 
 export const authService = {
@@ -46,7 +45,7 @@ export const authService = {
       await apiClient.post(`/api/auth/logout`);
     } catch (error) {
       console.error(
-        "ログアウト処理でエラーが発生しましたが強制終了します",
+        "ログアウト処理でエラーが発生しました。強制終了します",
         error,
       );
     }
@@ -56,14 +55,13 @@ export const authService = {
 /* ログイン状態を管理するAtom */
 export const isLoggedInAtom = atomWithStorage("isLoggedIn", false);
 
-/**
- * ログイン中のユーザーIDを管理するグローバルAtom状態
- * @type {import('jotai').PrimitiveAtom<number>}
- */
+/* ログイン中のユーザーIDを管理するグローバルAtom状態 */
 export const LoginIdAtom = atomWithStorage("loginId", "");
 
-// 初期化を完了するAtom
-export const isInitializedAtom = atom(false);
+/* ユーザーの判定を管理するAtom
+ * authenticated,unauthenticated,complete
+ */
+export const authStatusAtom = atomWithStorage("authStatus", "");
 
 /**
  * ログインを実行
@@ -90,7 +88,7 @@ export const login = async (formData) => {
  */
 export const logout = () => {
   // cookieを無効化
-  authService.fetchLoginUser();
+  authService.fetchLogoutUser();
 
   // ローカルストレージを全て削除
   localStorage.clear();
