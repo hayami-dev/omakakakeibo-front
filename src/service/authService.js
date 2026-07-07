@@ -17,8 +17,6 @@ export const authService = {
 
       const response = await apiClient.post(`/api/auth/login`, sendData);
 
-      console.log("fetchUserByLoginId", response.data);
-
       return response.data;
     } catch (error) {
       console.error("ログインに失敗...", error);
