@@ -9,33 +9,49 @@ import RegisterVerify from "./RegisterVerify";
 import RegisterPassword from "./RegisterPassword";
 import BudgetEdit from "@/pages/user/BudgetEdit";
 import RegisterComplete from "./RegisterComplete";
-import { registerService } from "@/service/registerService";
+import {
+  firstBudgetSave,
+  registerService,
+  saveUserData,
+} from "@/service/registerService";
 import { useLocation, useSearchParams } from "react-router";
+import { useSetAtom } from "jotai";
+import { monthlyBudgetAtom } from "@/service/budgetService";
+import { isLoggedInAtom, login } from "@/service/authService";
 
 export default function RegisterContainer() {
-  // 最初表示するページ
-  const [step, setStep] = useState(1);
+  // 目標金額をセット
+  const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
+
+  // ログイン状態を取得
+  const setIsLoggedIn = useSetAtom(isLoggedInAtom);
+
   // URLを検知
   const location = useLocation();
   // URLのtoken部分を取得
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  // 最初表示するページ
+  const [step, setStep] = useState(token ? 3 : 1);
 
   // 送信するデータ
   const [formData, setFormData] = useState({
-    email: "",
+    loginId: "",
     password: "",
     targetAmount: 50000,
     targetMonth: "",
   });
 
+  /**
+   * トークンをチェック
+   */
   useEffect(() => {
     if (location.pathname === "/auth/register/verify" && token) {
       const autoVerify = async () => {
         try {
           const res = await registerService.registerValidToken(token);
-          if (res && res.email) {
-            setFormData((prev) => ({ ...prev, email: res.email }));
+          if (res && res.loginId) {
+            setFormData((prev) => ({ ...prev, loginId: res.loginId }));
             setStep(3);
           }
         } catch (error) {
@@ -50,11 +66,42 @@ export default function RegisterContainer() {
     }
   }, [location, token]);
 
+  useEffect(() => {
+    /**
+     * 新規登録フロー
+     */
+    const runRegister = async (formData) => {
+      try {
+        const newUserId = await saveUserData(formData);
+
+        if (!newUserId) {
+          alert("新しいユーザーIDが発行されていません。");
+        }
+
+        // 登録後、ログインを実行
+        const sendData = {
+          loginId: formData.loginId,
+          password: formData.password,
+        };
+        await login(sendData);
+
+        // 初期目標金額の登録
+        await firstBudgetSave(formData, newUserId, setMonthlyBudget);
+
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("最終登録で予期せぬエラー:", error);
+        alert("予期せぬエラーが発生しました。");
+      }
+    };
+
+    if (step === 5) {
+      runRegister(formData);
+    }
+  }, [step, formData]);
+
   // ページ切替
   const nextStep = () => setStep((prev) => prev + 1);
-
-  // TODO:削除
-  console.log("formData", formData);
 
   return (
     <>
@@ -81,7 +128,7 @@ export default function RegisterContainer() {
           setFormData={setFormData}
         />
       )}
-      {step === 5 && <RegisterComplete formData={formData} />}
+      {step === 5 && <RegisterComplete />}
     </>
   );
 }

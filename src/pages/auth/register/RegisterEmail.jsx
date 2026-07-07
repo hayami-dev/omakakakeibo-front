@@ -10,35 +10,35 @@ import { validEmail, registerService } from "@/service/registerService";
 import { useNavigate } from "react-router";
 
 export default function RegisterEmail({ nextStep, formData, setFormData }) {
-  const [emailValue, setEmailValue] = useState(formData.email);
+  const [loginIdValue, setEmailValue] = useState(formData.loginId);
   const [errorText, setErrorText] = useState("");
 
   const navigate = useNavigate();
 
   // 画面を開いた瞬間（未入力）はエラー文はないけど進ませない、入力されてエラーがなければOK
-  const isButtonDisabled = emailValue.trim() === "" || errorText !== "";
+  const isButtonDisabled = loginIdValue.trim() === "" || errorText !== "";
 
-  const validateEmail = (value) => {
-    const msg = validEmail(value);
+  const validateEmail = () => {
+    const msg = validEmail(loginIdValue);
     setErrorText(msg);
     return msg;
   };
 
   const onHandleValid = () => {
-    validateEmail(emailValue); //TODO:すでに登録があるメアドかどうかの判定
+    validateEmail(loginIdValue); //TODO:すでに登録があるメアドかどうかの判定
   };
 
   const onHandleSend = async (e) => {
     e.preventDefault();
 
-    const msg = validateEmail(emailValue);
+    const msg = validateEmail(loginIdValue);
     if (msg !== "") {
       return; // エラーがあれば進ませない
     }
 
-    await registerService.registerRequest(emailValue);
+    await registerService.registerRequest(loginIdValue);
     // このメソッドが完了時点でsetされる
-    setFormData({ ...formData, email: emailValue });
+    setFormData({ ...formData, loginId: loginIdValue });
 
     nextStep();
   };
@@ -65,7 +65,7 @@ export default function RegisterEmail({ nextStep, formData, setFormData }) {
             type="email"
             id="email"
             placeholder={"yamada@example.com"}
-            value={emailValue}
+            value={loginIdValue}
             onBlur={(value) => onHandleValid(value)}
             onChange={setEmailValue}
             className=""

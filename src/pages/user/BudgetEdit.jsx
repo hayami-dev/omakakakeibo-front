@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import {
   INITIAL_MONTHLY_BUDGET,
   BUDGET_MIN_AMOUNT,
@@ -13,7 +13,6 @@ import {
   validateMonthlyBudget,
 } from "@/service/budgetService";
 import { getYearMonth } from "@/dateUtils";
-import { userIdAtom } from "@/service/authService";
 import BasePage from "@/components/ui/BasePage";
 import TextField from "@/components/ui/TextField";
 import Button from "@/components/ui/Button";
@@ -23,9 +22,6 @@ import handleApiError from "@/handleApiError";
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
 
 export default function BudgetEdit({ nextStep, formData, setFormData }) {
-  // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
-
   // atomで今の目標金額の状態を取得
   const [monthlyBudget, setMonthlyBudget] = useAtom(monthlyBudgetAtom);
 
@@ -53,16 +49,13 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
   // 画面更新（リロード）対策の読み込み処理
   useEffect(() => {
     const loadBudget = async () => {
-      if (nextStep || !USER_ID) {
+      if (nextStep) {
         return;
       }
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
-      const amount = await budgetService.loadBudgetWithFallback(
-        USER_ID,
-        currentMonth,
-      );
+      const amount = await budgetService.loadBudgetWithFallback(currentMonth);
       setMonthlyBudget(amount);
     };
     loadBudget();
@@ -101,7 +94,6 @@ export default function BudgetEdit({ nextStep, formData, setFormData }) {
     try {
       const success = await updateBudget({
         inputValue,
-        USER_ID,
         currentMonth,
         setMonthlyBudget,
       });

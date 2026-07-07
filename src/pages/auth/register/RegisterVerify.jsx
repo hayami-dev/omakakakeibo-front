@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 export default function RegisterVerify({ nextStep, formData }) {
   // 前のページでの入力を取得
-  const emailValue = formData.email;
+  const loginIdValue = formData.loginId;
 
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ export default function RegisterVerify({ nextStep, formData }) {
 
   // 認証トークンを再発行
   const onHandleSend = async () => {
-    await registerService.registerRequest(emailValue);
+    await registerService.registerRequest(loginIdValue);
   };
 
   return (

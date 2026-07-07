@@ -11,7 +11,7 @@ import { validPassword } from "@/service/registerService";
 
 export default function RegisterPassword({ nextStep, formData, setFormData }) {
   // メアドの入力値を取得
-  const email = formData.email;
+  const loginId = formData.loginId;
 
   // パスワードの入力値を管理
   const [passwordValue, setPasswordValue] = useState(formData.password);
@@ -26,8 +26,8 @@ export default function RegisterPassword({ nextStep, formData, setFormData }) {
     setIsPassShow((prev) => !prev);
   };
 
-  const validateEmail = (value) => {
-    const msg = validPassword(value);
+  const validateEmail = () => {
+    const msg = validPassword(passwordValue);
     setErrorText(msg);
     return msg;
   };
@@ -61,8 +61,8 @@ export default function RegisterPassword({ nextStep, formData, setFormData }) {
         </div>
         <form className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <p className="text-sm">ユーザーID</p>
-            <p>{email}</p>
+            <p className="text-sm">ログインID</p>
+            <p>{loginId}</p>
           </div>
           <fieldset className="flex flex-col gap-2">
             <label htmlFor="pass" className="text-sm">

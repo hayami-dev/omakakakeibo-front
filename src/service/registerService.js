@@ -5,15 +5,16 @@
 
 import apiClient from "@/apiClient";
 import handleApiError from "@/handleApiError";
+import { updateBudget } from "./budgetService";
 
 export const registerService = {
   /**
    * メアド認証用トークンを発行
-   * @param {*} email
+   * @param {*} loginId
    */
-  async registerRequest(email) {
+  async registerRequest(loginId) {
     try {
-      await apiClient.post(`/api/auth/register-request`, { email });
+      await apiClient.post(`/api/auth/register-request`, { loginId });
     } catch (error) {
       console.error("新規ユーザーのメアド送信に失敗...", error);
       handleApiError(error);
@@ -38,27 +39,13 @@ export const registerService = {
   },
   /**
    * 新規登録ユーザーの登録
-   * @param {*} email
+   * @param {*} loginId
    * @param {*} password
    */
-  async registerDataSave(email, password) {
-    // メアドのチェック
-    const emailError = validEmail(email);
-    if (emailError !== "") {
-      // validEmail はエラーがない時 "" を返す
-      alert(emailError);
-      return;
-    }
-
-    // パスワードのチェック
-    const passwordError = validPassword(password);
-    if (passwordError !== "") {
-      alert(passwordError);
-      return;
-    }
+  async registerDataSave(loginId, password) {
     try {
       const sendData = {
-        email,
+        loginId,
         password,
       };
 
@@ -127,16 +114,51 @@ export function validPassword(currentValue) {
  * 最終データを各DBに入れる
  */
 export async function saveUserData(formData) {
-  const email = formData.email;
+  const loginId = formData.loginId;
   const password = formData.password;
 
-  const userRes = await registerService.registerDataSave(email, password);
-  if (!userRes || !userRes.userId) {
+  // メアドのチェック
+  const emailError = validEmail(loginId);
+  if (emailError !== "") {
+    // validEmail はエラーがない時 "" を返す
+    alert(emailError);
     return;
   }
 
-  const newUserId = userRes.userId;
+  // パスワードのチェック
+  const passwordError = validPassword(password);
+  if (passwordError !== "") {
+    alert(passwordError);
+    return;
+  }
+
+  const newUserId = await registerService.registerDataSave(loginId, password);
+  if (!newUserId) {
+    return;
+  }
 
   // userIdを返す
   return newUserId;
 }
+
+/**
+ * 最初の目標金額を登録する
+ **/
+export const firstBudgetSave = async (
+  formData,
+  newUserId,
+  setMonthlyBudget,
+) => {
+  try {
+    await updateBudget({
+      inputValue: formData.targetAmount,
+      userId: newUserId,
+      currentMonth: formData.targetMonth,
+      setMonthlyBudget,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return "目標金額の初回登録に失敗しました。";
+  }
+};

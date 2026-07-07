@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 // ルート
 import { Route, Routes, Outlet } from "react-router";
 import Home from "@/pages/Home";
@@ -8,18 +7,14 @@ import CategoryEdit from "@/pages/user/CategoryEdit";
 import Header from "@/components/Header";
 import BudgetEdit from "@/pages/user/BudgetEdit";
 import Login from "@/pages/auth/login/Login";
-import { isLoggedInAtom, userIdAtom } from "@/service/authService";
+import MainLayout from "./MainLayout";
 // component
 import Toast from "@/components/ui/Toast";
-import RegisterContainer from "./pages/auth/register/RegisterContainer";
-import ProtectedRoute from "./components/ProtectedRoute";
+import RegisterContainer from "@/pages/auth/register/RegisterContainer";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import PublicRoute from "@/components/PublicRoute";
 
 function App() {
-  // ログイン状態を管理
-  const isLogeedIn = useAtomValue(isLoggedInAtom);
-
-  const USER_ID = useAtomValue(userIdAtom);
-
   return (
     <>
       {/* トースト通知 */}
@@ -28,23 +23,18 @@ function App() {
       {/* すべての画面ルート */}
       <Routes>
         {/* ログイン前 */}
-        <Route path="/auth">
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<RegisterContainer />} />
-          {/* トークン認証用 */}
-          <Route path="register/verify" element={<RegisterContainer />} />
+        <Route element={<PublicRoute />}>
+          <Route path="/auth">
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<RegisterContainer />} />
+            {/* トークン認証用 */}
+            <Route path="register/verify" element={<RegisterContainer />} />
+          </Route>
         </Route>
 
         {/* ログイン後 */}
         <Route element={<ProtectedRoute />}>
-          <Route
-            element={
-              <>
-                <Header />
-                <Outlet /> {/* ここにHomeやUserが入る！ */}
-              </>
-            }
-          >
+          <Route element={<MainLayout />}>
             {/* ホーム */}
             <Route path="/" element={<Home />}>
               {/* ダイアログ */}
