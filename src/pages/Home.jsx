@@ -1,8 +1,8 @@
 /* ユーザーが最初に訪れるホーム画面 */
 
-import { useEffect, useState } from "react";
-import { useAtom, useSetAtom, useAtomValue } from "jotai";
-import { Outlet, useNavigate, useOutletContext } from "react-router";
+import { useEffect } from "react";
+import { useSetAtom } from "jotai";
+import { Outlet } from "react-router";
 /*
  * utils */
 import { getYearMonth } from "@/dateUtils";

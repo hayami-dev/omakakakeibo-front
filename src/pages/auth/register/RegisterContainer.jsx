@@ -17,16 +17,17 @@ import {
 import { useLocation, useSearchParams } from "react-router";
 import { useSetAtom } from "jotai";
 import { monthlyBudgetAtom } from "@/service/budgetService";
-import { isLoggedInAtom, login, LoginIdAtom } from "@/service/authService";
+import { login, LoginIdAtom } from "@/service/authService";
 
 export default function RegisterContainer() {
   // 目標金額をセット
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
 
-  // ログイン状態を取得
-  const setIsLoggedIn = useSetAtom(isLoggedInAtom);
   // ログインするログインIDを取得
   const setLoginId = useSetAtom(LoginIdAtom);
+
+  // ユーザーデータの新規登録完了を管理
+  const [registerCompleteStatus, setRegisterCompleteStatus] = useState(false);
 
   // URLを検知
   const location = useLocation();
@@ -92,7 +93,9 @@ export default function RegisterContainer() {
         // 初期目標金額の登録
         await firstBudgetSave(formData, newUserId, setMonthlyBudget);
 
-        setIsLoggedIn(true);
+        setTimeout(() => {
+          setRegisterCompleteStatus(true);
+        }, 3000);
       } catch (error) {
         console.error("最終登録で予期せぬエラー:", error);
         alert("予期せぬエラーが発生しました。");
@@ -132,7 +135,9 @@ export default function RegisterContainer() {
           setFormData={setFormData}
         />
       )}
-      {step === 5 && <RegisterComplete />}
+      {step === 5 && (
+        <RegisterComplete registerCompleteStatus={registerCompleteStatus} />
+      )}
     </>
   );
 }

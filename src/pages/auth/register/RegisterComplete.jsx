@@ -1,19 +1,30 @@
 /* 新規登録フロー：メアド(ログインID)の入力 */
 import BasePage from "@/components/ui/BasePage";
 import Button from "@/components/ui/Button";
-import { useAtomValue } from "jotai";
+import { useSetAtom } from "jotai";
 import { useNavigate } from "react-router";
 import ChevronRightIcon from "@/assets/icons/ChevronRightIcon";
-import { isLoggedInAtom } from "@/service/authService";
+import { isLoggedInAtom, LoginIdAtom } from "@/service/authService";
 
-export default function RegisterComplete() {
+export default function RegisterComplete({ registerCompleteStatus }) {
   // ログイン状態を取得
-  const isLoggedIn = useAtomValue(isLoggedInAtom);
+  const setIsLoggedIn = useSetAtom(isLoggedInAtom);
 
   // 保存中の間、ローディング画面を表示
-  const isSaving = !isLoggedIn;
+  const isSaving = !registerCompleteStatus;
+  console.log("registerCompleteStatus", registerCompleteStatus);
 
+  // 画面遷移のフック
   const navigate = useNavigate();
+
+  /**
+   * 新規登録フロー
+   */
+  const moveHome = () => {
+    // ログイン状態に変化
+    setIsLoggedIn(true);
+    navigate("/");
+  };
 
   return (
     <>
@@ -55,11 +66,7 @@ export default function RegisterComplete() {
                 いっしょにがんばっていきましょう！
               </p>
             </div>
-            <Button
-              type="button"
-              onClick={() => navigate("/")}
-              className="mt-8"
-            >
+            <Button type="button" onClick={moveHome} className="mt-8">
               ホームへすすむ
             </Button>
           </div>

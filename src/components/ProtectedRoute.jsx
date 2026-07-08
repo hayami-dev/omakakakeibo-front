@@ -10,8 +10,11 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router";
 
 export default function ProtectedRoute() {
+  // ログイン情報を取得
   const [isLoggedIn, setIsLoggedIn] = useAtom(isLoggedInAtom);
   const setAuthStatus = useSetAtom(authStatusAtom);
+
+  // データローディング中かを管理
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
