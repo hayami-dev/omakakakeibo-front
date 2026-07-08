@@ -23,14 +23,18 @@ export default function CategoryEdit() {
   const [activeCategories, setActiveCategories] = useAtom(activeCategoriesAtom);
 
   // カテゴリマスタのセッターを取得
-  const setCategoriesMaster = useSetAtom(categoriesMasterAtom);
+  const [categoriesMaster, setCategoriesMaster] = useAtom(categoriesMasterAtom);
 
   // 一時変更用のカテゴリリスト
   const [localCategories, setLocalCategories] = useState(activeCategories);
 
   //カテゴリの変更が可能かどうか
   const today = new Date();
-  const isEdit = checkAlreadyEditCategory(today, activeCategories);
+  const isEdit = checkAlreadyEditCategory(
+    today,
+    activeCategories,
+    categoriesMaster,
+  );
 
   // トースト通知書き換えるためのatom
   const setToast = useSetAtom(toastAtom);

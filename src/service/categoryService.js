@@ -166,8 +166,15 @@ export const resolveCategoryById = (id, masterList) => {
  * @param {Array<Object>} activeCategories - 現在のアクティブカテゴリリスト
  * @returns {boolean} 今月編集可能ならtrue、すでに今月は不可ならfalse
  */
-export const checkAlreadyEditCategory = (todayObj, activeCategories) => {
+export const checkAlreadyEditCategory = (
+  todayObj,
+  activeCategories,
+  categoriesMaster,
+) => {
+  // アクティブカテゴリ無い場合早期リターン
   if (!activeCategories || activeCategories.length === 0) return true;
+
+  if (categoriesMaster.length <= 6) return true;
 
   const latestDateStr = activeCategories.reduce((prev, current) => {
     return prev.updatedAt > current.updatedAt ? prev : current;
