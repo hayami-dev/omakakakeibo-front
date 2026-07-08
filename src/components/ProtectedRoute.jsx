@@ -10,14 +10,17 @@ import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router";
 
 export default function ProtectedRoute() {
+  // ログイン情報を取得
   const [isLoggedIn, setIsLoggedIn] = useAtom(isLoggedInAtom);
   const setAuthStatus = useSetAtom(authStatusAtom);
+
+  // データローディング中かを管理
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await authService.fetchLoginUser();
+        const user = await authService.fetchLoginUserStatus();
         // サーバーから取得したLoginIdが有効ならログイン状態にする(時間経過、一度URLを離れるなど)
         const isAuthenticated = !!user;
         setAuthStatus(user ? "authenticated" : "unauthenticated");

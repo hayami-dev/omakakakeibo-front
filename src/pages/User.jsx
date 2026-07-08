@@ -6,6 +6,7 @@ import { useNavigate } from "react-router";
 // Service
 import {
   activeCategoriesAtom,
+  categoriesMasterAtom,
   checkAlreadyEditCategory,
 } from "@/service/categoryService";
 import {
@@ -32,6 +33,7 @@ export default function User() {
 
   // カテゴリ一覧を取得
   const activeCategories = useAtomValue(activeCategoriesAtom);
+  const categoriesMaster = useAtomValue(categoriesMasterAtom);
 
   // 目標金額を取得
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
@@ -44,7 +46,11 @@ export default function User() {
 
   //カテゴリの変更が可能かどうか
   const today = new Date();
-  const isEditCategory = checkAlreadyEditCategory(today, activeCategories);
+  const isEditCategory = checkAlreadyEditCategory(
+    today,
+    activeCategories,
+    categoriesMaster,
+  );
 
   // ページ切替のためのフック
   const navigate = useNavigate();
