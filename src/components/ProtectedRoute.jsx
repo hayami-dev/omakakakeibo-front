@@ -20,7 +20,7 @@ export default function ProtectedRoute() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await authService.fetchLoginUser();
+        const user = await authService.fetchLoginUserStatus();
         // サーバーから取得したLoginIdが有効ならログイン状態にする(時間経過、一度URLを離れるなど)
         const isAuthenticated = !!user;
         setAuthStatus(user ? "authenticated" : "unauthenticated");

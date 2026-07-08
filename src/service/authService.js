@@ -8,6 +8,15 @@ import apiClient from "@/apiClient";
 import handleApiError from "@/handleApiError";
 
 export const authService = {
+  /**
+   * ログインIDとパスワードを使用して認証を行い、セッションを確立。
+   * 成功時はサーバーから認証成功メッセージやユーザー情報が返る。
+   * * @param {Object} formData - ログインフォームの入力データ
+   * @param {string} formData.loginId - ユーザーのログインID
+   * @param {string} formData.password - ユーザーのパスワード
+   * @returns {Promise<Object>} APIからのレスポンスデータ
+   * @throws {Error} 認証失敗時やネットワークエラー時に例外を投げる
+   */
   async fetchUserByLoginId(formData) {
     try {
       const sendData = {
@@ -24,7 +33,13 @@ export const authService = {
       throw error;
     }
   },
-  async fetchLoginUser() {
+  /**
+   * 現在のセッション状態を確認し、ログイン中のユーザー情報を取得。
+   * サーバーが 401 Unauthorized を返した場合は「未ログイン」とみなし、null を返す。
+   * * @returns {Promise<Object|null>} ログイン中ならユーザー情報オブジェクト、未ログインなら null
+   * @throws {Error} 401 以外のサーバーエラーや通信エラー発生時に例外を投げる
+   */
+  async fetchLoginUserStatus() {
     try {
       const response = await apiClient.get(`/api/auth/me`);
       return response.data;
@@ -38,6 +53,10 @@ export const authService = {
       throw error;
     }
   },
+  /**
+   * ログアウト処理を実行し、サーバー側のセッション（Cookieなど）を無効化。
+   * * @returns {Promise<void>} 処理完了を返す
+   */
   async fetchLogoutUser() {
     try {
       await apiClient.post(`/api/auth/logout`);
