@@ -6,44 +6,51 @@ import { useNavigate } from "react-router";
 // Service
 import {
   activeCategoriesAtom,
+  categoriesMasterAtom,
   checkAlreadyEditCategory,
 } from "@/service/categoryService";
-import { currentMonthAtom } from "@/service/historyService";
 import {
   budgetService,
   monthlyBudgetAtom,
   INITIAL_MONTHLY_BUDGET,
   checkIsEditBudget,
 } from "@/service/budgetService";
-import { userIdAtom } from "@/service/authService";
+import { LoginIdAtom, logout } from "@/service/authService";
 // components
 import Button from "@/components/ui/Button";
 import EditIcon from "@/assets/icons/EditIcon";
 import CategoryButton from "@/components/ui/CategoryButton";
 import AttentionText from "@/components/ui/HelpText";
+import { getYearMonth } from "@/dateUtils";
 
 // ユーザー個別の情報の表示画面
 export default function User() {
-  // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
+  // ログインIDを取得
+  const loginId = useAtomValue(LoginIdAtom);
 
-  // 選択中の月
-  const currentMonth = useAtomValue(currentMonthAtom);
   // 目標金額の取得
   const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
 
   // カテゴリ一覧を取得
   const activeCategories = useAtomValue(activeCategoriesAtom);
+  const categoriesMaster = useAtomValue(categoriesMasterAtom);
 
   // 目標金額を取得
   const monthlyBudget = useAtomValue(monthlyBudgetAtom);
+
+  // 今月を取得
+  const currentMonth = getYearMonth();
 
   // 目標金額の変更が可能かどうかの判定
   const [isEditBudget, setIsEditBudget] = useState(false);
 
   //カテゴリの変更が可能かどうか
   const today = new Date();
-  const isEditCategory = checkAlreadyEditCategory(today, activeCategories);
+  const isEditCategory = checkAlreadyEditCategory(
+    today,
+    activeCategories,
+    categoriesMaster,
+  );
 
   // ページ切替のためのフック
   const navigate = useNavigate();
@@ -51,12 +58,12 @@ export default function User() {
   // 目標金額の変更が可能かどうかを判定
   useEffect(() => {
     const checkBudgetLock = async () => {
-      const canEdit = await checkIsEditBudget(USER_ID, currentMonth);
+      const canEdit = await checkIsEditBudget(currentMonth);
       setIsEditBudget(canEdit);
     };
 
     checkBudgetLock();
-  }, [currentMonth, USER_ID, monthlyBudget]);
+  }, [currentMonth, monthlyBudget]);
 
   // DBから目標金額を取得
   useEffect(() => {
@@ -64,14 +71,17 @@ export default function User() {
       if (monthlyBudget !== INITIAL_MONTHLY_BUDGET && monthlyBudget !== 0) {
         return;
       }
-      const amount = await budgetService.loadBudgetWithFallback(
-        USER_ID,
-        currentMonth,
-      );
+      const amount = await budgetService.loadBudgetWithFallback(currentMonth);
       setMonthlyBudget(amount);
     };
     loadBudget();
-  }, [currentMonth, USER_ID, monthlyBudget]);
+  }, [currentMonth, monthlyBudget]);
+
+  const handleLogout = () => {
+    if (window.confirm("ログアウトしますか？")) {
+      logout();
+    }
+  };
 
   // 処理
   return (
@@ -132,7 +142,7 @@ export default function User() {
       </section>
       <section className="flex flex-col gap-2">
         <h3>ユーザーID</h3>
-        <p>yamada@exsample.jp</p>
+        <p>{loginId}</p>
         <Button
           variant="secondary"
           size="sm"
@@ -140,10 +150,10 @@ export default function User() {
           className="!w-fit mt-2"
           onClick={() => navigate("/")}
         >
-          ユーザーIDの変更
+          ユーザーIDの変更(未実装)
         </Button>
       </section>
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-3 border-dot-underline pb-8">
         <h3>パスワード</h3>
         <p>●●●●●●●●</p>
         <Button
@@ -153,9 +163,14 @@ export default function User() {
           className="!w-fit mt-3"
           onClick={() => navigate("/")}
         >
-          パスワードの変更
+          パスワードの変更(未実装)
         </Button>
       </section>
+      <div className="pb-4">
+        <Button type="button" onClick={handleLogout}>
+          ログアウト
+        </Button>
+      </div>
     </main>
   );
 }

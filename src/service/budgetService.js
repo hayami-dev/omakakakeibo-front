@@ -30,16 +30,13 @@ export const budgetService = {
   /**
    * DBから特定のユーザー・対象月の目標金額を取得
    * データが存在しない場合はデフォルトの初期値を返す
-   * http://localhost:8080/api/budget/1/2026-03
-   * @param {number} userId - ログイン中のユーザーID
+   * http://localhost:8080/api/budget/2026-03
    * @param {string} targetMonth - 取得対象の月 (フォーマット: yyyy-MM)
    * @returns {Promise<number>} DBから取得した目標金額、またはデフォルト値
    */
-  async fetchMonthlyBudget(userId, targetMonth) {
+  async fetchMonthlyBudget(targetMonth) {
     try {
-      const response = await apiClient.get(
-        `/api/budget/${userId}/${targetMonth}`,
-      );
+      const response = await apiClient.get(`/api/budget/${targetMonth}`);
 
       return response.data && response.data.targetAmount !== undefined
         ? response.data.targetAmount
@@ -56,41 +53,20 @@ export const budgetService = {
     }
   },
   /**
-   * DBに新しい目標金額を保存（更新）
-   * http://localhost:8080/api/budget/add/1
-   * @param {Object} value - 送信する予算データ
-   * @param {number} value.userId - ユーザーID
-   * @param {string} value.targetMonth - 対象月 (yyyy-MM)
-   * @param {number} value.targetAmount - 設定する目標金額
-   * @returns {Promise<string|null>} サーバーから返却されたテキスト、または失敗時 null
-   */
-  async saveMonthlyBudget(value) {
-    try {
-      await apiClient.post(`/api/budget/add`, value);
-    } catch (error) {
-      console.error("目標金額データ追加に失敗...", error);
-      handleApiError(error);
-    }
-  },
-  /**
    * 対象月の目標金額を取得する（データ未登録時は過去最大6ヶ月前まで自動でさかのぼる）
    * * @description
    * 家計簿の利便性を高めるため、今月が未設定であっても、過去5ヶ月以内（計6ヶ月分）に
    * 設定された目標金額があれば、その最新の設定値を「今月の目標」として自動で引き継ぐ。
    * もし直近6ヶ月間すべて未登録だった場合は、システムのデフォルト初期値（50,000円）を返す。
-   * * @param {number} USER_ID - ログイン中のユーザーID
    * @param {string} currentMonth - 基点となる対象月 (フォーマット: yyyy-MM)
    * @returns {Promise<number>} 取得できた過去の目標金額、またはデフォルト初期値
    */
-  async loadBudgetWithFallback(USER_ID, currentMonth) {
+  async loadBudgetWithFallback(currentMonth) {
     let targetMonth = currentMonth; // 最初は今月からスタート
 
     // 今月を含めて最大6回、過去にさかのぼるループを回す
     for (let i = 0; i < 6; i++) {
-      const amount = await budgetService.fetchMonthlyBudget(
-        USER_ID,
-        targetMonth,
-      );
+      const amount = await budgetService.fetchMonthlyBudget(targetMonth);
 
       if (amount !== null) {
         // データが見つかったらそれを返す
@@ -103,6 +79,22 @@ export const budgetService = {
 
     // 6ヶ月間すべて未登録の場合初期値を返す
     return INITIAL_MONTHLY_BUDGET;
+  },
+  /**
+   * DBに新しい目標金額を保存（更新）
+   * http://localhost:8080/api/budget/add/1
+   * @param {Object} value - 送信する予算データ
+   * @param {string} value.targetMonth - 対象月 (yyyy-MM)
+   * @param {number} value.targetAmount - 設定する目標金額
+   * @returns {Promise<string|null>} サーバーから返却されたテキスト、または失敗時 null
+   */
+  async saveMonthlyBudget(value) {
+    try {
+      await apiClient.post(`/api/budget/add`, value);
+    } catch (error) {
+      console.error("目標金額データ追加に失敗...", error);
+      handleApiError(error);
+    }
   },
 };
 
@@ -137,29 +129,26 @@ export const formatAmountWithSign = (amount) => {
  * ユーザーが入力した目標金額をバリデーションし、DBとAtomに保存
  * @param {Object} params - 引数のオブジェクト
  * @param {string} params.inputValue - 入力欄から受け取った文字列の金額
- * @param {number} params.USER_ID - ログイン中のユーザーID
  * @param {string} params.currentMonth - 対象の月 (フォーマット: yyyy-MM)
  * @param {Function} params.setMonthlyBudget - JotaiのAtomを更新するためのセッター関数
  * @returns {Promise<boolean>} 保存が成功した場合は true、失敗・バリデーションNGの場合は false
  */
 export const updateBudget = async ({
   inputValue,
-  USER_ID,
   currentMonth,
   setMonthlyBudget,
 }) => {
-  const num = Number(inputValue);
-  // 範囲外の入力だった場合はじく
-  if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
-    alert(
-      `${BUDGET_MIN_AMOUNT.toLocaleString()}～${BUDGET_MAX_AMOUNT.toLocaleString()}円までの金額を入力してください`,
-    );
+  const msg = validateMonthlyBudget(inputValue);
+
+  if (msg !== null) {
+    alert(msg);
     return false;
   }
 
+  const num = Number(inputValue);
+
   // DBへ送るデータ
   const sendData = {
-    userId: USER_ID,
     targetMonth: currentMonth,
     targetAmount: num,
   };
@@ -167,7 +156,9 @@ export const updateBudget = async ({
   // 送信
   try {
     await budgetService.saveMonthlyBudget(sendData);
-    setMonthlyBudget(num);
+    if (setMonthlyBudget) {
+      setMonthlyBudget(num);
+    }
     return true;
   } catch (error) {
     console.error("目標金額の保存に失敗しました", error);
@@ -178,11 +169,8 @@ export const updateBudget = async ({
 /**
  * 目標金額の変更が可能かどうかを判定
  */
-export async function checkIsEditBudget(USER_ID, currentMonth) {
-  const realAmount = await budgetService.fetchMonthlyBudget(
-    USER_ID,
-    currentMonth,
-  );
+export async function checkIsEditBudget(currentMonth) {
+  const realAmount = await budgetService.fetchMonthlyBudget(currentMonth);
 
   if (realAmount !== null) {
     return false;
@@ -190,3 +178,18 @@ export async function checkIsEditBudget(USER_ID, currentMonth) {
     return true;
   }
 }
+
+/**
+ * 月の目標金額のバリデーション
+ * @param {*} inputValue
+ * @returns {String} バリデーションOKならnull
+ */
+export const validateMonthlyBudget = (inputValue) => {
+  const num = Number(inputValue);
+
+  // 範囲外の入力だった場合はじく
+  if (isNaN(num) || num < BUDGET_MIN_AMOUNT || num > BUDGET_MAX_AMOUNT) {
+    return `${BUDGET_MIN_AMOUNT.toLocaleString()}～${BUDGET_MAX_AMOUNT.toLocaleString()}円までの金額を入力してください`;
+  }
+  return null;
+};

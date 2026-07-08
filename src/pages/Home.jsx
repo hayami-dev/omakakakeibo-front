@@ -1,7 +1,7 @@
 /* ユーザーが最初に訪れるホーム画面 */
 
 import { useEffect } from "react";
-import { useAtom, useSetAtom, useAtomValue } from "jotai";
+import { useSetAtom } from "jotai";
 import { Outlet } from "react-router";
 /*
  * utils */
@@ -14,22 +14,16 @@ import HistoryList from "@/components/home/HistoryList";
 import CategorySummary from "@/components/home/CategorySummary";
 import MonthSummary from "@/components/home/MonthSummary";
 import Footer from "@/components/Footer";
+import LoadingAnime from "@/components/ui/LoadingAnime";
+
 /**
  * service
  */
 import { currentMonthAtom } from "@/service/historyService";
-import { budgetService, monthlyBudgetAtom } from "@/service/budgetService";
-import { userIdAtom } from "@/service/authService";
 
 export default function Home() {
-  // ユーザーIDを取得
-  const USER_ID = useAtomValue(userIdAtom);
-
   // 選択中の月
-  const [currentMonth, setCurrentMonth] = useAtom(currentMonthAtom);
-
-  // 目標金額の取得
-  const setMonthlyBudget = useSetAtom(monthlyBudgetAtom);
+  const setCurrentMonth = useSetAtom(currentMonthAtom);
 
   // Home画面に戻ってきた時に今月にリセットする
   useEffect(() => {
@@ -37,17 +31,10 @@ export default function Home() {
     setCurrentMonth(thisMonth);
   }, [setCurrentMonth]);
 
-  // DBから目標金額を取得
-  useEffect(() => {
-    const loadBudget = async () => {
-      const amount = await budgetService.loadBudgetWithFallback(
-        USER_ID,
-        currentMonth,
-      );
-      setMonthlyBudget(amount);
-    };
-    loadBudget();
-  }, [currentMonth]);
+  // 初回アクセス時、読み込みを待ってからInputHistoryを表示
+  // const navigate = useNavigate();
+
+  // 初回アクセス時のみ、InputHistoryを自動で表示
 
   return (
     <>
