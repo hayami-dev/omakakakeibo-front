@@ -4,10 +4,10 @@ import Home from "@/pages/Home";
 import InputHistory from "@/pages/InputHistory";
 import User from "@/pages/User";
 import CategoryEdit from "@/pages/user/CategoryEdit";
-import Header from "@/components/Header";
 import BudgetEdit from "@/pages/user/BudgetEdit";
 import Login from "@/pages/auth/login/Login";
 import MainLayout from "./MainLayout";
+import License from "@/pages/License";
 // component
 import Toast from "@/components/ui/Toast";
 import RegisterContainer from "@/pages/auth/register/RegisterContainer";
@@ -24,7 +24,7 @@ function App() {
       <Routes>
         {/* ログイン前 */}
         <Route element={<PublicRoute />}>
-          <Route path="/auth">
+          <Route path="auth">
             <Route path="login" element={<Login />} />
             <Route path="register" element={<RegisterContainer />} />
             {/* トークン認証用 */}
@@ -47,6 +47,9 @@ function App() {
             <Route path="user/budgetEdit" element={<BudgetEdit />} />
           </Route>
         </Route>
+
+        {/* ライセンスページ */}
+        <Route path="license" element={<License />}></Route>
       </Routes>
     </>
   );
