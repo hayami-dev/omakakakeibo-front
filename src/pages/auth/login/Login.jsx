@@ -16,6 +16,7 @@ import {
 import EyeIcon from "@/assets/icons/eye.svg";
 import EyeOffIcon from "@/assets/icons/eye-off.svg";
 import { toastAtom } from "@/service/toastAtom";
+import CopyrightSection from "@/components/CopyrightSection";
 
 export default function Login() {
   // ログイン状態を管理
@@ -188,6 +189,7 @@ export default function Login() {
           </Button>
         </div>
       </main>
+      <CopyrightSection />
     </>
   );
 }
