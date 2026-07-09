@@ -5,7 +5,11 @@ import { useNavigate } from "react-router";
 
 // 定数として静的なライセンス情報を定義
 const DESIGN_LICENSES = [
-  { name: "ニコ文字", license: "SIL Open Font License 1.1", type: "font" },
+  {
+    name: " ニコモジ＋（V2）",
+    license: "SIL Open Font License 1.1",
+    type: "font",
+  },
   {
     name: "M PLUS 1 / Rounded Mplus 1c",
     license: "SIL Open Font License 1.1",
@@ -23,13 +27,6 @@ const DESIGN_LICENSES = [
     license: "Apache License 2.0",
     type: "design",
   },
-  {
-    name: "Spring Boot / MyBatis",
-    license: "Apache License 2.0",
-    type: "backend",
-  },
-  { name: "MySQL Connector/J", license: "GPL-2.0", type: "backend" },
-  { name: "jBCrypt / JJWT", license: "ISC / Apache 2.0", type: "backend" },
 ];
 
 // バックエンドライブラリ
