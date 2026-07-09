@@ -12,7 +12,7 @@ import {
 } from "./service/categoryService";
 import { budgetService, monthlyBudgetAtom } from "./service/budgetService";
 import Header from "./components/Header";
-import { Outlet } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import LoadingAnime from "./components/ui/LoadingAnime";
 import { authStatusAtom, isLoggedInAtom } from "./service/authService";
 
@@ -35,6 +35,9 @@ export default function MainLayout() {
   const [showLoadingDOM, setShowLoadingDOM] = useState(true);
 
   const [firstAccess, setFirstAccess] = useState(true);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // DBから各種初期データと目標金額を取得
   useEffect(() => {
@@ -89,6 +92,11 @@ export default function MainLayout() {
           setFirstAccess(false);
         }, 500);
         setAuthStatus("complete");
+
+        // 初回アクセス時のみ、InputHistoryを自動で表示
+        if (!location.pathname("/user")) {
+          navigate("/input");
+        }
       }
     };
 

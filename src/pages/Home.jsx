@@ -31,11 +31,6 @@ export default function Home() {
     setCurrentMonth(thisMonth);
   }, [setCurrentMonth]);
 
-  // 初回アクセス時、読み込みを待ってからInputHistoryを表示
-  // const navigate = useNavigate();
-
-  // 初回アクセス時のみ、InputHistoryを自動で表示
-
   return (
     <>
       <main className="flex flex-col gap-5 pt-6 pb-16">
