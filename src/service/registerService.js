@@ -39,13 +39,13 @@ export const registerService = {
   },
   /**
    * 新規登録ユーザーの登録
-   * @param {*} loginId
+   * @param {string} token 認証メールのURLに付いていたトークン
    * @param {*} password
    */
-  async registerDataSave(loginId, password) {
+  async registerDataSave(token, password) {
     try {
       const sendData = {
-        loginId,
+        token,
         password,
       };
 
@@ -115,6 +115,7 @@ export function validPassword(currentValue) {
  */
 export async function saveUserData(formData) {
   const loginId = formData.loginId;
+  const token = formData.token;
   const password = formData.password;
 
   // メアドのチェック
@@ -132,7 +133,7 @@ export async function saveUserData(formData) {
     return;
   }
 
-  const newUserId = await registerService.registerDataSave(loginId, password);
+  const newUserId = await registerService.registerDataSave(token, password);
   if (!newUserId) {
     return;
   }

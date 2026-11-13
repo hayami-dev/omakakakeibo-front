@@ -40,6 +40,7 @@ export default function RegisterContainer() {
   // 送信するデータ
   const [formData, setFormData] = useState({
     loginId: "",
+    token: "",
     password: "",
     targetAmount: 50000,
     targetMonth: "",
@@ -54,7 +55,7 @@ export default function RegisterContainer() {
         try {
           const res = await registerService.registerValidToken(token);
           if (res && res.loginId) {
-            setFormData((prev) => ({ ...prev, loginId: res.loginId }));
+            setFormData((prev) => ({ ...prev, loginId: res.loginId, token }));
             setStep(3);
           }
         } catch (error) {
